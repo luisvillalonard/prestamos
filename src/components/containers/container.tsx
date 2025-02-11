@@ -1,38 +1,26 @@
-import { Card, Flex, theme } from "antd"
-import { ControlProps } from "../../interfaces/globales"
+import { Card, CardProps, theme } from "antd"
 
-const Container = (props: Pick<ControlProps, Required<"children" | "title"> | "style">) => {
+const Container = (props: CardProps) => {
 
-    const { children, title, style } = props
-    const { token: { boxShadow }} = theme.useToken()
-    const titleIsText = typeof title === "string"
-    const headerStyle: React.CSSProperties = {
-        paddingLeft:  10,
-        paddingRight: 10,
-        paddingTop: 14,
-        paddingBottom: 24
-    }
+    const { token } = theme.useToken()
 
     return (
         <Card
-            title={
-                <Flex align="center" justify={titleIsText ? "start" : "space-between"} style={{ width: '100%' }}>
-                    {titleIsText ? <div className="fs-4">{title}</div> : title}
-                </Flex>
-            }
+            {...props}
             style={{
-                margin: 18,
                 position: 'relative',
-                boxShadow: boxShadow,
-                ...style
+                boxShadow: token.boxShadow,
+                ...props.style
             }}
             styles={{
-                header: headerStyle,
+                header: {
+                    padding: 10
+                },
                 body: {
-                    padding: 0  
+                    padding: 10  
                 }
             }}>
-            {children}
+            {props.children}
         </Card>
     )
 }

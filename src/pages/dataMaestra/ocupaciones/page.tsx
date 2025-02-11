@@ -1,29 +1,29 @@
 import { ButtonPrimary } from "@components/buttons/primary"
 import Searcher from "@components/inputs/searcher"
-import { Space, Typography } from "antd"
+import { Col, Space, Typography } from "antd"
 import Listado from "./listado"
 import { useState } from "react"
 import Container from "@components/containers/container"
 import { useData } from "@hooks/useData"
 import Loading from "@components/containers/loading"
-import FormUsuario from "./form"
+import FormOcupaciones from "./form"
 
-export default function PageUsuarios() {
+export default function PageOcupaciones() {
 
-    const { contextUsuarios: { state: { modelo, procesando }, nuevo } } = useData()
+    const { contextOcupaciones: { state: { modelo, procesando }, nuevo } } = useData()
     const [filter, setFilter] = useState<string>('')
     const { Title } = Typography
 
     return (
-        <>
-            <Title level={2} style={{ fontWeight: 300 }}>Usuarios</Title>
+        <Col span={18} offset={3}>
+            <Title level={2} style={{ fontWeight: 300 }}>Ocupaciones</Title>
             <Container
                 title={
-                    <Searcher size="large" onChange={setFilter} />
+                    <Searcher variant="borderless" size="large" onChange={setFilter} />
                 }
                 extra={
                     <Space>
-                        <ButtonPrimary onClick={nuevo}>Nuevo</ButtonPrimary>
+                        <ButtonPrimary onClick={nuevo}>Nueva</ButtonPrimary>
                     </Space>
                 }>
                 <Listado filter={filter} />
@@ -32,8 +32,8 @@ export default function PageUsuarios() {
             {
                 !modelo
                     ? <></>
-                    : <FormUsuario />
+                    : <FormOcupaciones />
             }
-        </>
+        </Col>
     )
 }

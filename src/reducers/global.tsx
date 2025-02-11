@@ -14,7 +14,7 @@ export type ACTIONTYPES<DataType> =
     | { type: ACTIONS.FETCH_COMPLETE; data?: DataType[]; model?: DataType; paginacion?: PagingResult; recargar?: boolean }
 
 export interface State<DataType> {
-    modelo?: DataType | null,
+    modelo?: DataType,
     datos: DataType[],
     procesando: boolean,
     editando: boolean,
@@ -25,6 +25,7 @@ export interface State<DataType> {
 
 export interface GlobalContextState<T> {
     state: State<T>,
+    nuevo: () => void,
     editar: (item: T) => Promise<void>,
     agregar: (item: T) => Promise<ResponseResult<T>>,
     actualizar: (item: T) => Promise<ResponseResult<T>>,
@@ -58,7 +59,7 @@ const reducer = <DataType extends unknown>(state: State<DataType>, action: ACTIO
         case ACTIONS.CANCEL: {
             return {
                 ...state,
-                modelo: null,
+                modelo: undefined,
                 editando: false
             };
         }

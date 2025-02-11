@@ -21,8 +21,8 @@ export interface ControlProps {
     active?: boolean,
     isOpen: boolean,
     inside?: boolean,
-    wait?: boolean,
     loading?: boolean,
+    wait?: boolean,
 
     size?: SizeType,
     buttonType?: ButtonType;

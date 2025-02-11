@@ -3,7 +3,7 @@ export const secretKey = 'D7B9F2FD64B04F18B4D1EC4869FC52BA';
 export function useConstants() {
 
     const API_URL = {
-        Base: import.meta.env.PROD ? 'http://www.prestamosapi.somee.com/api' : 'https://localhost/prestamos.api', //'https://localhost/factuv.api',
+        Base: process.env.VITE_API_URL, //import.meta.env.PROD ? 'http://www.prestamosapi.somee.com' : 'http://www.prestamosapi.somee.com',
         //Base: 'https://localhost:44340',
 
         ApiDefaultProps: {
@@ -45,7 +45,7 @@ export function useConstants() {
             Validar: 'validar',
             CambiarClave: 'cambioClave/:codigo',
         },
-        Configuraciones: {
+        DataMaestra: {
             Base: 'config',
             Ciudades: 'ciudades',
             DocumentosTipos: 'documentos/tipos',

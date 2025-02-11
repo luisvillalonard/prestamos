@@ -1,5 +1,7 @@
 import { useConstants } from '@hooks/useConstants'
 import PageClientes from '@pages/clientes/page'
+import PageCiudades from '@pages/dataMaestra/ciudades/page'
+import PageOcupaciones from '@pages/dataMaestra/ocupaciones/page'
 import PageHome from '@pages/home'
 import PageNotFound from '@pages/not-found'
 import PageLogin from '@pages/seguridad/login'
@@ -18,6 +20,10 @@ const RutasApp = () => {
             <Route path={Urls.Clientes.Base}>
                 <Route path={Urls.Clientes.Formulario} element={<Outlet />} />
                 <Route path={Urls.Clientes.Historico} element={<PageClientes />} />
+            </Route>
+            <Route path={Urls.DataMaestra.Base}>
+                <Route path={Urls.DataMaestra.Ciudades} element={<PageCiudades />} />
+                <Route path={Urls.DataMaestra.Ocupaciones} element={<PageOcupaciones />} />
             </Route>
             <Route path={Urls.Seguridad.Base}>
                 <Route path={Urls.Seguridad.Usuarios} element={<PageUsuarios />} />
