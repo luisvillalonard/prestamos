@@ -1,7 +1,7 @@
-import { Button, Space, Form, Modal, ModalProps } from "antd"
+import { ButtonDefault } from "@components/buttons/default"
+import { Button, Flex, Form, Modal, ModalProps } from "antd"
 import { Store } from "antd/es/form/interface"
 import { FormProps } from "react-router-dom"
-import { ButtonDefault } from "@components/buttons/default"
 
 /* type FormDrawerProps = {
     name: string,
@@ -32,10 +32,10 @@ const FormModal = (props: FormProps & Omit<ModalProps, "onFinish"> & {
             onCancel={onClose}
             getContainer={false}
             footer={
-                <Space>
+                <Flex justify="space-between">
                     <ButtonDefault key="1" htmlType="button" onClick={onClose}>Cerrar</ButtonDefault>
                     <Button key="2" shape="round" type="primary" htmlType="submit" form={name} loading={loading}>Guardar</Button>
-                </Space>
+                </Flex>
             }
             styles={{
                 header: {

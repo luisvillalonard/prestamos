@@ -8,7 +8,7 @@ import OcupacionesProvider, { OcupacionesContext } from "@contexts/dataMaestra/o
 import PrestamosEstadosProvider, { PrestamosEstadosContext } from "@contexts/dataMaestra/prestamoEstado";
 import SexosProvider, { SexosContext } from "@contexts/dataMaestra/sexo";
 import UsuariosProvider, { UsuariosContext, UsuariosContextState } from "@contexts/seguridad/usuarios";
-import { Ocupacion } from "@interfaces/dataMaestra";
+import { Ciudad, DocumentoTipo, FormaPago, MetodoPago, Moneda, Ocupacion, PrestamoEstado, Sexo } from "@interfaces/dataMaestra";
 import { Usuario } from "@interfaces/seguridad";
 import { GlobalContextState } from "@reducers/global";
 import { useContext } from "react";
@@ -33,14 +33,14 @@ export const ContextsProvidersTree = ContextsProviders([
 export const useData = () => {
 
     /* Data Maestra */
-    const contextCiudades = useContext(CiudadesContext) as GlobalContextState<Ocupacion>;
-    const contextDocumentosTipos = useContext(DocumentosTiposContext) as GlobalContextState<Ocupacion>;
-    const contextFormasPago = useContext(FormasPagoContext) as GlobalContextState<Ocupacion>;
-    const contextMetodosPago = useContext(MetodosPagoContext) as GlobalContextState<Ocupacion>;
-    const contextMonedas = useContext(MonedasContext) as GlobalContextState<Ocupacion>;
+    const contextCiudades = useContext(CiudadesContext) as GlobalContextState<Ciudad>;
+    const contextDocumentosTipos = useContext(DocumentosTiposContext) as GlobalContextState<DocumentoTipo>;
+    const contextFormasPago = useContext(FormasPagoContext) as GlobalContextState<FormaPago>;
+    const contextMetodosPago = useContext(MetodosPagoContext) as GlobalContextState<MetodoPago>;
+    const contextMonedas = useContext(MonedasContext) as GlobalContextState<Moneda>;
     const contextOcupaciones = useContext(OcupacionesContext) as GlobalContextState<Ocupacion>;
-    const contextPrestamosEstados = useContext(PrestamosEstadosContext) as GlobalContextState<Ocupacion>;
-    const contextSexos = useContext(SexosContext) as GlobalContextState<Ocupacion>;
+    const contextPrestamosEstados = useContext(PrestamosEstadosContext) as GlobalContextState<PrestamoEstado>;
+    const contextSexos = useContext(SexosContext) as GlobalContextState<Sexo>;
 
     /* Seguridad */
     const contextUsuarios = useContext(UsuariosContext) as UsuariosContextState<Usuario>;

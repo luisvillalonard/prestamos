@@ -1,8 +1,8 @@
+import { ButtonEdit } from "@components/buttons/edit";
 import { useData } from "@hooks/useData";
-import { useIconos } from "@hooks/useIconos";
 import { ControlProps } from "@interfaces/globales";
 import { Usuario } from "@interfaces/seguridad";
-import { Button, Flex, Table, Tag, Tooltip } from "antd";
+import { Flex, Table, Tag, Tooltip } from "antd";
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 
@@ -12,7 +12,6 @@ export default function Listado(props: Pick<ControlProps, "filter">) {
     const { datos, procesando, recargar } = state
     const { filter } = props
     const url = useLocation()
-    const { IconEdit } = useIconos()
     const { Column } = Table
 
     const cargar = async () => await todos();
@@ -24,7 +23,6 @@ export default function Listado(props: Pick<ControlProps, "filter">) {
         <Table<Usuario>
             size="middle"
             bordered={false}
-            loading={procesando}
             pagination={{ size: 'default' }}
             dataSource={
                 procesando
@@ -43,7 +41,7 @@ export default function Listado(props: Pick<ControlProps, "filter">) {
             <Column title="#" dataIndex="key" key="key" align="center" fixed='left' width={60} />
             <Column title="Acceso" dataIndex="acceso" key="acceso" />
             <Column title="Perf&iacute;l" render={() => ('Rol')} />
-            <Column title="C&oacute;digo Empleado" render={() => ('0001')} />
+            <Column title="C&oacute;digo Empleado" render={(record: Usuario) => (record.empleadoId)} />
             <Column title="Correo" dataIndex="correo" key="correo" />
             <Column title="Cambio Clave" render={(record: Usuario) => (
                 <Tag color={record.cambio ? '#87d068' : 'red'}>{record.cambio ? 'Si' : 'No'}</Tag>
@@ -53,7 +51,7 @@ export default function Listado(props: Pick<ControlProps, "filter">) {
             )} />
             <Column title="Acci&oacute;n" align="center" width={80} render={(record: Usuario) => (
                 <Tooltip title={`Editar el usuario (${record.acceso})`}>
-                    <Button type="text" icon={<IconEdit />} onClick={() => { editar(record) }} />
+                    <ButtonEdit type="text" onClick={() => { editar(record) }} />
                 </Tooltip>
             )} />
         </Table>

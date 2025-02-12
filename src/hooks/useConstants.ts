@@ -32,7 +32,6 @@ export function useConstants() {
         },
         Prestamos: {
             Base: 'prestamos',
-            Estados: 'estados',
             Registrados: 'registrados',
             Pagos: 'pagos',
             Pago: 'pago',
@@ -46,11 +45,11 @@ export function useConstants() {
             CambiarClave: 'cambioClave/:codigo',
         },
         DataMaestra: {
-            Base: 'config',
+            Base: 'maestra',
             Ciudades: 'ciudades',
             DocumentosTipos: 'documentos/tipos',
             FormasPago: 'formasPago',
-            MetodosPago: 'metodoPago',
+            MetodosPago: 'metodosPago',
             Monedas: 'monedas',
             Ocupaciones: 'ocupaciones',
             PrestamosEstados: 'prestamos/estados',

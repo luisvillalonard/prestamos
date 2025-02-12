@@ -1,8 +1,8 @@
-import { useConstants } from "@hooks/useConstants"
-import { useIconos } from "@hooks/useIconos"
-import { MenuItem } from "@interfaces/globales"
-import { Layout, Menu } from "antd"
-import { useNavigate } from "react-router-dom"
+import { useConstants } from '@hooks/useConstants'
+import { useIconos } from '@hooks/useIconos'
+import { MenuItem } from '@interfaces/globales'
+import { Layout, Menu } from 'antd'
+import { useNavigate } from 'react-router-dom'
 import { v4 as uuidv4 } from 'uuid'
 
 export default function MenuApp() {
@@ -22,7 +22,7 @@ export default function MenuApp() {
     }
     const headerStyle: React.CSSProperties = {
         fontSize: 16,
-        fontWeight: "bolder",
+        fontWeight: 'bolder',
     }
     const iconHeaderStyle: React.CSSProperties = {
         margin: 0
@@ -60,8 +60,7 @@ export default function MenuApp() {
                 { key: `${Urls.DataMaestra.Base}/${Urls.DataMaestra.MetodosPago}`, label: 'Métodos de Pago', icon: <IconConfig style={{ fontSize: 18 }} /> },
                 { key: `${Urls.DataMaestra.Base}/${Urls.DataMaestra.Monedas}`, label: 'Tipo de Monedas', icon: <IconConfig style={{ fontSize: 18 }} /> },
                 { key: `${Urls.DataMaestra.Base}/${Urls.DataMaestra.Ocupaciones}`, label: 'Ocupaciones', icon: <IconConfig style={{ fontSize: 18 }} /> },
-                { key: `${Urls.Prestamos.Base}/${Urls.Prestamos.Estados}`, label: 'Estados de Prestamos', icon: <IconConfig style={{ fontSize: 18 }} /> },
-                { key: `${Urls.DataMaestra.Base}/${Urls.DataMaestra.Sexos}`, label: 'Sexos', icon: <IconConfig style={{ fontSize: 18 }} /> },
+                { key: `${Urls.DataMaestra.Base}/${Urls.DataMaestra.PrestamosEstados}`, label: 'Estados de Prestamos', icon: <IconConfig style={{ fontSize: 18 }} /> },
             ],
         },
         {
@@ -88,8 +87,8 @@ export default function MenuApp() {
             collapsed={false}
             style={siderStyle}>
             <Menu
-                theme="dark"
-                mode="inline"
+                theme='dark'
+                mode='inline'
                 items={items}
                 inlineCollapsed={false}
                 style={{ height: '100%', borderRight: 0, overflow: 'auto' }}

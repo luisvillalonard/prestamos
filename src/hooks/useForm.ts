@@ -42,6 +42,7 @@ export function useForm<T>(initState: T) {
         entidad,
         editar,
         handleChangeInput,
+
     }
 
 }
