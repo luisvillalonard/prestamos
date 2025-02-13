@@ -7,8 +7,9 @@ import { createContext } from "react"
 
 export const CiudadesContext = createContext<GlobalContextState<Ciudad>>({} as GlobalContextState<Ciudad>)
 
-export default function CiudadesProvider({ children }: ControlProps) {
+export default function CiudadesProvider(props: Pick<ControlProps, "children">) {
 
+    const { children } = props
     const { Urls } = useConstants()
     const { state, editar, cancelar, agregar, actualizar, todos } = useReducerHook<Ciudad>(Urls.DataMaestra.Ciudades);
 

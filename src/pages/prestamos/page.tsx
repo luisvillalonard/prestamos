@@ -9,9 +9,9 @@ import Loading from "@components/containers/loading"
 import { useNavigate } from "react-router-dom"
 import { useConstants } from "@hooks/useConstants"
 
-export default function PageClientes() {
+export default function PagePrestamos() {
 
-    const { contextClientes: { state: { procesando } } } = useData()
+    const { contextPrestamosEstados: { state: { procesando } } } = useData()
     const [filter, setFilter] = useState<string>('')
     const nav = useNavigate()
     const { Urls } = useConstants()
@@ -20,14 +20,14 @@ export default function PageClientes() {
     return (
         <>
             <Col span={24}>
-                <Title level={2} style={{ fontWeight: 300 }}>Usuarios</Title>
+                <Title level={2} style={{ fontWeight: 300 }}>Prestamos Registrados</Title>
                 <Container
                     title={
                         <Searcher variant="borderless" size="large" onChange={setFilter} />
                     }
                     extra={
                         <Space>
-                            <ButtonPrimary onClick={() => nav(`/${Urls.Clientes.Base}/${Urls.Clientes.Formulario}`, { replace: true })}>Nuevo Usuario</ButtonPrimary>
+                            <ButtonPrimary onClick={() => nav(`/${Urls.Prestamos.Base}/${Urls.Prestamos.Formulario}`, { replace: true })}>Nuevo Prestamo</ButtonPrimary>
                         </Space>
                     }>
                     <Listado filter={filter} />

@@ -7,8 +7,9 @@ import { createContext } from "react"
 
 export const MetodosPagoContext = createContext<GlobalContextState<MetodoPago>>({} as GlobalContextState<MetodoPago>)
 
-export default function MetodosPagoProvider({ children }: ControlProps) {
+export default function MetodosPagoProvider(props: Pick<ControlProps, "children">) {
 
+    const { children } = props
     const { Urls } = useConstants()
     const { state, editar, cancelar, agregar, actualizar, todos } = useReducerHook<MetodoPago>(Urls.DataMaestra.MetodosPago);
 

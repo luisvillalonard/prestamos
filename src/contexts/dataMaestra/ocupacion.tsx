@@ -7,8 +7,9 @@ import { createContext } from "react"
 
 export const OcupacionesContext = createContext<GlobalContextState<Ocupacion>>({} as GlobalContextState<Ocupacion>)
 
-export default function OcupacionesProvider({ children }: ControlProps) {
+export default function OcupacionesProvider(props: Pick<ControlProps, "children">) {
 
+    const { children } = props
     const { Urls } = useConstants()
     const { state, editar, cancelar, agregar, actualizar, todos } = useReducerHook<Ocupacion>(Urls.DataMaestra.Ocupaciones);
 

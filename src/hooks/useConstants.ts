@@ -32,6 +32,7 @@ export function useConstants() {
         },
         Prestamos: {
             Base: 'prestamos',
+            Formulario: 'formulario',
             Registrados: 'registrados',
             Pagos: 'pagos',
             Pago: 'pago',

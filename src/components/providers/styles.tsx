@@ -23,7 +23,10 @@ const StyleProvider = (props: Pick<ControlProps, "children">) => {
                 },
                 components: {
                     Input: {
-                        colorBorder: gris51
+                        colorBorder: gris51,
+                    },
+                    DatePicker: {
+                        colorBorder: gris51,
                     },
                     Button: {
                         defaultBorderColor: gris51,
@@ -32,6 +35,9 @@ const StyleProvider = (props: Pick<ControlProps, "children">) => {
 
                         defaultHoverBorderColor: gris51,
                         defaultHoverColor: gris51,
+                    },
+                    Select: {
+                        colorBorder: gris51,
                     },
                     Menu: {
                         itemMarginBlock: 0,

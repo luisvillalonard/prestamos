@@ -7,8 +7,9 @@ import { createContext } from "react"
 
 export const MonedasContext = createContext<GlobalContextState<Moneda>>({} as GlobalContextState<Moneda>)
 
-export default function MonedasProvider({ children }: ControlProps) {
+export default function MonedasProvider(props: Pick<ControlProps, "children">) {
 
+    const { children } = props
     const { Urls } = useConstants()
     const { state, editar, cancelar, agregar, actualizar, todos } = useReducerHook<Moneda>(Urls.DataMaestra.Monedas);
 

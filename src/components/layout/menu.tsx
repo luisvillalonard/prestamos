@@ -43,7 +43,7 @@ export default function MenuApp() {
             label: <span style={headerStyle}>Prestamos</span>,
             icon: <IconChecklist style={iconHeaderStyle} />,
             children: [
-                { key: `${Urls.Prestamos.Base}`, label: 'Prestamos', icon: <IconStore style={{ fontSize: 18 }} /> },
+                { key: `${Urls.Prestamos.Base}/${Urls.Prestamos.Formulario}`, label: 'Formulario de Prestamos', icon: <IconStore style={{ fontSize: 18 }} /> },
                 { key: `${Urls.Prestamos.Base}/${Urls.Prestamos.Registrados}`, label: 'Prestamos Registrados', icon: <IconPackage style={{ fontSize: 18 }} /> },
                 { key: `${Urls.Prestamos.Base}/${Urls.Prestamos.Pagos}`, label: 'Pagos Realizados', icon: <IconMeasureUnit style={{ fontSize: 18 }} /> },
                 { key: `${Urls.Prestamos.Base}/${Urls.Prestamos.Pago}`, label: 'Nuevo Pago', icon: <IconMeasureUnit style={{ fontSize: 18 }} /> },
@@ -51,7 +51,7 @@ export default function MenuApp() {
         },
         {
             key: `${uuidv4()}`,
-            label: <span style={headerStyle}>Configuraciones</span>,
+            label: <span style={headerStyle}>Data Maestra</span>,
             icon: <IconConfig style={iconHeaderStyle} />,
             children: [
                 { key: `${Urls.DataMaestra.Base}/${Urls.DataMaestra.Ciudades}`, label: 'Ciudades', icon: <IconConfig style={{ fontSize: 18 }} /> },

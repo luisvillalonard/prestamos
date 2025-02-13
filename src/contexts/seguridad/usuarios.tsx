@@ -15,10 +15,11 @@ export interface UsuariosContextState<T> extends GlobalContextState<T> {
 
 export const UsuariosContext = createContext<UsuariosContextState<Usuario>>({} as UsuariosContextState<Usuario>)
 
-function UsuariosProvider({ children }: ControlProps) {
+export default function UsuariosProvider(props: Pick<ControlProps, "children">) {
 
+    const { children } = props
     const { Urls } = useConstants()
-    const { state, dispatch, editar, cancelar, agregar, actualizar, todos } = useReducerHook<Usuario>(Urls.Seguridad.Usuarios);
+    const { state, dispatch, editar, cancelar, agregar, actualizar, todos, errorResult } = useReducerHook<Usuario>(Urls.Seguridad.Usuarios);
     const api = useFetch();
 
     const nuevo = async (): Promise<void> => {
@@ -32,21 +33,42 @@ function UsuariosProvider({ children }: ControlProps) {
 
     const porCodigo = async (codigo: string): Promise<ResponseResult<Usuario>> => {
         dispatch({ type: ACTIONS.FETCHING });
-        const resp = await api.Get<Usuario>(`${Urls.Seguridad.Usuarios}/${codigo}`);
+        let resp: ResponseResult<Usuario>;
+
+        try {
+            resp = await api.Get<Usuario>(`${Urls.Seguridad.Usuarios}/${codigo}`);
+        } catch (error: any) {
+            resp = errorResult<Usuario>(error);
+        }
+
         dispatch({ type: ACTIONS.FETCH_COMPLETE, recargar: false });
         return resp;
     }
 
     const cambiarClave = async (item: UsuarioCambioClave): Promise<ResponseResult<UserApp>> => {
         dispatch({ type: ACTIONS.FETCHING });
-        const resp = await api.Post<UserApp>(Urls.Seguridad.CambiarClave.replace('/:codigo', ''), item);
+        let resp: ResponseResult<UserApp>;
+
+        try {
+            resp = await api.Post<UserApp>(Urls.Seguridad.CambiarClave.replace('/:codigo', ''), item);
+        } catch (error: any) {
+            resp = errorResult<UserApp>(error);
+        }
+
         dispatch({ type: ACTIONS.FETCH_COMPLETE, recargar: true });
         return resp;
     }
 
     const validar = async (item: Login): Promise<ResponseResult<UserApp>> => {
         dispatch({ type: ACTIONS.FETCHING });
-        const resp = await api.Post<UserApp>(Urls.Seguridad.Validar, item);
+        let resp: ResponseResult<UserApp>;
+
+        try {
+            resp = await api.Post<UserApp>(Urls.Seguridad.Validar, item);
+        } catch (error: any) {
+            resp = errorResult<UserApp>(error);
+        }
+
         dispatch({ type: ACTIONS.FETCH_COMPLETE, recargar: false });
         return resp;
     }
@@ -68,4 +90,4 @@ function UsuariosProvider({ children }: ControlProps) {
         </UsuariosContext.Provider>
     )
 }
-export default UsuariosProvider;
+

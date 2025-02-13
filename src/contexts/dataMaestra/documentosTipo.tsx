@@ -7,8 +7,9 @@ import { createContext } from "react"
 
 export const DocumentosTiposContext = createContext<GlobalContextState<DocumentoTipo>>({} as GlobalContextState<DocumentoTipo>)
 
-export default function DocumentosTiposProvider({ children }: ControlProps) {
+export default function DocumentosTiposProvider(props: Pick<ControlProps, "children">) {
 
+    const { children } = props
     const { Urls } = useConstants()
     const { state, editar, cancelar, agregar, actualizar, todos } = useReducerHook<DocumentoTipo>(Urls.DataMaestra.DocumentosTipos);
 

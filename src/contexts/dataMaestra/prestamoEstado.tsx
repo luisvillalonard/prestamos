@@ -7,8 +7,9 @@ import { createContext } from "react"
 
 export const PrestamosEstadosContext = createContext<GlobalContextState<PrestamoEstado>>({} as GlobalContextState<PrestamoEstado>)
 
-export default function PrestamosEstadosProvider({ children }: ControlProps) {
+export default function PrestamosEstadosProvider(props: Pick<ControlProps, "children">) {
 
+    const { children } = props
     const { Urls } = useConstants()
     const { state, editar, cancelar, agregar, actualizar, todos } = useReducerHook<PrestamoEstado>(Urls.DataMaestra.PrestamosEstados);
 
