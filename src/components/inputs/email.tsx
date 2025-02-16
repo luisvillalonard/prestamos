@@ -2,16 +2,20 @@ import { Form, Input, InputProps } from "antd"
 import { Rule } from "antd/es/form"
 
 
-export default function InputEmail(props: Pick<InputProps, Required<"name"> | "value" | "maxLength" | "onChange"> & {
+export default function InputEmail(props: Pick<InputProps, Required<"name"> | "value" | "maxLength" | "onChange" | "style"> & {
     label?: React.ReactNode, rules?: Rule[]
 }) {
 
-    const { name, label, value, rules, maxLength, onChange } = props
+    const { name, label, value, rules, style, maxLength, onChange } = props
 
     return (
         <Form.Item
             name={name}
             label={label}
+            style={{
+                ...style,
+                marginBottom: 6,
+            }}
             rules={[
                 ...(rules ?? []), {
                     type: "email",

@@ -1,13 +1,12 @@
+import { useIconos } from "@hooks/useIconos"
+import { ControlProps } from '@interfaces/globales'
 import type { InputProps, InputRef } from 'antd'
 import { Input, Space, Tooltip } from "antd"
 import { ChangeEvent, useEffect, useRef, useState } from "react"
-import { useIconos } from "@hooks/useIconos"
-import { ControlProps } from '@interfaces/globales'
 
 const Searcher = (props: Omit<InputProps, "onChange"> & Pick<ControlProps, "onChange">) => {
 
     const { onChange } = props
-    const timeoutRef = useRef<ReturnType<typeof setTimeout>>()
     const inputRef = useRef<InputRef>(null)
     const [filter, setFilter] = useState<string>('')
     const { IconSearch } = useIconos()
@@ -24,26 +23,11 @@ const Searcher = (props: Omit<InputProps, "onChange"> & Pick<ControlProps, "onCh
                     suffix={<IconSearch />}
                     ref={inputRef}
                     value={filter}
-                    style={{
-                        ...props.style,
-                        /* borderRadius: 0, 
-                        borderBottomWidth: 1, 
-                        borderBottomStyle: 'solid', */
-                    }}
+                    style={{ ...props.style }}
                     onKeyUp={(evt) => {
                         if (evt.code.toLowerCase() === 'escape') setFilter('')
                     }}
-                    onChange={(evt: ChangeEvent<HTMLInputElement>) => {
-
-                        if (timeoutRef.current) {
-                            clearTimeout(timeoutRef.current)
-                        }
-
-                        timeoutRef.current = setTimeout(() => {
-                            setFilter(evt.target.value)
-                        }, evt.target.value.length === 0 ? 100 : 600)
-
-                    }} />
+                    onChange={(evt: ChangeEvent<HTMLInputElement>) => setFilter(evt.target.value)} />
             </Tooltip>
         </Space>
     )

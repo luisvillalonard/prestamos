@@ -2,6 +2,7 @@ import FormModal from "@components/containers/form"
 import InputText from "@components/inputs/text"
 import { useData } from "@hooks/useData"
 import { useForm } from "@hooks/useForm"
+import { Alerta, Exito } from "@hooks/useMensaje"
 import { Ocupacion } from "@interfaces/dataMaestra"
 import { useEffect } from "react"
 
@@ -22,13 +23,13 @@ export default function FormOcupaciones() {
                 resp = await actualizar(entidad);
             }
 
-            /* if (!resp) {
-                Alerta('Situación inesperada tratando de guardar los datos del país.');
-            } else if (!resp.success) {
-                Alerta('Situación inesperada tratando de guardar los datos del país.');
+            if (!resp) {
+                Alerta('Situación inesperada tratando de guardar los datos de la ocupación.');
+            } else if (!resp.ok) {
+                Alerta('Situación inesperada tratando de guardar los datos de la ocupación.');
             } else {
-                Exito(`País ${isNew ? 'registrado' : 'actualizado'}  exitosamente!`);
-            } */
+                Exito(`Ocupación ${esNuevo ? 'registrada' : 'actualizada'}  exitosamente!`);
+            }
         }
     }
 

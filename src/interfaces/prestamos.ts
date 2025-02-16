@@ -25,4 +25,4 @@ export interface Prestamo {
     usuario: Usuario | undefined,
     fechaActualizado?: string,
     usuarioActualizado?: Usuario
-    }
+}

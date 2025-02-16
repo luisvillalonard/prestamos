@@ -41,6 +41,11 @@ export interface GlobalState<DataType> {
     isProcessing: boolean,
 }
 
+export enum SessionStorageKeys {
+    User = '_p.usr',
+    Token = '_p.tk'
+}
+
 export interface RequestFilter {
     pageSize: number,
     currentPage: number,

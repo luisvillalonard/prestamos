@@ -9,6 +9,7 @@ import OcupacionesProvider, { OcupacionesContext } from "@contexts/dataMaestra/o
 import PrestamosEstadosProvider, { PrestamosEstadosContext } from "@contexts/dataMaestra/prestamoEstado";
 import SexosProvider, { SexosContext } from "@contexts/dataMaestra/sexo";
 import PrestamosProvider, { PrestamosContext } from "@contexts/prestamos/prestamo";
+import { AuthContext, AuthProvider, AuthReducerState } from "@contexts/seguridad/auth";
 import UsuariosProvider, { UsuariosContext, UsuariosContextState } from "@contexts/seguridad/usuarios";
 import { Cliente } from "@interfaces/clientes";
 import { Ciudad, DocumentoTipo, FormaPago, MetodoPago, Moneda, Ocupacion, PrestamoEstado, Sexo } from "@interfaces/dataMaestra";
@@ -36,6 +37,7 @@ export const ContextsProvidersTree = ContextsProviders([
     [PrestamosProvider, {}],
 
     /* Seguridad */
+    [AuthProvider, {}],
     [UsuariosProvider, {}],
 
 ]);
@@ -59,6 +61,7 @@ export const useData = () => {
     const contextPrestamos = useContext(PrestamosContext) as GlobalContextState<Prestamo>;
 
     /* Seguridad */
+    const contextAuth = useContext(AuthContext) as AuthReducerState;
     const contextUsuarios = useContext(UsuariosContext) as UsuariosContextState<Usuario>;
 
     return {
@@ -78,8 +81,9 @@ export const useData = () => {
 
         /* Prestamos */
         contextPrestamos,
-        
+
         /* Seguridad */
+        contextAuth,
         contextUsuarios,
 
     }

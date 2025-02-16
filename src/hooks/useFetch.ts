@@ -1,4 +1,5 @@
-import { ResponseResult } from "../interfaces/globales"
+import { UserApp } from "@interfaces/seguridad"
+import { ResponseResult, SessionStorageKeys } from "../interfaces/globales"
 import { useConstants } from "./useConstants"
 
 export const useFetch = () => {
@@ -14,8 +15,13 @@ export const useFetch = () => {
             paginacion: undefined
         }
 
-        const token = '';
-        const defaultHeaders = { ...API_URL.ApiDefaultProps.headers, Authorization: token };
+        let user: UserApp | null = null;
+        const dataStorage = sessionStorage.getItem(SessionStorageKeys.User)
+        if (dataStorage) {
+            user = JSON.parse(dataStorage);
+        }
+
+        const defaultHeaders = { ...API_URL.ApiDefaultProps.headers, Authorization: user?.token || '' };
         const reqMethod = !options?.method ? API_URL.ApiDefaultProps.method : options.method;
         const reqHeader = options?.headers ? { ...options.headers, ...defaultHeaders } : defaultHeaders;
         const reqBody = !options?.body ? null : JSON.stringify(options?.body);

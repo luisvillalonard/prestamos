@@ -13,7 +13,7 @@ export default function RadioSwitch(props: Pick<SwitchProps, "checked" | "onChan
             <Form.Item
                 valuePropName="checked"
                 rules={rules}
-                style={{ marginBottom: 5 }}>
+                style={{ marginBottom: 6 }}>
                 <Space>
                     <Switch id={id}
                         checked={checked}

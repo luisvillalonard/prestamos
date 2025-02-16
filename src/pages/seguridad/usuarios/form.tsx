@@ -4,6 +4,7 @@ import InputText from "@components/inputs/text"
 import RadioSwitch from "@components/radios/swich"
 import { useData } from "@hooks/useData"
 import { useForm } from "@hooks/useForm"
+import { Alerta, Exito } from "@hooks/useMensaje"
 import { Usuario } from "@interfaces/seguridad"
 import { useEffect } from "react"
 
@@ -24,13 +25,13 @@ export default function FormUsuario() {
                 resp = await actualizar(entidad);
             }
 
-            /* if (!resp) {
-                Alerta('Situación inesperada tratando de guardar los datos del país.');
-            } else if (!resp.success) {
-                Alerta('Situación inesperada tratando de guardar los datos del país.');
+            if (!resp) {
+                Alerta('Situación inesperada tratando de guardar los datos del usuario.');
+            } else if (!resp.ok) {
+                Alerta('Situación inesperada tratando de guardar los datos del usuario.');
             } else {
-                Exito(`País ${isNew ? 'registrado' : 'actualizado'}  exitosamente!`);
-            } */
+                Exito(`Usuario ${esNuevo ? 'registrado' : 'actualizado'}  exitosamente!`);
+            }
         }
     }
 

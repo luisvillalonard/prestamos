@@ -1,21 +1,27 @@
 import { ButtonPrimary } from "@components/buttons/primary"
-import { Col, Space, Typography } from "antd"
-import Listado from "./listado"
 import Container from "@components/containers/container"
-import Searcher from "@components/inputs/searcher"
-import { useData } from "@hooks/useData"
-import { useState } from "react"
 import Loading from "@components/containers/loading"
-import { useNavigate } from "react-router-dom"
+import Searcher from "@components/inputs/searcher"
 import { useConstants } from "@hooks/useConstants"
+import { useData } from "@hooks/useData"
+import { Col, Space, Typography } from "antd"
+import { useEffect, useState } from "react"
+import { useNavigate } from "react-router-dom"
+import Listado from "./listado"
 
 export default function PageClientes() {
 
-    const { contextClientes: { state: { procesando } } } = useData()
+    const { contextClientes: { state: { procesando, editando }, nuevo } } = useData()
     const [filter, setFilter] = useState<string>('')
     const nav = useNavigate()
     const { Urls } = useConstants()
     const { Title } = Typography
+
+    useEffect(() => {
+        if (editando) {
+            nav(`/${Urls.Clientes.Base}/${Urls.Clientes.Formulario}`, { replace: true })
+        }
+    }, [editando])
 
     return (
         <>
@@ -27,7 +33,10 @@ export default function PageClientes() {
                     }
                     extra={
                         <Space>
-                            <ButtonPrimary onClick={() => nav(`/${Urls.Clientes.Base}/${Urls.Clientes.Formulario}`, { replace: true })}>Nuevo Usuario</ButtonPrimary>
+                            <ButtonPrimary
+                                onClick={nuevo}>
+                                Nuevo Usuario
+                            </ButtonPrimary>
                         </Space>
                     }>
                     <Listado filter={filter} />

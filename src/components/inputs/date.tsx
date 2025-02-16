@@ -1,8 +1,8 @@
 //DatePicker
-import { DatePicker, DatePickerProps, Form } from "antd"
-import { Rule } from "antd/es/form"
-import dayjs from 'dayjs'
-import customParseFormat from 'dayjs/plugin/customParseFormat'
+import { DatePicker, DatePickerProps, Form } from "antd";
+import { Rule } from "antd/es/form";
+import dayjs from 'dayjs';
+import customParseFormat from 'dayjs/plugin/customParseFormat';
 
 dayjs.locale('es-DO');
 dayjs.extend(customParseFormat);
@@ -13,24 +13,35 @@ export default function InputDate(props: Pick<DatePickerProps, Required<"name"> 
     rules?: Rule[]
 }) {
 
-    const { name, value, label, rules, readOnly, disabled, placeholder, width, style, onChange } = props
-    const dateFormat = 'DD/MM/YYYY'
+    const { name, value, label, rules, readOnly, disabled, placeholder, style, onChange } = props
+    const dateFormat = 'DD-MM-YYYY';
+
+
+    console.log(value)
 
     return (
         <Form.Item
             name={name}
-            label={label} 
-            initialValue={!value ? undefined : dayjs(value, dateFormat)}
-            rules={rules}>
+            label={label}
+            //initialValue={!value ? undefined : dayjs(value, dateFormat)}
+            rules={rules}
+            style={{
+                ...style,
+                width: '100%',
+                marginBottom: 8,
+            }}>
             <DatePicker
                 name={name}
                 placeholder={placeholder}
-                format={dateFormat}
-                value={!value ? undefined : dayjs(value, dateFormat)}
+                format={{
+                    format: dateFormat,
+                    type: 'mask',
+                }}
+                //defaultValue={getDateFromValue(value)}
+                //value={dayjs('09-10-1980', dateFormat)}
                 readOnly={readOnly}
                 disabled={disabled}
-                width={width}
-                style={style}
+                style={{ width: '100%' }}
                 onChange={onChange} />
         </Form.Item>
     )

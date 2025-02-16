@@ -16,6 +16,7 @@ const StyleProvider = (props: Pick<ControlProps, "children">) => {
                     colorTextBase: gris51,
                     colorTextHeading: gris51,
                     colorTextSecondary: gris51,
+                    colorTextDisabled: gris51,
                     colorTextPlaceholder: 'rgb(150,150,150)'
 
                     // Alias Token

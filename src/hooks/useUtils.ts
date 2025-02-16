@@ -1,8 +1,6 @@
+import { GetProp, UploadProps } from "antd";
 import { useNavigate } from "react-router-dom";
 import { RequestFilter } from "../interfaces/globales";
-import { secretKey } from "./useConstants";
-import * as CryptoJS from 'crypto-js';
-import { GetProp, UploadProps } from "antd";
 
 type StringOrNull = string | null | undefined;
 
@@ -29,7 +27,7 @@ export const getParamsUrlToString = (params: RequestFilter | null | undefined) =
 
 export const FormatDate_DDMMYYYY = (fecha: StringOrNull) => {
     if (!fecha)
-        return null;
+        return undefined;
 
     try {
         // 1900-01-01 - YEAR-MONTH-DAY
@@ -39,13 +37,13 @@ export const FormatDate_DDMMYYYY = (fecha: StringOrNull) => {
         month = month.length <= 1 ? '0'.concat(month) : month;
 
         // 01/01/1900 - DAY-MONTH-YEAR
-        return [day, month, year].reverse().join('/');
+        return [day, month, year].reverse().join('-');
     } catch (e) { }
 }
 
 export const FormatDate_YYYYMMDD = (fecha: string): StringOrNull => {
     if (!fecha)
-        return null;
+        return undefined;
 
     try {
         // 01/01/1900 - DAY-MONTH-YEAR
@@ -59,7 +57,7 @@ export const FormatDate_YYYYMMDD = (fecha: string): StringOrNull => {
     } catch (e) { }
 }
 
-export const GetTimeFromString = (time: string | null | undefined): Date | null => {
+export const GetTimeFromString = (time: StringOrNull): Date | null => {
     if (!time)
         return null;
 
@@ -151,23 +149,6 @@ export const getBase64 = (file: FileType): Promise<string> =>
         reader.onload = () => resolve(reader.result as string);
         reader.onerror = (error) => reject(error);
     });
-
-export const encrypt = (valor: any) => {
-    if (!valor) {
-        return null;
-    }
-
-    return CryptoJS.AES.encrypt(JSON.stringify(valor), secretKey).toString();
-}
-
-export const decrypt = (valor: any) => {
-    if (!valor) {
-        return null;
-    }
-
-    const bytes = CryptoJS.AES.decrypt(valor, secretKey);
-    return bytes.toString(CryptoJS.enc.Utf8);
-}
 
 export function IsNullOrUndefined(e: any) {
     if (e === "undefined") {

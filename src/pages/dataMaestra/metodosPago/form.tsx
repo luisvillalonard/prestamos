@@ -2,6 +2,7 @@ import FormModal from "@components/containers/form"
 import InputText from "@components/inputs/text"
 import { useData } from "@hooks/useData"
 import { useForm } from "@hooks/useForm"
+import { Alerta, Exito } from "@hooks/useMensaje"
 import { MetodoPago } from "@interfaces/dataMaestra"
 import { useEffect } from "react"
 
@@ -22,13 +23,13 @@ export default function FormMetodoPago() {
                 resp = await actualizar(entidad);
             }
 
-            /* if (!resp) {
-                Alerta('Situación inesperada tratando de guardar los datos del país.');
-            } else if (!resp.success) {
-                Alerta('Situación inesperada tratando de guardar los datos del país.');
+            if (!resp) {
+                Alerta('Situación inesperada tratando de guardar los datos del método de pago.');
+            } else if (!resp.ok) {
+                Alerta('Situación inesperada tratando de guardar los datos del método de pago.');
             } else {
-                Exito(`País ${isNew ? 'registrado' : 'actualizado'}  exitosamente!`);
-            } */
+                Exito(`Método de pago ${esNuevo ? 'registrada' : 'actualizada'}  exitosamente!`);
+            }
         }
     }
 

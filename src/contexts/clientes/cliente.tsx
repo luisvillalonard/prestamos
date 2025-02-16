@@ -1,7 +1,7 @@
 import { useConstants } from "@hooks/useConstants"
 import { useReducerHook } from "@hooks/useReducer"
-import { ControlProps } from "@interfaces/globales"
 import { Cliente } from "@interfaces/clientes"
+import { ControlProps } from "@interfaces/globales"
 import { GlobalContextState } from "@reducers/global"
 import { createContext } from "react"
 
@@ -20,9 +20,11 @@ export default function ClientesProvider(props: Pick<ControlProps, "children">) 
             empleadoId: '',
             nombres: '',
             apellidos: '',
+            documentoTipo: undefined,
             documento: '',
             sexo: undefined,
-            usuario: undefined,
+            fechaCreacion: new Date().toISOString().substring(0, 10),
+            activo: true,
         });
     }
 

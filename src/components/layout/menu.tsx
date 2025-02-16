@@ -34,7 +34,7 @@ export default function MenuApp() {
             label: <span style={headerStyle}>Clientes</span>,
             icon: <IconClient style={iconHeaderStyle} />,
             children: [
-                { key: `${Urls.Clientes.Base}/${Urls.Clientes.Formulario}`, label: 'Formulario de Registro', icon: <IconClient style={{ fontSize: 18 }} /> },
+                { key: `${Urls.Clientes.Base}/${Urls.Clientes.Formulario}`, label: 'Formulario', icon: <IconClient style={{ fontSize: 18 }} /> },
                 { key: `${Urls.Clientes.Base}/${Urls.Clientes.Historico}`, label: 'Historico', icon: <IconClient style={{ fontSize: 18 }} /> },
             ],
         },

@@ -1,4 +1,4 @@
-import { Ciudad, Ocupacion, Sexo } from "./dataMaestra";
+import { Ciudad, DocumentoTipo, Ocupacion, Sexo } from "./dataMaestra";
 import { Usuario } from "./seguridad";
 
 export interface Cliente {
@@ -7,6 +7,7 @@ export interface Cliente {
     empleadoId: string,
     nombres: string,
     apellidos: string,
+    documentoTipo: DocumentoTipo | undefined,
     documento: string,
     sexo: Sexo | undefined,
     fechaNacimiento?: string,
@@ -16,8 +17,9 @@ export interface Cliente {
     telefonoFijo?: string,
     telefonoCelular?: string,
     fechaAntiguedad?: string,
-    fechaCreacion?: string,
-    usuario: Usuario | undefined,
+    fechaCreacion: string,
+    usuario?: Usuario,
     fechaActualizado?: string,
     usuarioActualizado?: Usuario,
+    activo: boolean,
 }
