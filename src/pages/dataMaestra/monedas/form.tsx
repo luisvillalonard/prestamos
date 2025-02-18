@@ -26,7 +26,7 @@ export default function FormOcupaciones() {
             if (!resp) {
                 Alerta('Situación inesperada tratando de guardar los datos de la moneda.');
             } else if (!resp.ok) {
-                Alerta('Situación inesperada tratando de guardar los datos de la moneda.');
+                Alerta(resp.mensaje || 'Situación inesperada tratando de guardar los datos de la moneda.');
             } else {
                 Exito(`Moneda ${esNuevo ? 'registrada' : 'actualizada'}  exitosamente!`);
             }

@@ -1,4 +1,4 @@
-import { useConstants } from "@hooks/useConstants"
+import { Urls } from "@hooks/useConstants"
 import { useReducerHook } from "@hooks/useReducer"
 import { ControlProps } from "@interfaces/globales"
 import { FormaPago } from "@interfaces/dataMaestra"
@@ -10,7 +10,6 @@ export const FormasPagoContext = createContext<GlobalContextState<FormaPago>>({}
 export default function FormasPagoProvider(props: Pick<ControlProps, "children">) {
 
     const { children } = props
-    const { Urls } = useConstants()
     const { state, editar, cancelar, agregar, actualizar, todos } = useReducerHook<FormaPago>(Urls.DataMaestra.FormasPago);
 
     const nuevo = async (): Promise<void> => {

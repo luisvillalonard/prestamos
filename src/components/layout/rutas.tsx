@@ -1,4 +1,4 @@
-import { useConstants } from '@hooks/useConstants'
+import { Urls } from '@hooks/useConstants'
 import FormCliente from '@pages/clientes/form'
 import PageClientes from '@pages/clientes/page'
 import PageAcesores from '@pages/dataMaestra/acesores/page'
@@ -19,9 +19,7 @@ import PageUsuarios from '@pages/seguridad/usuarios/page'
 import { Route, Routes } from 'react-router-dom'
 
 const RutasApp = () => {
-
-    const { Urls } = useConstants()
-
+    
     return (
         <Routes>
             <Route path={'/'} element={<PageHome />} />

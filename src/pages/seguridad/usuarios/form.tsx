@@ -28,7 +28,7 @@ export default function FormUsuario() {
             if (!resp) {
                 Alerta('Situación inesperada tratando de guardar los datos del usuario.');
             } else if (!resp.ok) {
-                Alerta('Situación inesperada tratando de guardar los datos del usuario.');
+                Alerta(resp.mensaje || 'Situación inesperada tratando de guardar los datos del usuario.');
             } else {
                 Exito(`Usuario ${esNuevo ? 'registrado' : 'actualizado'}  exitosamente!`);
             }

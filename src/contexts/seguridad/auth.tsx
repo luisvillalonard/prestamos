@@ -1,5 +1,5 @@
 import { createContext, useReducer } from "react"
-import { useConstants } from "../../hooks/useConstants"
+import { Urls } from "../../hooks/useConstants"
 import { useFetch } from "../../hooks/useFetch"
 import { ControlProps, ResponseResult, SessionStorageKeys } from "../../interfaces/globales"
 import { Login, UserApp } from "../../interfaces/seguridad"
@@ -27,8 +27,6 @@ export const AuthContext = createContext<AuthReducerState>({} as AuthReducerStat
 
 export const AuthProvider = ({ children }: ControlProps) => {
 
-
-    const { Urls } = useConstants()
     const [state, dispatch] = useReducer(authReducer, initState);
     const api = useFetch();
 

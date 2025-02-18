@@ -6,15 +6,13 @@ import Searcher from "@components/inputs/searcher"
 import { useData } from "@hooks/useData"
 import { useState } from "react"
 import Loading from "@components/containers/loading"
-import { useNavigate } from "react-router-dom"
-import { useConstants } from "@hooks/useConstants"
+import { Urls } from "@hooks/useConstants"
+import { navUrl } from "@hooks/useUtils"
 
 export default function PagePrestamos() {
 
     const { contextPrestamosEstados: { state: { procesando } } } = useData()
     const [filter, setFilter] = useState<string>('')
-    const nav = useNavigate()
-    const { Urls } = useConstants()
     const { Title } = Typography
 
     return (
@@ -27,7 +25,7 @@ export default function PagePrestamos() {
                     }
                     extra={
                         <Space>
-                            <ButtonPrimary onClick={() => nav(`/${Urls.Prestamos.Base}/${Urls.Prestamos.Formulario}`, { replace: true })}>Nuevo Prestamo</ButtonPrimary>
+                            <ButtonPrimary onClick={() => navUrl(`/${Urls.Prestamos.Base}/${Urls.Prestamos.Formulario}`)}>Nuevo Prestamo</ButtonPrimary>
                         </Space>
                     }>
                     <Listado filter={filter} />

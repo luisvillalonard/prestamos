@@ -1,4 +1,4 @@
-import { useConstants } from "@hooks/useConstants"
+import { Urls } from "@hooks/useConstants"
 import { useReducerHook } from "@hooks/useReducer"
 import { ControlProps } from "@interfaces/globales"
 import { Prestamo } from "@interfaces/prestamos"
@@ -10,7 +10,6 @@ export const PrestamosContext = createContext<GlobalContextState<Prestamo>>({} a
 export default function PrestamosProvider(props: Pick<ControlProps, "children">) {
 
     const { children } = props
-    const { Urls } = useConstants()
     const { state, editar, cancelar, agregar, actualizar, todos } = useReducerHook<Prestamo>(Urls.Prestamos.Base);
 
     const nuevo = async (): Promise<void> => {

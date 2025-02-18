@@ -47,9 +47,11 @@ const StyleProvider = (props: Pick<ControlProps, "children">) => {
                         itemMarginBlock: 0,
                         itemMarginInline: 0,
                         itemBorderRadius: 0,
-                        subMenuItemBorderRadius: 0,
                         iconSize: 26,
+                        darkItemSelectedColor: '#fafafa',
                         collapsedIconSize: 26,
+                        subMenuItemBorderRadius: 0,
+                        subMenuItemSelectedColor: 'yellow',
                     },
                     Table: {
                         headerBg: '#ffffff',

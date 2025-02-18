@@ -1,4 +1,4 @@
-import { useConstants } from "@hooks/useConstants"
+import { Urls } from "@hooks/useConstants"
 import { useReducerHook } from "@hooks/useReducer"
 import { Acesor } from "@interfaces/dataMaestra"
 import { ControlProps } from "@interfaces/globales"
@@ -10,7 +10,6 @@ export const AcesoresContext = createContext<GlobalContextState<Acesor>>({} as G
 export default function AcesoresProvider(props: Pick<ControlProps, "children">) {
 
     const { children } = props
-    const { Urls } = useConstants()
     const { state, editar, cancelar, agregar, actualizar, todos } = useReducerHook<Acesor>(Urls.DataMaestra.Acesores);
 
     const nuevo = async (): Promise<void> => {

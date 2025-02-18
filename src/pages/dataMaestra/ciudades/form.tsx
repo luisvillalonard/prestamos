@@ -26,7 +26,7 @@ export default function FormCiudades() {
             if (!resp) {
                 Alerta('Situación inesperada tratando de guardar los datos de la ciudad.');
             } else if (!resp.ok) {
-                Alerta('Situación inesperada tratando de guardar los datos de la ciudad.');
+                Alerta(resp.mensaje || 'Situación inesperada tratando de guardar los datos de la ciudad.');
             } else {
                 Exito(`Ciudad ${esNuevo ? 'registrada' : 'actualizada'}  exitosamente!`);
             }

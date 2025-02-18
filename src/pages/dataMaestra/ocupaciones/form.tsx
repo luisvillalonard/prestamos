@@ -26,7 +26,7 @@ export default function FormOcupaciones() {
             if (!resp) {
                 Alerta('Situación inesperada tratando de guardar los datos de la ocupación.');
             } else if (!resp.ok) {
-                Alerta('Situación inesperada tratando de guardar los datos de la ocupación.');
+                Alerta(resp.mensaje || 'Situación inesperada tratando de guardar los datos de la ocupación.');
             } else {
                 Exito(`Ocupación ${esNuevo ? 'registrada' : 'actualizada'}  exitosamente!`);
             }

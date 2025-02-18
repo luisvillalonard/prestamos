@@ -26,7 +26,7 @@ export default function FormMetodoPago() {
             if (!resp) {
                 Alerta('Situación inesperada tratando de guardar los datos del método de pago.');
             } else if (!resp.ok) {
-                Alerta('Situación inesperada tratando de guardar los datos del método de pago.');
+                Alerta(resp.mensaje || 'Situación inesperada tratando de guardar los datos del método de pago.');
             } else {
                 Exito(`Método de pago ${esNuevo ? 'registrada' : 'actualizada'}  exitosamente!`);
             }

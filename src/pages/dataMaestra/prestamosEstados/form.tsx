@@ -26,7 +26,7 @@ export default function FormPrestamoEstado() {
             if (!resp) {
                 Alerta('Situación inesperada tratando de guardar los datos del estado de préstamo.');
             } else if (!resp.ok) {
-                Alerta('Situación inesperada tratando de guardar los datos del estado de préstamo.');
+                Alerta(resp.mensaje || 'Situación inesperada tratando de guardar los datos del estado de préstamo.');
             } else {
                 Exito(`Estado de préstamo ${esNuevo ? 'registrada' : 'actualizada'}  exitosamente!`);
             }

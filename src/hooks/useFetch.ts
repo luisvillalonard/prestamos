@@ -1,10 +1,22 @@
 import { UserApp } from "@interfaces/seguridad"
 import { ResponseResult, SessionStorageKeys } from "../interfaces/globales"
-import { useConstants } from "./useConstants"
+
+const baseFetch = {
+    method: 'GET', // *GET, POST, PUT, DELETE, etc.
+    cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+    //credentials: 'same-origin', // include, *same-origin, omit
+    headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json; charset=UTF-8',
+        mode: 'cors', // no-cors, *cors, same-origin,
+        Authorization: '',
+    },
+    redirect: 'follow', // manual, *follow, error
+    referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+    body: undefined // body data type must match "Content-Type" header
+}
 
 export const useFetch = () => {
-
-    const { API_URL } = useConstants()
 
     async function customFetch<T>(url: string, options?: RequestInit): Promise<ResponseResult<T>> {
 
@@ -15,14 +27,15 @@ export const useFetch = () => {
             paginacion: undefined
         }
 
+        // Establezco el usuario logueado
         let user: UserApp | null = null;
         const dataStorage = sessionStorage.getItem(SessionStorageKeys.User)
         if (dataStorage) {
             user = JSON.parse(dataStorage);
         }
 
-        const defaultHeaders = { ...API_URL.ApiDefaultProps.headers, Authorization: user?.token || '' };
-        const reqMethod = !options?.method ? API_URL.ApiDefaultProps.method : options.method;
+        const defaultHeaders = { ...baseFetch.headers, Authorization: user?.token || '' };
+        const reqMethod = !options?.method ? baseFetch.method : options.method;
         const reqHeader = options?.headers ? { ...options.headers, ...defaultHeaders } : defaultHeaders;
         const reqBody = !options?.body ? null : JSON.stringify(options?.body);
         const reqOptions = {
@@ -32,7 +45,7 @@ export const useFetch = () => {
         }
 
         try {
-            const fetchResult = await fetch(`${API_URL.Base}/api/${url}`, reqOptions);
+            const fetchResult = await fetch(`${process.env.VITE_API_URL}/api/${url}`, reqOptions);
             const result = await fetchResult.json();
 
             if (fetchResult.ok) {

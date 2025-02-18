@@ -1,4 +1,4 @@
-import { useConstants } from "@hooks/useConstants"
+import { Urls } from "@hooks/useConstants"
 import { useFetch } from "@hooks/useFetch"
 import { useReducerHook } from "@hooks/useReducer"
 import { ControlProps, ResponseResult } from "@interfaces/globales"
@@ -18,7 +18,6 @@ export const UsuariosContext = createContext<UsuariosContextState<Usuario>>({} a
 export default function UsuariosProvider(props: Pick<ControlProps, "children">) {
 
     const { children } = props
-    const { Urls } = useConstants()
     const { state, dispatch, editar, cancelar, agregar, actualizar, todos, errorResult } = useReducerHook<Usuario>(Urls.Seguridad.Usuarios);
     const api = useFetch();
 

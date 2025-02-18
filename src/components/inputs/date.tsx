@@ -13,7 +13,7 @@ export default function InputDate(props: Pick<DatePickerProps, Required<"name"> 
     rules?: Rule[]
 }) {
 
-    const { name, value, label, rules, readOnly, disabled, placeholder, style, onChange } = props
+    const { name, value, label, rules, disabled, placeholder, style, onChange } = props
     const dateFormat = 'DD-MM-YYYY';
 
 
@@ -23,15 +23,11 @@ export default function InputDate(props: Pick<DatePickerProps, Required<"name"> 
         <Form.Item
             name={name}
             label={label}
-            //initialValue={!value ? undefined : dayjs(value, dateFormat)}
             rules={rules}
             style={{
-                ...style,
                 width: '100%',
-                marginBottom: 8,
             }}>
             <DatePicker
-                name={name}
                 placeholder={placeholder}
                 format={{
                     format: dateFormat,
@@ -39,10 +35,12 @@ export default function InputDate(props: Pick<DatePickerProps, Required<"name"> 
                 }}
                 //defaultValue={getDateFromValue(value)}
                 //value={dayjs('09-10-1980', dateFormat)}
-                readOnly={readOnly}
                 disabled={disabled}
-                style={{ width: '100%' }}
-                onChange={onChange} />
+                onChange={onChange}
+                style={{
+                    width: '100%',
+                    ...style,
+                }} />
         </Form.Item>
     )
 }

@@ -26,7 +26,7 @@ export default function FormDocumentiTipo() {
             if (!resp) {
                 Alerta('Situación inesperada tratando de guardar los datos del tipo de documento.');
             } else if (!resp.ok) {
-                Alerta('Situación inesperada tratando de guardar los datos del tipo de documento.');
+                Alerta(resp.mensaje || 'Situación inesperada tratando de guardar los datos del tipo de documento.');
             } else {
                 Exito(`Tipo de documento ${esNuevo ? 'registrado' : 'actualizado'}  exitosamente!`);
             }

@@ -10,10 +10,13 @@ export const ButtonEdit = (props: ButtonProps) => {
     return (
         <Button
             {...props}
-            type="text"
-            shape="circle"
+            variant='text'
+            shape='default'
             icon={<IconEdit style={{ fontSize: 20 }} />}
-            onClick={onClick}>
+            onClick={onClick}
+            style={{
+                borderColor: '#ccc'
+            }}>
         </Button>
     )
 }

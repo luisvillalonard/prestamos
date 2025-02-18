@@ -1,22 +1,20 @@
-import { useConstants } from "@hooks/useConstants"
+import { Urls } from "@hooks/useConstants"
 import { useData } from "@hooks/useData"
 import { useForm } from "@hooks/useForm"
 import { useIconos } from "@hooks/useIconos"
+import { navUrl } from "@hooks/useUtils"
 import { ResponseResult } from "@interfaces/globales"
 import { Login, UserApp } from "@interfaces/seguridad"
 import { Alert, Button, Card, Checkbox, Col, Divider, Flex, Form, Input, Layout, theme } from "antd"
 import { useState } from "react"
-import { useNavigate } from "react-router-dom"
 
 export default function PageLogin() {
 
     const { contextAuth: { state: { procesando }, validar } } = useData()
     const { token: { colorPrimary } } = theme.useToken()
     const { IconUser, IconLock, IconLoading } = useIconos()
-    const { Urls } = useConstants()
     const { entidad: user } = useForm<Login>({ acceso: '', clave: '', recuerdame: true })
     const [result, setResult] = useState<ResponseResult<UserApp> | null>(null)
-    const nav = useNavigate()
 
     const onFinish = async (values: Login) => {
 
@@ -25,7 +23,7 @@ export default function PageLogin() {
             setResult(resp)
             return
         }
-        nav(Urls.Home, { replace: true })
+        navUrl(Urls.Home)
 
     };
 

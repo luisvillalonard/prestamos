@@ -1,11 +1,10 @@
 import type { MenuProps } from "antd"
 import { ButtonType } from 'antd/es/button'
 import { SizeType } from 'antd/es/config-provider/SizeContext'
-import { Dayjs } from 'dayjs'
 import { CSSProperties } from 'react'
 import { IconType } from 'react-icons'
 
-export type MenuItem = Required<MenuProps>['items'][number]
+//export type MenuItem = Required<MenuProps>['items'][number] & { menuid: number }
 
 export interface ControlProps {
     children: JSX.Element | JSX.Element[],
@@ -36,6 +35,15 @@ export interface ControlProps {
     setFocus?: () => void,
 }
 
+export interface MenuItem {
+    menuid: number,
+    key: string,
+    label: string | React.ReactNode,
+    icon?: React.ReactNode,
+    children?: MenuItem[],
+    element?: JSX.Element
+}
+
 export interface GlobalState<DataType> {
     data: DataType | undefined,
     isProcessing: boolean,
@@ -43,7 +51,9 @@ export interface GlobalState<DataType> {
 
 export enum SessionStorageKeys {
     User = '_p.usr',
-    Token = '_p.tk'
+    Token = '_p.tk',
+    ShowMenu = '_p.sm',
+    ShowUserInfo = '_p.sui',
 }
 
 export interface RequestFilter {
@@ -68,17 +78,4 @@ export interface ResponseResult<T> {
     datos: T | undefined,
     mensaje: string | undefined,
     paginacion: PagingResult | undefined
-}
-
-export interface Anexo {
-    id: number,
-    imagen: string,
-    extension: string
-}
-
-export type TimePickerCustomProps = {
-    id?: string,
-    name?: string,
-    date: Dayjs,
-    dateString: string | string[]
 }

@@ -26,7 +26,7 @@ export default function FormAcesor() {
             if (!resp) {
                 Alerta('Situación inesperada tratando de guardar los datos de la acesor.');
             } else if (!resp.ok) {
-                Alerta('Situación inesperada tratando de guardar los datos de la acesor.');
+                Alerta(resp.mensaje || 'Situación inesperada tratando de guardar los datos de la acesor.');
             } else {
                 Exito(`Acesor ${esNuevo ? 'registrado' : 'actualizado'}  exitosamente!`);
             }

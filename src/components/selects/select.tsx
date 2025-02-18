@@ -8,20 +8,19 @@ export default function InputSelect(props: SelectProps & {
     rules?: Rule[]
 }) {
 
-    const { name, label, rules } = props
+    const { name, label, rules, options, defaultValue, style } = props
 
     return (
         <Form.Item
             name={name}
             label={label}
-            rules={rules}
-            style={{
-                width: '100%',
-            }}>
+            rules={rules}>
             <Select
+                defaultValue={defaultValue}
+                options={options}
                 style={{
                     width: '100%',
-                    ...props.style,
+                    ...style,
                 }}>
             </Select>
         </Form.Item>

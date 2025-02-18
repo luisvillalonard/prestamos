@@ -3,7 +3,7 @@ import InputDate from "@components/inputs/date"
 import InputNumbers from "@components/inputs/numbers"
 import InputText from "@components/inputs/text"
 import InputSelect from "@components/selects/select"
-import { useConstants } from "@hooks/useConstants"
+import { Urls } from "@hooks/useConstants"
 import { useData } from "@hooks/useData"
 import { useForm } from "@hooks/useForm"
 import { useIconos } from "@hooks/useIconos"
@@ -26,7 +26,6 @@ export default function FormPrestamo() {
     } = useData()
     const { entidad, editar } = useForm<Prestamo | undefined>(modelo)
     const searchRef = useRef<InputRef>(null)
-    const { Urls } = useConstants()
     const { IconCalculator } = useIconos()
     const { Title } = Typography
     const { Search } = Input

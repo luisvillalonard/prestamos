@@ -1,5 +1,4 @@
 import { ButtonEdit } from "@components/buttons/edit"
-import { useConstants } from "@hooks/useConstants"
 import { useData } from "@hooks/useData"
 import { Cliente } from "@interfaces/clientes"
 import { ControlProps } from "@interfaces/globales"
@@ -12,7 +11,6 @@ export default function Listado(props: Pick<ControlProps, "filter">) {
     const { contextClientes: { state: { datos, procesando, recargar }, editar, todos } } = useData()
     const { filter = '' } = props
     const url = useLocation()
-    useConstants()
     const { Column } = Table
 
     const cargar = async () => await todos();
@@ -45,7 +43,9 @@ export default function Listado(props: Pick<ControlProps, "filter">) {
             <Column title="#" dataIndex="key" key="key" align="center" fixed='left' width={60} />
             <Column title="Código" dataIndex="codigo" key="codigo" width={80} />
             <Column title="Empleado Id" dataIndex="empleadoId" key="empleadoId" width={100} />
-            <Column title="Nombres y Apellidos" width={180} render={(record: Cliente) => (`${record.nombres} ${record.apellidos}`.trim())} />
+            <Column title="Nombres y Apellidos" width={180} render={(record: Cliente) => (
+                `${record.nombres || ''} ${record.apellidos || ''}`.trim()
+            )} />
             <Column title="Documento" render={(record: Cliente) => (
                 <span style={{ textWrap: 'nowrap' }}>{`(${record.documentoTipo?.nombre}) ${record.documento}`}</span>
             )} />
