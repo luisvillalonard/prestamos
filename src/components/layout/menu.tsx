@@ -45,8 +45,7 @@ export default function MenuApp() {
             children: [
                 { key: `${Urls.Prestamos.Base}/${Urls.Prestamos.Formulario}`, label: 'Formulario de Prestamos', icon: <IconStore style={{ fontSize: 18 }} /> },
                 { key: `${Urls.Prestamos.Base}/${Urls.Prestamos.Registrados}`, label: 'Prestamos Registrados', icon: <IconPackage style={{ fontSize: 18 }} /> },
-                { key: `${Urls.Prestamos.Base}/${Urls.Prestamos.Pagos}`, label: 'Pagos Realizados', icon: <IconMeasureUnit style={{ fontSize: 18 }} /> },
-                { key: `${Urls.Prestamos.Base}/${Urls.Prestamos.Pago}`, label: 'Nuevo Pago', icon: <IconMeasureUnit style={{ fontSize: 18 }} /> },
+                { key: `${Urls.Prestamos.Base}/${Urls.Prestamos.Cobro}`, label: 'Cobro de Prestamo', icon: <IconMeasureUnit style={{ fontSize: 18 }} /> },
             ],
         },
         {
@@ -61,6 +60,7 @@ export default function MenuApp() {
                 { key: `${Urls.DataMaestra.Base}/${Urls.DataMaestra.Monedas}`, label: 'Tipo de Monedas', icon: <IconConfig style={{ fontSize: 18 }} /> },
                 { key: `${Urls.DataMaestra.Base}/${Urls.DataMaestra.Ocupaciones}`, label: 'Ocupaciones', icon: <IconConfig style={{ fontSize: 18 }} /> },
                 { key: `${Urls.DataMaestra.Base}/${Urls.DataMaestra.PrestamosEstados}`, label: 'Estados de Prestamos', icon: <IconConfig style={{ fontSize: 18 }} /> },
+                { key: `${Urls.DataMaestra.Base}/${Urls.DataMaestra.Acesores}`, label: 'Acesores', icon: <IconConfig style={{ fontSize: 18 }} /> },
             ],
         },
         {

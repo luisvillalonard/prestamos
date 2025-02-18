@@ -1,5 +1,6 @@
 import { ContextsProviders } from "@components/providers/contexts";
 import ClientesProvider, { ClientesContext } from "@contexts/clientes/cliente";
+import AcesoresProvider, { AcesoresContext } from "@contexts/dataMaestra/acesores";
 import CiudadesProvider, { CiudadesContext } from "@contexts/dataMaestra/ciudades";
 import DocumentosTiposProvider, { DocumentosTiposContext } from "@contexts/dataMaestra/documentosTipo";
 import FormasPagoProvider, { FormasPagoContext } from "@contexts/dataMaestra/formaPago";
@@ -9,11 +10,12 @@ import OcupacionesProvider, { OcupacionesContext } from "@contexts/dataMaestra/o
 import PrestamosEstadosProvider, { PrestamosEstadosContext } from "@contexts/dataMaestra/prestamoEstado";
 import SexosProvider, { SexosContext } from "@contexts/dataMaestra/sexo";
 import PrestamosProvider, { PrestamosContext } from "@contexts/prestamos/prestamo";
+import PrestamosPagosProvider, { PrestamosPagosContext } from "@contexts/prestamos/prestamoPago";
 import { AuthContext, AuthProvider, AuthReducerState } from "@contexts/seguridad/auth";
 import UsuariosProvider, { UsuariosContext, UsuariosContextState } from "@contexts/seguridad/usuarios";
 import { Cliente } from "@interfaces/clientes";
-import { Ciudad, DocumentoTipo, FormaPago, MetodoPago, Moneda, Ocupacion, PrestamoEstado, Sexo } from "@interfaces/dataMaestra";
-import { Prestamo } from "@interfaces/prestamos";
+import { Acesor, Ciudad, DocumentoTipo, FormaPago, MetodoPago, Moneda, Ocupacion, PrestamoEstado, Sexo } from "@interfaces/dataMaestra";
+import { Prestamo, PrestamoPago } from "@interfaces/prestamos";
 import { Usuario } from "@interfaces/seguridad";
 import { GlobalContextState } from "@reducers/global";
 import { useContext } from "react";
@@ -32,9 +34,11 @@ export const ContextsProvidersTree = ContextsProviders([
     [OcupacionesProvider, {}],
     [PrestamosEstadosProvider, {}],
     [SexosProvider, {}],
+    [AcesoresProvider, {}],
 
     /* Prestamos */
     [PrestamosProvider, {}],
+    [PrestamosPagosProvider, {}],
 
     /* Seguridad */
     [AuthProvider, {}],
@@ -56,9 +60,11 @@ export const useData = () => {
     const contextOcupaciones = useContext(OcupacionesContext) as GlobalContextState<Ocupacion>;
     const contextPrestamosEstados = useContext(PrestamosEstadosContext) as GlobalContextState<PrestamoEstado>;
     const contextSexos = useContext(SexosContext) as GlobalContextState<Sexo>;
+    const contextAcesores = useContext(AcesoresContext) as GlobalContextState<Acesor>;
 
     /* Prestamos */
     const contextPrestamos = useContext(PrestamosContext) as GlobalContextState<Prestamo>;
+    const contextPrestamosPagos = useContext(PrestamosPagosContext) as GlobalContextState<PrestamoPago>;
 
     /* Seguridad */
     const contextAuth = useContext(AuthContext) as AuthReducerState;
@@ -78,9 +84,11 @@ export const useData = () => {
         contextOcupaciones,
         contextPrestamosEstados,
         contextSexos,
+        contextAcesores,
 
         /* Prestamos */
         contextPrestamos,
+        contextPrestamosPagos,
 
         /* Seguridad */
         contextAuth,

@@ -2,13 +2,13 @@ import { Form, Select, SelectProps } from "antd"
 import { Rule } from "antd/es/form"
 
 
-export default function InputSelect(props: Pick<SelectProps, "value" | "options" | "onChange" | "disabled" | "placeholder" | "labelRender" | "allowClear" | "style"> & {
+export default function InputSelect(props: SelectProps & {
     name: string,
     label?: React.ReactNode,
     rules?: Rule[]
 }) {
 
-    const { name, label, value, rules, options, disabled, placeholder, allowClear, style, labelRender, onChange } = props
+    const { name, label, rules } = props
 
     return (
         <Form.Item
@@ -16,18 +16,13 @@ export default function InputSelect(props: Pick<SelectProps, "value" | "options"
             label={label}
             rules={rules}
             style={{
-                ...style,
-                marginBottom: 6,
+                width: '100%',
             }}>
             <Select
-                allowClear={allowClear}
-                placeholder={placeholder}
-                disabled={disabled}
-                value={value}
-                labelRender={labelRender}
-                options={options}
-                onChange={onChange}
-                style={style}>
+                style={{
+                    width: '100%',
+                    ...props.style,
+                }}>
             </Select>
         </Form.Item>
     )

@@ -34,8 +34,7 @@ export function useConstants() {
             Base: 'prestamos',
             Formulario: 'formulario',
             Registrados: 'registrados',
-            Pagos: 'pagos',
-            Pago: 'pago',
+            Cobro: 'cobro',
         },
         Seguridad: {
             Base: 'seguridad',
@@ -55,6 +54,7 @@ export function useConstants() {
             Ocupaciones: 'ocupaciones',
             PrestamosEstados: 'prestamos/estados',
             Sexos: 'sexos',
+            Acesores: 'acesores',
         },
     }
 

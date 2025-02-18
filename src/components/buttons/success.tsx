@@ -1,11 +1,14 @@
 import type { ButtonProps } from 'antd'
 import { Button } from 'antd'
 
-export const ButtonPrimary = (props: Omit<ButtonProps, "type">) => {
+export const ButtonSuccess = (props: ButtonProps) => {
     return (
         <Button
             {...props}
-            type="primary"
+            /* variant="solid"
+            color="cyan" */
+            style={{ backgroundColor: '#87d068' }}
+            type='primary'
             shape={props.shape ?? "round"}>
         </Button>
     )

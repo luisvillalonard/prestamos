@@ -160,8 +160,7 @@ export default function FormCliente() {
                                                 }
                                             }} />
                                         :
-                                        <InputText name="fechaNacimiento" label="Fecha Nacimiento" value={entidad?.fechaNacimiento}
-                                            disabled onChange={handleChangeInput} />
+                                        <InputText name="fechaNacimiento" label="Fecha Nacimiento" value={entidad?.fechaNacimiento} />
                                 }
                             </Col>
                             <Col lg={12} md={12} sm={24} xs={24}>

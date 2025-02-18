@@ -26,6 +26,9 @@ const StyleProvider = (props: Pick<ControlProps, "children">) => {
                     Input: {
                         colorBorder: gris51,
                     },
+                    InputNumber: {
+                        colorBorder: gris51,
+                    },
                     DatePicker: {
                         colorBorder: gris51,
                     },
@@ -51,6 +54,11 @@ const StyleProvider = (props: Pick<ControlProps, "children">) => {
                     Table: {
                         headerBg: '#ffffff',
                         headerBorderRadius: 0,
+                    },
+                    Form: {
+                        itemMarginBottom: 2,
+                        verticalLabelMargin: 3,
+                        verticalLabelPadding: 0,
                     }
                 }
             }}

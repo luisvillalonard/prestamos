@@ -18,3 +18,5 @@ export interface Ocupacion extends DataMaestraBase { }
 export interface PrestamoEstado extends DataMaestraBase { }
 
 export interface Sexo extends DataMaestraBase { }
+
+export interface Acesor extends DataMaestraBase { }

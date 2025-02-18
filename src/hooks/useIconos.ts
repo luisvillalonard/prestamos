@@ -1,26 +1,32 @@
-import { 
-    EditOutlined, CheckOutlined, DownOutlined, UpOutlined, LockOutlined, MenuOutlined, MinusOutlined,
-    BankOutlined, BellOutlined, LoadingOutlined, PlusOutlined,
+import {
+    BankOutlined, BellOutlined,
+    CheckOutlined, DownOutlined,
+    EditOutlined,
+    LoadingOutlined,
+    LockOutlined, MenuOutlined, MinusOutlined,
+    PlusOutlined,
     PoweroffOutlined,
-    ShoppingCartOutlined
+    ShoppingCartOutlined,
+    UpOutlined
 } from "@ant-design/icons";
-import { IconType } from "react-icons"
-import { AiOutlineUser, AiOutlineUserAdd, AiOutlineUserDelete } from "react-icons/ai"
-import { BsSearch, BsTrash, BsPersonLinesFill, BsPersonVcard, BsListColumns, BsTags } from "react-icons/bs"
+import { IconType } from "react-icons";
+import { AiOutlineUser, AiOutlineUserAdd, AiOutlineUserDelete } from "react-icons/ai";
+import { BsListColumns, BsPersonLinesFill, BsPersonVcard, BsSearch, BsTags, BsTrash } from "react-icons/bs";
 import { CiBarcode } from "react-icons/ci";
-import { FaUserShield, FaRegMoneyBill1 } from "react-icons/fa6";
-import { GoChecklist } from "react-icons/go";
+import { FaRegMoneyBill1, FaUserShield } from "react-icons/fa6";
 import { GiPayMoney, GiReceiveMoney } from "react-icons/gi";
-import { HiOutlineOfficeBuilding, HiOutlineClipboardList } from "react-icons/hi";
+import { GoChecklist } from "react-icons/go";
+import { HiOutlineClipboardList, HiOutlineOfficeBuilding } from "react-icons/hi";
 import { HiOutlineBuildingOffice2, HiOutlineCog6Tooth, HiOutlineUsers } from "react-icons/hi2";
 import { ImListNumbered } from "react-icons/im";
 import { IoMdTime } from "react-icons/io";
-import { IoCloseOutline, IoTextOutline, IoShieldCheckmarkOutline } from "react-icons/io5";
-import { LiaFileInvoiceSolid, LiaFileInvoiceDollarSolid } from "react-icons/lia";
-import { PiTreeStructureThin, PiUsersThreeLight, PiPackageLight, PiUserList } from "react-icons/pi";
+import { IoCloseOutline, IoShieldCheckmarkOutline, IoTextOutline } from "react-icons/io5";
+import { LiaFileInvoiceDollarSolid, LiaFileInvoiceSolid } from "react-icons/lia";
+import { LuCalculator } from "react-icons/lu";
+import { PiPackageLight, PiTreeStructureThin, PiUserList, PiUsersThreeLight } from "react-icons/pi";
 import { RiProductHuntLine, RiProfileLine } from "react-icons/ri";
-import { SlUserUnfollow, SlUserFollowing,SlBookOpen } from "react-icons/sl";
-import { TbRuler3, TbRulerMeasure, TbInvoice } from "react-icons/tb";
+import { SlBookOpen, SlUserFollowing, SlUserUnfollow } from "react-icons/sl";
+import { TbInvoice, TbRuler3, TbRulerMeasure } from "react-icons/tb";
 
 export function useIconos() {
 
@@ -34,6 +40,7 @@ export function useIconos() {
     const IconBookOpen: IconType = SlBookOpen;
     const IconBuy: IconType = TbInvoice;
     const IconBuyType: IconType = HiOutlineClipboardList;
+    const IconCalculator = LuCalculator;
     const IconCheck = CheckOutlined;
     const IconChecklist: IconType = GoChecklist;
     const IconClose = IoCloseOutline; //AiOutlineClose
@@ -88,6 +95,7 @@ export function useIconos() {
         IconBookOpen,
         IconBuy,
         IconBuyType,
+        IconCalculator,
         IconCheck,
         IconChecklist,
         IconClose,

@@ -1,5 +1,5 @@
 import { Cliente } from "./clientes"
-import { FormaPago, MetodoPago, PrestamoEstado } from "./dataMaestra"
+import { Acesor, FormaPago, MetodoPago, Moneda, PrestamoEstado } from "./dataMaestra"
 import { Usuario } from "./seguridad"
 
 export interface Prestamo {
@@ -9,6 +9,7 @@ export interface Prestamo {
     fechaCredito: string,
     formaPago: FormaPago | undefined,
     metodoPago: MetodoPago | undefined,
+    moneda: Moneda | undefined,
     cuotas: number,
     fechaCuotas: number,
     deudaInicial: number,
@@ -22,7 +23,18 @@ export interface Prestamo {
     estado: PrestamoEstado | undefined,
     diasMora: number,
     destino: string,
+    acesor: Acesor | undefined,
     usuario: Usuario | undefined,
     fechaActualizado?: string,
     usuarioActualizado?: Usuario
+}
+
+export interface PrestamoPago {
+    id: number,
+    prestamoId: number,
+    formaPago: FormaPago | undefined,
+    monto: number,
+    deuda: number,
+    multaMora: number,
+    usuario: Usuario | undefined,
 }

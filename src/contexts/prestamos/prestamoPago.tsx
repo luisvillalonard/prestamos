@@ -1,17 +1,17 @@
 import { useConstants } from "@hooks/useConstants"
 import { useReducerHook } from "@hooks/useReducer"
 import { ControlProps } from "@interfaces/globales"
-import { Prestamo } from "@interfaces/prestamos"
+import { PrestamoPago } from "@interfaces/prestamos"
 import { GlobalContextState } from "@reducers/global"
 import { createContext } from "react"
 
-export const PrestamosContext = createContext<GlobalContextState<Prestamo>>({} as GlobalContextState<Prestamo>)
+export const PrestamosPagosContext = createContext<GlobalContextState<PrestamoPago>>({} as GlobalContextState<PrestamoPago>)
 
-export default function PrestamosProvider(props: Pick<ControlProps, "children">) {
+export default function PrestamosPagosProvider(props: Pick<ControlProps, "children">) {
 
     const { children } = props
     const { Urls } = useConstants()
-    const { state, editar, cancelar, agregar, actualizar, todos } = useReducerHook<Prestamo>(Urls.Prestamos.Base);
+    const { state, editar, cancelar, agregar, actualizar, todos } = useReducerHook<PrestamoPago>(Urls.Prestamos.Base);
 
     const nuevo = async (): Promise<void> => {
         editar({
@@ -41,7 +41,7 @@ export default function PrestamosProvider(props: Pick<ControlProps, "children">)
     }
 
     return (
-        <PrestamosContext.Provider value={{
+        <PrestamosPagosContext.Provider value={{
             state,
             nuevo,
             editar,
@@ -51,6 +51,6 @@ export default function PrestamosProvider(props: Pick<ControlProps, "children">)
             todos,
         }}>
             {children}
-        </PrestamosContext.Provider>
+        </PrestamosPagosContext.Provider>
     )
 }
