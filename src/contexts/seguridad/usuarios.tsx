@@ -2,7 +2,7 @@ import { Urls } from "@hooks/useConstants"
 import { useFetch } from "@hooks/useFetch"
 import { useReducerHook } from "@hooks/useReducer"
 import { ControlProps, ResponseResult } from "@interfaces/globales"
-import { Login, UserApp, Usuario, UsuarioCambioClave } from "@interfaces/seguridad"
+import { CambioClave, Login, UserApp, Usuario } from "@interfaces/seguridad"
 import { ACTIONS, GlobalContextState } from "@reducers/global"
 import { createContext } from "react"
 
@@ -10,7 +10,7 @@ export interface UsuariosContextState<T> extends GlobalContextState<T> {
     nuevo: () => void,
     validar: (item: Login) => Promise<ResponseResult<UserApp>>,
     porCodigo: (codigo: string) => Promise<ResponseResult<T>>,
-    cambiarClave: (item: UsuarioCambioClave) => Promise<ResponseResult<UserApp>>,
+    cambiarClave: (item: CambioClave) => Promise<ResponseResult<UserApp>>,
 }
 
 export const UsuariosContext = createContext<UsuariosContextState<Usuario>>({} as UsuariosContextState<Usuario>)
@@ -44,12 +44,12 @@ export default function UsuariosProvider(props: Pick<ControlProps, "children">) 
         return resp;
     }
 
-    const cambiarClave = async (item: UsuarioCambioClave): Promise<ResponseResult<UserApp>> => {
+    const cambiarClave = async (item: CambioClave): Promise<ResponseResult<UserApp>> => {
         dispatch({ type: ACTIONS.FETCHING });
         let resp: ResponseResult<UserApp>;
 
         try {
-            resp = await api.Post<UserApp>(Urls.Seguridad.CambiarClave.replace('/:codigo', ''), item);
+            resp = await api.Post<UserApp>(`${Urls.Seguridad.Usuarios}/${Urls.Seguridad.CambiarClave}`, item);
         } catch (error: any) {
             resp = errorResult<UserApp>(error);
         }

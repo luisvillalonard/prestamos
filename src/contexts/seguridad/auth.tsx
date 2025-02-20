@@ -32,9 +32,12 @@ export const AuthProvider = ({ children }: ControlProps) => {
 
     const validar = async (user: Login): Promise<ResponseResult<UserApp>> => {
         dispatch({ type: 'FETCHING' })
-        const resp = await api.Post<UserApp>(`${Urls.Seguridad.Usuarios}/${Urls.Seguridad.Validar}`, user);
-        if (resp.ok) {
-            LoggedIn(resp.datos as UserApp);
+        let resp: ResponseResult<UserApp>;
+
+        try {
+            resp = await api.Post<UserApp>(`${Urls.Seguridad.Usuarios}/${Urls.Seguridad.Validar}`, user);
+        } catch (error: unknown) {
+            resp = error as ResponseResult<UserApp>;
         }
         dispatch({ type: 'FETCH_COMPLETE' })
         return resp;
@@ -66,13 +69,9 @@ export const AuthProvider = ({ children }: ControlProps) => {
         dispatch({ type: 'SIGN_OUT' })
     }
 
-    const showMenu = () => {
-        dispatch({ type: 'SHOW_MENU' })
-    }
+    const showMenu = () => dispatch({ type: 'SHOW_MENU' })
 
-    const showUserInfo = () => {
-        dispatch({ type: 'SHOW_USER_INFO' })
-    }
+    const showUserInfo = () => dispatch({ type: 'SHOW_USER_INFO' })
 
     return (
         <AuthContext.Provider value={{

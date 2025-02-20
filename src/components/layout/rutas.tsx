@@ -14,12 +14,12 @@ import PageNotFound from '@pages/not-found'
 import PagePrestamoCobro from '@pages/prestamos/cobro'
 import FormPrestamo from '@pages/prestamos/form'
 import PagePrestamos from '@pages/prestamos/page'
-import PageLogin from '@pages/seguridad/login'
+import PageLogin from '@pages/seguridad/login/page'
 import PageUsuarios from '@pages/seguridad/usuarios/page'
 import { Route, Routes } from 'react-router-dom'
 
 const RutasApp = () => {
-    
+
     return (
         <Routes>
             <Route path={'/'} element={<PageHome />} />

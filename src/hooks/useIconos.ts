@@ -1,34 +1,20 @@
 import {
-    BankOutlined, BellOutlined,
-    CheckOutlined, DownOutlined,
     EditOutlined,
     LoadingOutlined,
-    LockOutlined, MenuOutlined, MinusOutlined,
-    PlusOutlined,
+    LockOutlined, MenuOutlined,
     PoweroffOutlined,
-    ShoppingCartOutlined,
-    UpOutlined
-} from "@ant-design/icons";
-import { IconType } from "react-icons";
-import { AiOutlineUser, AiOutlineUserAdd, AiOutlineUserDelete } from "react-icons/ai";
-import { BsListColumns, BsPersonLinesFill, BsPersonVcard, BsSearch, BsTags, BsTrash } from "react-icons/bs";
-import { CiBarcode, CiViewList } from "react-icons/ci";
-import { FaRegAddressCard, FaRegMoneyBill1, FaUserShield } from "react-icons/fa6";
-import { GiPayMoney, GiReceiveMoney } from "react-icons/gi";
-import { GoChecklist } from "react-icons/go";
-import { HiOutlineClipboardList, HiOutlineOfficeBuilding } from "react-icons/hi";
-import { HiOutlineBuildingOffice2, HiOutlineCog6Tooth, HiOutlineUsers } from "react-icons/hi2";
-import { ImListNumbered } from "react-icons/im";
-import { IoMdTime } from "react-icons/io";
-import { IoCloseOutline, IoShieldCheckmarkOutline, IoTextOutline } from "react-icons/io5";
-import { LiaFileInvoiceDollarSolid, LiaFileInvoiceSolid } from "react-icons/lia";
-import { LuCalculator } from "react-icons/lu";
-import { MdOutlineFormatListNumbered } from "react-icons/md";
-import { PiPackageLight, PiTreeStructureThin, PiUserList, PiUsersThreeLight } from "react-icons/pi";
-import { RiProductHuntLine, RiProfileLine } from "react-icons/ri";
-import { SiReacthookform } from "react-icons/si";
-import { SlBookOpen, SlUserFollowing, SlUserUnfollow } from "react-icons/sl";
-import { TbInvoice, TbRuler3, TbRulerMeasure } from "react-icons/tb";
+} from "@ant-design/icons"
+import { IconType } from "react-icons"
+import { AiOutlineUser } from "react-icons/ai"
+import { BsPersonVcard, BsSearch } from "react-icons/bs"
+import { CiViewList } from "react-icons/ci"
+import { FaRegAddressCard, FaUserShield } from "react-icons/fa6"
+import { GiReceiveMoney } from "react-icons/gi"
+import { GoChecklist } from "react-icons/go"
+import { HiOutlineCog6Tooth, HiOutlineUsers } from "react-icons/hi2"
+import { IoShieldCheckmarkOutline } from "react-icons/io5"
+import { LuCalculator } from "react-icons/lu"
+import { MdOutlineFormatListNumbered, MdOutlinePassword } from "react-icons/md"
 
 export function useIconos() {
 
@@ -43,6 +29,7 @@ export function useIconos() {
     const IconLock = LockOutlined;
     const IconMenu = MenuOutlined;
     const IconLogout = PoweroffOutlined;
+    const IconPassword = MdOutlinePassword;
     const IconReceiveMoney = GiReceiveMoney;
     const IconSearch = BsSearch;
     const IconUserProfile = BsPersonVcard;
@@ -100,6 +87,7 @@ export function useIconos() {
         IconLoading,
         IconLock,
         IconLogout,
+        IconPassword,
         IconMenu,
         IconReceiveMoney,
         IconSearch,

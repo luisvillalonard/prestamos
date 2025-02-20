@@ -7,11 +7,10 @@ import { Urls } from "@hooks/useConstants"
 import { useData } from "@hooks/useData"
 import { useForm } from "@hooks/useForm"
 import { Alerta, Exito } from "@hooks/useMensaje"
-import { navUrl } from "@hooks/useUtils"
 import { Cliente } from "@interfaces/clientes"
 import { Col, DatePicker, Form, Input, Radio, RadioChangeEvent, Row, Select, Space, Switch, Tag, Typography } from "antd"
 import { useEffect } from "react"
-import { useParams } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 
 export default function FormCliente() {
 
@@ -23,6 +22,7 @@ export default function FormCliente() {
         contextOcupaciones: { state: { datos: ocupaciones }, todos: cargarOcupaciones },
     } = useData()
     const { entidad, editar, handleChangeInput } = useForm<Cliente | undefined>(modelo)
+    const nav = useNavigate()
     const { Title } = Typography
     useParams();
 
@@ -55,8 +55,8 @@ export default function FormCliente() {
     }
 
     const onClose = () => {
-        cancelar()
-        navUrl(`/${Urls.Clientes.Base}/${Urls.Clientes.Historico}`)
+        cancelar();
+        nav(`/${Urls.Clientes.Base}/${Urls.Clientes.Historico}`, { replace: true });
     }
 
     useEffect(() => { cargarAuxiliares() }, [])

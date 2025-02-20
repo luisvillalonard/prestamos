@@ -1,13 +1,12 @@
-import type { MenuProps } from "antd"
-import { ButtonType } from 'antd/es/button'
-import { SizeType } from 'antd/es/config-provider/SizeContext'
-import { CSSProperties } from 'react'
-import { IconType } from 'react-icons'
+import { ButtonType } from 'antd/es/button';
+import { SizeType } from 'antd/es/config-provider/SizeContext';
+import { CSSProperties } from 'react';
+import { IconType } from 'react-icons';
 
 //export type MenuItem = Required<MenuProps>['items'][number] & { menuid: number }
 
 export interface ControlProps {
-    children: JSX.Element | JSX.Element[],
+    children: React.ReactNode | React.ReactNode[],
     title?: string | React.ReactNode,
     icon?: React.ReactElement | JSX.Element | IconType,
     extra: React.ReactNode,
@@ -78,4 +77,10 @@ export interface ResponseResult<T> {
     datos: T | undefined,
     mensaje: string | undefined,
     paginacion: PagingResult | undefined
+}
+
+export interface Anexo {
+    id: number,
+    imagen: string,
+    extension: string
 }

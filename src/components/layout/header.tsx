@@ -36,12 +36,13 @@ const HeaderApp = () => {
               placement="bottomRight"
               title={<div className="fs-5">Cerrar la sesi&oacute;n</div>}
               description={<div className="fs-6">Esta seguro(a) que desea cerrar la sesi&oacute;n actual?</div>}
+              icon={<></>}
               okText="Aceptar"
-              okButtonProps={{ size: 'middle', type: 'default' }}
+              okButtonProps={{ size: 'middle', variant: 'solid', color: 'primary', shape: 'round' }}
               cancelText="Cancelar"
               cancelButtonProps={{ size: 'middle', type: 'text' }}
               onConfirm={LoggedOut}>
-              <Button type="text" icon={<IconLogout style={{ fontSize: 20 }} />} style={{ color: 'rgba(255,255,255,0.8)' }} onClick={LoggedOut}>Salir</Button>
+              <Button type="text" icon={<IconLogout style={{ fontSize: 20 }} />} style={{ color: 'rgba(255,255,255,0.8)' }}>Salir</Button>
             </Popconfirm>
           </Tooltip>
         </Flex>

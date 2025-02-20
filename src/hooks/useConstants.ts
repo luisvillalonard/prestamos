@@ -20,7 +20,7 @@ export const Urls = {
         Permisos: 'permisos',
         Usuarios: 'usuarios',
         Validar: 'validar',
-        CambiarClave: 'cambioClave/:codigo',
+        CambiarClave: 'cambioClave',
     },
     DataMaestra: {
         Base: 'maestra',

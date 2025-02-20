@@ -1,19 +1,26 @@
 import { ButtonEdit } from "@components/buttons/edit"
+import { Urls } from "@hooks/useConstants"
 import { useData } from "@hooks/useData"
 import { Cliente } from "@interfaces/clientes"
 import { ControlProps } from "@interfaces/globales"
 import { Flex, Table, Tag, Tooltip } from "antd"
 import { useEffect } from "react"
-import { useLocation } from "react-router-dom"
+import { useLocation, useNavigate } from "react-router-dom"
 
 export default function Listado(props: Pick<ControlProps, "filter">) {
 
     const { contextClientes: { state: { datos, procesando, recargar }, editar, todos } } = useData()
     const { filter = '' } = props
+    const nav = useNavigate()
     const url = useLocation()
     const { Column } = Table
 
     const cargar = async () => await todos();
+
+    const onEdit = (cliente: Cliente) => {
+        editar(cliente);
+        nav(`/${Urls.Clientes.Base}/${Urls.Clientes.Formulario}`, { replace: true });
+    }
 
     useEffect(() => { cargar() }, [url.pathname])
     useEffect(() => { if (recargar) cargar() }, [recargar])
@@ -39,9 +46,11 @@ export default function Listado(props: Pick<ControlProps, "filter">) {
                             )
                         })
                         .map((item, index) => { return { ...item, key: index + 1 } })
-            } locale={{ emptyText: <Flex>0 clientes</Flex> }}>
+            }
+            locale={{ emptyText: <Flex>0 clientes</Flex> }}
+            scroll={{ x: 'max-content' }}>
             <Column title="#" dataIndex="key" key="key" align="center" fixed='left' width={60} />
-            <Column title="Código" dataIndex="codigo" key="codigo" width={80} />
+            <Column title="Código" dataIndex="codigo" key="codigo" fixed='left' width={80} />
             <Column title="Empleado Id" dataIndex="empleadoId" key="empleadoId" width={100} />
             <Column title="Nombres y Apellidos" width={180} render={(record: Cliente) => (
                 `${record.nombres || ''} ${record.apellidos || ''}`.trim()
@@ -60,7 +69,7 @@ export default function Listado(props: Pick<ControlProps, "filter">) {
             )} />
             <Column title="Acci&oacute;n" align="center" width={80} render={(record: Cliente) => (
                 <Tooltip title={`Editar el cliente (${record.nombres} ${record.apellidos})`.trim()}>
-                    <ButtonEdit type="text" onClick={() => editar(record)} />
+                    <ButtonEdit type="text" onClick={() => onEdit(record)} />
                 </Tooltip>
             )} />
         </Table>

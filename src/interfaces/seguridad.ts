@@ -18,7 +18,7 @@ export interface Usuario {
     activo: boolean
 }
 
-export interface UsuarioCambioClave {
+export interface CambioClave {
     id: number,
     passwordNew: string,
     passwordConfirm: string,
