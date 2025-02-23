@@ -4,7 +4,7 @@ import { useForm } from "@hooks/useForm";
 import { useIconos } from "@hooks/useIconos";
 import { ControlProps } from "@interfaces/globales";
 import { Login } from "@interfaces/seguridad";
-import { Alert, Button, Checkbox, Flex, Form, Input } from "antd";
+import { Alert, Button, Checkbox, Divider, Flex, Form, Input, Typography } from "antd";
 import { useState } from "react";
 
 export default function LoginForm(props: Pick<ControlProps, "onChange">) {
@@ -14,6 +14,7 @@ export default function LoginForm(props: Pick<ControlProps, "onChange">) {
     const { IconUser, IconPassword, IconLoading } = useIconos()
     const { entidad: user } = useForm<Login>({ acceso: '', clave: '', recuerdame: true })
     const [mensaje, setMensaje] = useState<string>('')
+    const { Title } = Typography
 
     const onFinish = async (login: Login) => {
 
@@ -33,10 +34,12 @@ export default function LoginForm(props: Pick<ControlProps, "onChange">) {
     }
 
     return (
-        <>
+        <Flex vertical className="w-100">
+            <Title level={2} style={{ margin: 0, fontWeight: 'lighter', textAlign: 'center' }}>Inicio Sesi&oacute;n</Title>
+            <Divider />
             {
                 mensaje
-                    ? <Alert type="error" closable={false} showIcon message={mensaje} style={{ width: '100%', marginBottom: 20 }} />
+                    ? <Alert type="error" closable={false} showIcon message={mensaje} style={{ width: '100%', marginBottom: 30 }} />
                     : <></>
             }
             <Form
@@ -48,23 +51,23 @@ export default function LoginForm(props: Pick<ControlProps, "onChange">) {
                 onFinish={onFinish}
                 style={{ width: '100%' }}
             >
-                <FormItem name="acceso" rules={[{ required: true, message: 'Obligatorio', }]}>
+                <FormItem name="acceso" rules={[{ required: true, message: 'Obligatorio', }]}
+                    style={{ marginBottom: 30 }}>
                     <Input
                         name="acceso"
                         value={user.acceso}
                         readOnly={procesando}
-                        prefix={<IconUser style={{ fontSize: 20 }} />}
-                        placeholder="coloque aqui el usuario"
-                        style={{ marginBottom: 18 }} />
+                        prefix={<IconUser style={{ fontSize: 30 }} />}
+                        placeholder="escriba aqui el usuario" />
                 </FormItem>
-                <FormItem name="clave" rules={[{ required: true, message: 'Obligatorio' }]}>
+                <FormItem name="clave" rules={[{ required: true, message: 'Obligatorio' }]}
+                    style={{ marginBottom: 30 }}>
                     <Input.Password
                         name="clave"
                         value={user.clave}
                         readOnly={procesando}
-                        prefix={<IconPassword style={{ fontSize: 20 }} />}
-                        placeholder="coloque aqui la clave"
-                        style={{ marginBottom: 18 }} />
+                        prefix={<IconPassword style={{ fontSize: 30 }} />}
+                        placeholder="escriba aqui la clave" />
                 </FormItem>
                 <Form.Item>
                     <Button block type="primary" shape="round" htmlType="submit" disabled={procesando}>
@@ -84,10 +87,9 @@ export default function LoginForm(props: Pick<ControlProps, "onChange">) {
                         <Form.Item name="recuerdame" valuePropName="checked" noStyle>
                             <Checkbox value={user.recuerdame}>Recuerdame</Checkbox>
                         </Form.Item>
-                        <a href="">Recuperar Clave</a>
                     </Flex>
                 </FormItem>
             </Form>
-        </>
+        </Flex>
     )
 }

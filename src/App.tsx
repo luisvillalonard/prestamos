@@ -8,13 +8,14 @@ import RutasApp from '@components/layout/rutas'
 import UserInfoNotification from '@components/layout/userInfo'
 import { useData } from '@hooks/useData'
 import PageLogin from '@pages/seguridad/login/page'
-import { Layout } from 'antd'
+import { Layout, theme } from 'antd'
 import { useEffect } from 'react'
 
 export default function App() {
 
   const { contextAuth: { state: { user, viewInfoUser }, getUserApp } } = useData()
   const { Content } = Layout
+  const { token } = theme.useToken()
 
   useEffect(() => {
     getUserApp();
@@ -27,10 +28,10 @@ export default function App() {
   return (
     <Layout className='h-100'>
       <HeaderApp />
-      <Layout>
+      <Layout style={{ backgroundColor: token.colorBgContainer }}>
         <UserInfoNotification isOpen={viewInfoUser} />
         <MenuApp />
-        <Content className='body-content'>
+        <Content className='p-4 position-relative overflow-auto'>
           <RutasApp />
         </Content>
       </Layout>

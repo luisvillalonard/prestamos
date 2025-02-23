@@ -6,14 +6,15 @@ export default function FormItem(props: FormItemProps & {
     message?: string,
 }) {
 
-    const { name, label, rules, children } = props
+    const { name, label, rules, style, children } = props
 
 
     return (
         <Form.Item
             name={name}
             label={label}
-            rules={rules}>
+            rules={rules}
+            style={style}>
             {children}
         </Form.Item>
     )

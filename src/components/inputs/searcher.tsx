@@ -23,7 +23,6 @@ const Searcher = (props: Omit<InputProps, "onChange"> & Pick<ControlProps, "onCh
                     suffix={<IconSearch />}
                     ref={inputRef}
                     value={filter}
-                    style={{ ...props.style }}
                     onKeyUp={(evt) => {
                         if (evt.code.toLowerCase() === 'escape') setFilter('')
                     }}

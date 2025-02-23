@@ -4,7 +4,7 @@ import { useForm } from "@hooks/useForm";
 import { useIconos } from "@hooks/useIconos";
 import { ControlProps } from "@interfaces/globales";
 import { CambioClave, UserApp } from "@interfaces/seguridad";
-import { Alert, Button, Flex, Form, Input } from "antd";
+import { Alert, Button, Divider, Flex, Form, Input, Typography } from "antd";
 import { useEffect, useState } from "react";
 
 export default function FormCambioClave(props: Pick<ControlProps, "onChange"> & { userLogin: UserApp }) {
@@ -14,6 +14,7 @@ export default function FormCambioClave(props: Pick<ControlProps, "onChange"> & 
     const { IconLoading, IconPassword } = useIconos()
     const { entidad: userCambio, editar, handleChangeInput } = useForm<CambioClave | undefined>({ id: 0, passwordNew: '', passwordConfirm: '' })
     const [mensaje, setMensaje] = useState<string>('')
+    const { Title } = Typography
 
     const onFinish = async () => {
 
@@ -33,21 +34,21 @@ export default function FormCambioClave(props: Pick<ControlProps, "onChange"> & 
     }
 
     useEffect(() => {
-        if (userLogin) {
-            if (userCambio) {
-                editar({
-                    ...userCambio,
-                    id: userLogin.id,
-                })
-            }
+        if (userLogin && userCambio) {
+            editar({
+                ...userCambio,
+                id: userLogin.id,
+            })
         }
     }, [userLogin])
 
     return (
-        <>
+        <Flex vertical className="w-100">
+            <Title level={2} style={{ margin: 0, fontWeight: 'lighter', textAlign: 'center' }}>Inicio Sesi&oacute;n</Title>
+            <Divider />
             {
                 mensaje
-                    ? <Alert type="error" closable={false} showIcon message={mensaje} style={{ width: '100%', marginBottom: 20 }} />
+                    ? <Alert type="error" closable={false} showIcon message={mensaje} style={{ width: '100%', marginBottom: 30 }} />
                     : <Alert type="info" closable={false} showIcon message="Para poder acceder al sistema debe cambiar la clave de su usuario." style={{ width: '100%', marginBottom: 20 }} />
             }
             <Form
@@ -93,6 +94,6 @@ export default function FormCambioClave(props: Pick<ControlProps, "onChange"> & 
                     </Button>
                 </Form.Item>
             </Form>
-        </>
+        </Flex>
     )
 }

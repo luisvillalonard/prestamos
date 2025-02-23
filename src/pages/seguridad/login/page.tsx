@@ -1,11 +1,12 @@
+import bglogin from '@assets/bglogin.svg'
 import { Urls } from "@hooks/useConstants"
 import { useData } from "@hooks/useData"
 import { UserApp } from "@interfaces/seguridad"
-import { Card, Col, Divider, Flex, Layout, theme, Typography } from "antd"
+import { Col, Divider, Flex, Image, Layout, Row, theme } from "antd"
 import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
-import FormCambioClave from "./cambioClave"
-import LoginForm from "./form"
+import FormCambioClave from './cambioClave'
+import LoginForm from './form'
 
 export default function PageLogin() {
 
@@ -13,7 +14,6 @@ export default function PageLogin() {
     const [user, setUser] = useState<UserApp | null>(null)
     const { token } = theme.useToken()
     const nav = useNavigate()
-    const { Title } = Typography
 
     useEffect(() => {
         if (user && user.cambio && user.activo) {
@@ -23,32 +23,32 @@ export default function PageLogin() {
     }, [user])
 
     return (
-        <Layout className="vh-100 body-login">
-            <Flex
-                align="center"
-                justify="center"
-                className="h-100">
-                <Col md={18} sm={20} xs={22} style={{ alignItems: 'center' }}>
-                    <Col xl={{ span: 8, offset: 14 }} lg={{ span: 10, offset: 14 }} md={{ span: 12, offset: 12 }} sm={24} xs={24}>
-                        <Card style={{ position: 'relative' }}>
-                            <Flex vertical align="center">
-                                <Flex vertical align="center" gap={0}>
-                                    <Title level={1} style={{ fontWeight: 'bolder', margin: 0, marginBottom: 6, color: token.colorPrimary }}>Prestamos</Title>
-                                    <Title level={3} style={{ fontWeight: 'lighter', margin: 0 }}>Inicio de Sesión</Title>
-                                </Flex>
-                                <Divider className="my-3" />
-                                {
-                                    !user
-                                        ? <LoginForm onChange={setUser} />
-                                        : !user.cambio
-                                            ? <FormCambioClave onChange={setUser} userLogin={user} />
-                                            : <></>
-                                }
+        <Layout className="vh-100" style={{ backgroundColor: '#001529' }}>
+            <Row style={{ height: '100%' }}>
+                <Col xl={{ span: 15, order: 1 }} lg={{ span: 14, order: 1 }} md={{ span: 14, order: 1 }} sm={{ span: 24, order: 2 }} xs={{ span: 24, order: 2 }} style={{ alignSelf: 'center' }}>
+                    <Col span={20} offset={2}>
+                        <Flex vertical align='center'>
+                            <Flex align='center' justify='center' gap={10}>
+                                <h1 className='display-5' style={{ fontWeight: 'bolder', margin: 0, color: token.colorWhite }}>Sistema</h1>
+                                <h1 className='display-5' style={{ fontWeight: 'bolder', margin: 0, color: token.colorPrimary }}>Prestamos</h1>
                             </Flex>
-                        </Card>
+                            <Divider style={{ borderColor: token.colorWhite }} />
+                            <Image preview={false} width='70%' src={bglogin} />
+                        </Flex>
                     </Col>
                 </Col>
-            </Flex>
+                <Col xl={{ span: 9, order: 2 }} lg={{ span: 10, order: 2 }} md={{ span: 10, order: 2 }} sm={{ span: 24, order: 1 }} xs={{ span: 24, order: 1 }} style={{ backgroundColor: token.colorBgContainer }}>
+                    <Flex vertical align="center" justify="center" className="h-100 p-5">
+                        {
+                            !user
+                                ? <LoginForm onChange={setUser} />
+                                : !user.cambio
+                                    ? <FormCambioClave onChange={setUser} userLogin={user} />
+                                    : <></>
+                        }
+                    </Flex>
+                </Col>
+            </Row>
         </Layout>
     )
 }

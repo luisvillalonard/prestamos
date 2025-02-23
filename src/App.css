@@ -18,8 +18,8 @@ body {
 }
 
 .body-login {
-  background-image: url(assets/bglogin.jpeg);
-  background-position: top left;
+  background-image: url(assets/bglogin.svg);
+  background-position: center center;
   background-repeat: no-repeat;
   background-size: cover;
 }
@@ -28,7 +28,7 @@ body {
   padding: 20px 16px;
   position: relative !important;
   overflow: auto !important;
-  background: #edf2f9f5;
+  /* background: #edf2f9f5; */
 }
 
 .ant-menu-light .ant-menu-submenu-selected>.ant-menu-submenu-title {

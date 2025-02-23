@@ -1,5 +1,6 @@
 import { Urls } from '@hooks/useConstants'
 import { useData } from '@hooks/useData'
+import { IconClient, IconConfig, IconForm, IconListNumbered, IconLoans, IconReceiveMoney, IconUserPermission, IconUserProfile, IconUsers, IconUserShield } from '@hooks/useIconos'
 import { MenuItem } from '@interfaces/globales'
 import { Layout, Menu, MenuProps } from 'antd'
 import { useEffect, useState } from 'react'
@@ -20,44 +21,48 @@ const menuItems: MenuItem[] = [
         menuid: 10,
         key: Urls.Clientes.Base,
         label: <span style={headerStyle}>Clientes</span>,
+        icon: <IconClient />,
         children: [
-            { menuid: 11, key: `${Urls.Clientes.Base}/${Urls.Clientes.Formulario}`, label: 'Formulario' },
-            { menuid: 12, key: `${Urls.Clientes.Base}/${Urls.Clientes.Historico}`, label: 'Clientes Registrados' },
+            { menuid: 11, key: `${Urls.Clientes.Base}/${Urls.Clientes.Formulario}`, label: 'Formulario', icon: <IconForm /> },
+            { menuid: 12, key: `${Urls.Clientes.Base}/${Urls.Clientes.Historico}`, label: 'Clientes Registrados', icon: <IconListNumbered /> },
         ],
     },
     {
         menuid: 20,
         key: Urls.Prestamos.Base,
         label: <span style={headerStyle}>Prestamos</span>,
+        icon: <IconLoans />,
         children: [
-            { menuid: 21, key: `${Urls.Prestamos.Base}/${Urls.Prestamos.Formulario}`, label: 'Formulario de Prestamos' },
-            { menuid: 22, key: `${Urls.Prestamos.Base}/${Urls.Prestamos.Registrados}`, label: 'Prestamos Registrados' },
-            { menuid: 23, key: `${Urls.Prestamos.Base}/${Urls.Prestamos.Cobro}`, label: 'Cobro de Prestamo' },
+            { menuid: 21, key: `${Urls.Prestamos.Base}/${Urls.Prestamos.Formulario}`, label: 'Formulario de Prestamos', icon: <IconForm /> },
+            { menuid: 22, key: `${Urls.Prestamos.Base}/${Urls.Prestamos.Registrados}`, label: 'Prestamos Registrados', icon: <IconListNumbered /> },
+            { menuid: 23, key: `${Urls.Prestamos.Base}/${Urls.Prestamos.Cobro}`, label: 'Cobro de Prestamo', icon: <IconReceiveMoney /> },
         ],
     },
     {
         menuid: 30,
         key: Urls.DataMaestra.Base,
         label: <span style={headerStyle}>Data Maestra</span>,
+        icon: <IconConfig />,
         children: [
-            { menuid: 31, key: `${Urls.DataMaestra.Base}/${Urls.DataMaestra.Ciudades}`, label: 'Ciudades' },
-            { menuid: 32, key: `${Urls.DataMaestra.Base}/${Urls.DataMaestra.DocumentosTipos}`, label: 'Tipos de Documentos' },
-            { menuid: 33, key: `${Urls.DataMaestra.Base}/${Urls.DataMaestra.FormasPago}`, label: 'Formas de Pago' },
-            { menuid: 34, key: `${Urls.DataMaestra.Base}/${Urls.DataMaestra.MetodosPago}`, label: 'Métodos de Pago' },
-            { menuid: 35, key: `${Urls.DataMaestra.Base}/${Urls.DataMaestra.Monedas}`, label: 'Tipo de Monedas' },
-            { menuid: 36, key: `${Urls.DataMaestra.Base}/${Urls.DataMaestra.Ocupaciones}`, label: 'Ocupaciones' },
-            { menuid: 37, key: `${Urls.DataMaestra.Base}/${Urls.DataMaestra.PrestamosEstados}`, label: 'Estados de Prestamos' },
-            { menuid: 38, key: `${Urls.DataMaestra.Base}/${Urls.DataMaestra.Acesores}`, label: 'Acesores' },
+            { menuid: 31, key: `${Urls.DataMaestra.Base}/${Urls.DataMaestra.Ciudades}`, label: 'Ciudades', icon: <IconConfig /> },
+            { menuid: 32, key: `${Urls.DataMaestra.Base}/${Urls.DataMaestra.DocumentosTipos}`, label: 'Tipos de Documentos', icon: <IconConfig /> },
+            { menuid: 33, key: `${Urls.DataMaestra.Base}/${Urls.DataMaestra.FormasPago}`, label: 'Formas de Pago', icon: <IconConfig /> },
+            { menuid: 34, key: `${Urls.DataMaestra.Base}/${Urls.DataMaestra.MetodosPago}`, label: 'Métodos de Pago', icon: <IconConfig /> },
+            { menuid: 35, key: `${Urls.DataMaestra.Base}/${Urls.DataMaestra.Monedas}`, label: 'Tipo de Monedas', icon: <IconConfig /> },
+            { menuid: 36, key: `${Urls.DataMaestra.Base}/${Urls.DataMaestra.Ocupaciones}`, label: 'Ocupaciones', icon: <IconConfig /> },
+            { menuid: 37, key: `${Urls.DataMaestra.Base}/${Urls.DataMaestra.PrestamosEstados}`, label: 'Estados de Prestamos', icon: <IconConfig /> },
+            { menuid: 38, key: `${Urls.DataMaestra.Base}/${Urls.DataMaestra.Acesores}`, label: 'Acesores', icon: <IconConfig /> },
         ],
     },
     {
         menuid: 40,
         key: Urls.Seguridad.Base,
         label: <span style={headerStyle}>Seguridad</span>,
+        icon: <IconUserShield />,
         children: [
-            { menuid: 41, key: `${Urls.Seguridad.Base}/${Urls.Seguridad.Roles}`, label: 'Perfiles de Usuarios' },
-            { menuid: 42, key: `${Urls.Seguridad.Base}/${Urls.Seguridad.Permisos}`, label: 'Permisos' },
-            { menuid: 43, key: `${Urls.Seguridad.Base}/${Urls.Seguridad.Usuarios}`, label: 'Usuarios' },
+            { menuid: 41, key: `${Urls.Seguridad.Base}/${Urls.Seguridad.Roles}`, label: 'Perfiles de Usuarios', icon: <IconUserProfile /> },
+            { menuid: 42, key: `${Urls.Seguridad.Base}/${Urls.Seguridad.Permisos}`, label: 'Permisos', icon: <IconUserPermission /> },
+            { menuid: 43, key: `${Urls.Seguridad.Base}/${Urls.Seguridad.Usuarios}`, label: 'Usuarios', icon: <IconUsers /> },
         ],
     },
 ]
