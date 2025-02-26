@@ -12,11 +12,12 @@ import SexosProvider, { SexosContext } from "@contexts/dataMaestra/sexo";
 import PrestamosProvider, { PrestamosContext } from "@contexts/prestamos/prestamo";
 import PrestamosPagosProvider, { PrestamosPagosContext } from "@contexts/prestamos/prestamoPago";
 import { AuthContext, AuthProvider, AuthReducerState } from "@contexts/seguridad/auth";
+import PermisosProvider, { PermisosContext, PermisosContextState } from "@contexts/seguridad/permisos";
 import UsuariosProvider, { UsuariosContext, UsuariosContextState } from "@contexts/seguridad/usuarios";
 import { Cliente } from "@interfaces/clientes";
 import { Acesor, Ciudad, DocumentoTipo, FormaPago, MetodoPago, Moneda, Ocupacion, PrestamoEstado, Sexo } from "@interfaces/dataMaestra";
 import { Prestamo, PrestamoPago } from "@interfaces/prestamos";
-import { Usuario } from "@interfaces/seguridad";
+import { Rol, Usuario } from "@interfaces/seguridad";
 import { GlobalContextState } from "@reducers/global";
 import { useContext } from "react";
 
@@ -42,6 +43,7 @@ export const ContextsProvidersTree = ContextsProviders([
 
     /* Seguridad */
     [AuthProvider, {}],
+    [PermisosProvider, {}],
     [UsuariosProvider, {}],
 
 ]);
@@ -68,6 +70,7 @@ export const useData = () => {
 
     /* Seguridad */
     const contextAuth = useContext(AuthContext) as AuthReducerState;
+    const contextPermisos = useContext(PermisosContext) as PermisosContextState<Rol>;
     const contextUsuarios = useContext(UsuariosContext) as UsuariosContextState<Usuario>;
 
     return {
@@ -92,6 +95,7 @@ export const useData = () => {
 
         /* Seguridad */
         contextAuth,
+        contextPermisos,
         contextUsuarios,
 
     }

@@ -15,6 +15,8 @@ import PagePrestamoCobro from '@pages/prestamos/cobro'
 import FormPrestamo from '@pages/prestamos/form'
 import PagePrestamos from '@pages/prestamos/page'
 import PageLogin from '@pages/seguridad/login/page'
+import FormPermisos from '@pages/seguridad/permisos/form'
+import PagePermisos from '@pages/seguridad/permisos/page'
 import PageUsuarios from '@pages/seguridad/usuarios/page'
 import { Route, Routes } from 'react-router-dom'
 
@@ -45,6 +47,8 @@ const RutasApp = () => {
                 <Route path={Urls.Prestamos.Cobro} element={<PagePrestamoCobro />} />
             </Route>
             <Route path={Urls.Seguridad.Base}>
+                <Route path={Urls.Seguridad.Permisos} element={<PagePermisos />} />
+                <Route path={Urls.Seguridad.PermisosFormulario} element={<FormPermisos />} />
                 <Route path={Urls.Seguridad.Usuarios} element={<PageUsuarios />} />
             </Route>
         </Routes>

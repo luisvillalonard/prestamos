@@ -8,9 +8,9 @@ import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import Listado from "./listado"
 
-export default function PageClientes() {
+export default function PagePermisos() {
 
-    const { contextClientes: { state: { procesando }, nuevo } } = useData()
+    const { contextPermisos: { state: { procesando }, nuevo } } = useData()
     const [filter, setFilter] = useState<string>('')
     const nav = useNavigate()
     const { Title } = Typography
@@ -18,15 +18,15 @@ export default function PageClientes() {
 
     const onNew = () => {
         nuevo();
-        nav(`/${Urls.Clientes.Base}/${Urls.Clientes.Formulario}`, { replace: true });
+        nav(`/${Urls.Seguridad.Base}/${Urls.Seguridad.PermisosFormulario}`, { replace: true });
     }
 
     return (
         <>
             <Col span={24}>
                 <Flex align="center" justify="space-between">
-                    <Title level={3} style={{ fontWeight: 'bolder', marginBottom: 0, color: token.colorPrimary }}>Clientes</Title>
-                    <ButtonPrimary size="large" onClick={onNew}>Nuevo Cliente</ButtonPrimary>
+                    <Title level={3} style={{ fontWeight: 'bolder', marginBottom: 0, color: token.colorPrimary }}>Permisos</Title>
+                    <ButtonPrimary size="large" onClick={onNew}>Nuevo Perf&iacute;l</ButtonPrimary>
                 </Flex>
                 <Divider className='my-3' />
                 <Flex align="center" justify="flex-end" className="w-100 mb-3">

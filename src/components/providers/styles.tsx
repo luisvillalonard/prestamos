@@ -1,22 +1,23 @@
 import { ConfigProvider } from "antd"
 import { ControlProps } from "../../interfaces/globales"
+import { Colors } from "@hooks/useConstants"
 
 const StyleProvider = (props: Pick<ControlProps, "children">) => {
 
     const { children } = props
     //const customColorPrimary = '#597ef7'
-    const gris51: string = '#515151'
+    //const gris51: string = '#515151'
 
     return (
         <ConfigProvider
             theme={{
                 token: {
                     // Seed Token
-                    colorText: gris51,
-                    colorTextBase: gris51,
-                    colorTextHeading: gris51,
-                    colorTextSecondary: gris51,
-                    colorTextDisabled: gris51,
+                    colorText: Colors.Gris51,
+                    colorTextBase: Colors.Gris51,
+                    colorTextHeading: Colors.Gris51,
+                    colorTextSecondary: Colors.Gris51,
+                    colorTextDisabled: Colors.Gris51,
                     colorTextPlaceholder: 'rgb(150,150,150)'
 
                     // Alias Token
@@ -24,24 +25,24 @@ const StyleProvider = (props: Pick<ControlProps, "children">) => {
                 },
                 components: {
                     Input: {
-                        colorBorder: gris51,
+                        colorBorder: Colors.Gris51,
                     },
                     InputNumber: {
-                        colorBorder: gris51,
+                        colorBorder: Colors.Gris51,
                     },
                     DatePicker: {
-                        colorBorder: gris51,
+                        colorBorder: Colors.Gris51,
                     },
                     Button: {
-                        defaultBorderColor: gris51,
-                        colorBorderSecondary: gris51,
-                        colorSuccessBorderHover: gris51,
+                        defaultBorderColor: Colors.Gris51,
+                        colorBorderSecondary: Colors.Gris51,
+                        colorSuccessBorderHover: Colors.Gris51,
 
-                        defaultHoverBorderColor: gris51,
-                        defaultHoverColor: gris51,
+                        defaultHoverBorderColor: Colors.Gris51,
+                        defaultHoverColor: Colors.Gris51,
                     },
                     Select: {
-                        colorBorder: gris51,
+                        colorBorder: Colors.Gris51,
                     },
                     Menu: {
                         itemMarginBlock: 0,

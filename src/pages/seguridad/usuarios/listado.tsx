@@ -40,7 +40,7 @@ export default function Listado(props: Pick<ControlProps, "filter">) {
             } locale={{ emptyText: <Flex>0 usuarios</Flex> }}>
             <Column title="#" dataIndex="key" key="key" align="center" fixed='left' width={60} />
             <Column title="Acceso" dataIndex="acceso" key="acceso" />
-            <Column title="Perf&iacute;l" render={() => ('Rol')} />
+            <Column title="Perf&iacute;l" render={(record: Usuario) => (record.rol?.nombre)} />
             <Column title="C&oacute;digo Empleado" render={(record: Usuario) => (record.empleadoId)} />
             <Column title="Correo" dataIndex="correo" key="correo" />
             <Column title="Cambio Clave" render={(record: Usuario) => (

@@ -1,10 +1,16 @@
 import Swal from "sweetalert2";
 
-export function Exito(mensaje: string) {
+export function Exito(mensaje: string, func?: () => void ) {
     Swal.fire({
         title: 'Exito!',
         html: `${mensaje}`,
         icon: 'success',
+    }).then(async (result) => {
+        if (result.isConfirmed) {
+            if (func) {
+                func();
+            }
+        }
     })
 }
 

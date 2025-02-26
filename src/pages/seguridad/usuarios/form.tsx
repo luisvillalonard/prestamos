@@ -1,4 +1,5 @@
 import FormModal from "@components/containers/form"
+import FormItem from "@components/forms/item"
 import InputEmail from "@components/inputs/email"
 import InputText from "@components/inputs/text"
 import RadioSwitch from "@components/radios/swich"
@@ -6,13 +7,19 @@ import { useData } from "@hooks/useData"
 import { useForm } from "@hooks/useForm"
 import { Alerta, Exito } from "@hooks/useMensaje"
 import { Usuario } from "@interfaces/seguridad"
+import { Select, Space, Switch } from "antd"
 import { useEffect } from "react"
 
 export default function FormUsuario() {
 
-    const { contextUsuarios: { state: { modelo }, agregar, actualizar, cancelar } } = useData()
+    const {
+        contextUsuarios: { state: { modelo }, agregar, actualizar, cancelar },
+        contextPermisos: { state: { datos: roles }, todos }
+    } = useData()
     const { entidad, editar, handleChangeInput } = useForm<Usuario | undefined>(modelo)
     const esNuevo = entidad?.id === 0;
+
+    const cargarRoles = async () => await todos()
 
     const guardar = async () => {
 
@@ -35,7 +42,10 @@ export default function FormUsuario() {
         }
     }
 
-    useEffect(() => { editar(modelo) }, [modelo])
+    useEffect(() => {
+        editar(modelo);
+        cargarRoles();
+    }, [modelo])
 
     if (!entidad) {
         return <></>
@@ -50,29 +60,54 @@ export default function FormUsuario() {
             initialValues={modelo}
             onFinish={guardar}
             onClose={cancelar}>
-            <InputText name="acceso" label="Acceso" maxLength={25} value={entidad?.acceso || ''} disabled={!esNuevo}
-                rules={[{ required: true, message: 'Obligatorio' }]} onChange={handleChangeInput} />
-
-            <InputText name="empleadoId" label="Empleado Id" maxLength={50} value={entidad?.empleadoId || ''}
-                rules={[{ required: true, message: 'Obligatorio' }]} onChange={handleChangeInput} />
-
-            <InputEmail name="correo" label="Correo Electr&oacute;nico" maxLength={150} value={entidad?.correo || ''}
-                rules={[{ required: true, message: 'Obligatorio' }]} onChange={handleChangeInput} />
-
+            <FormItem name="acceso" label="Acceso" rules={[{ required: true, message: 'Obligatorio' }]}>
+                <InputText name="acceso" maxLength={25} value={entidad?.acceso || ''} disabled={!esNuevo} onChange={handleChangeInput} />
+            </FormItem>
+            <FormItem name="empleadoId" label="Empleado C&oacute;digo">
+                <InputText name="empleadoId" maxLength={50} value={entidad?.empleadoId || ''} onChange={handleChangeInput} />
+            </FormItem>
+            <FormItem name="correo" label="Correo Electr&oacute;nico" rules={[{ required: true, message: 'Obligatorio' }]}>
+                <InputEmail name="correo" maxLength={150} value={entidad?.correo || ''} onChange={handleChangeInput} />
+            </FormItem>
+            <FormItem label="Perf&iacute;l de Usuario">
+                <Select
+                    allowClear
+                    defaultValue={entidad?.rol?.id}
+                    options={roles.map(item => ({ key: item.id, value: item.id, label: item.nombre }))}
+                    onChange={(value: number) => {
+                        if (entidad) {
+                            editar({ ...entidad, rol: roles.filter(opt => opt.id === value).shift() });
+                        }
+                    }} />
+            </FormItem>
             {
                 esNuevo
                     ? <></>
-                    : <RadioSwitch id="usuarioCambio" label="Cambio la clave" checked={entidad.cambio}
-                        onChange={(checked) => editar({ ...entidad, cambio: checked })} />
+                    :
+                    <FormItem>
+                        <Space>
+                            <Switch
+                                id="cambioClave"
+                                checked={entidad.cambio}
+                                onChange={(checked) => editar({ ...entidad, cambio: checked })} />
+                            <span>Esta usuario cambio su clave de acceso</span>
+                        </Space>
+                    </FormItem>
             }
-
             {
                 esNuevo
                     ? <></>
-                    : <RadioSwitch id="usuarioActivo" label={entidad.activo ? 'Activo' : 'Inactivo'} checked={entidad.activo}
-                        onChange={(checked) => editar({ ...entidad, activo: checked })} />
+                    :
+                    <FormItem>
+                        <Space>
+                            <Switch
+                                id="usuarioActivo"
+                                checked={entidad.activo}
+                                onChange={(checked) => editar({ ...entidad, activo: checked })} />
+                            <span>{entidad.activo ? 'Activo' : 'Inactivo'}</span>
+                        </Space>
+                    </FormItem>
             }
-
         </FormModal>
     )
 }

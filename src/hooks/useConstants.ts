@@ -18,6 +18,7 @@ export const Urls = {
         Base: 'seguridad',
         Roles: 'roles',
         Permisos: 'permisos',
+        PermisosFormulario: 'permisos/formulario',
         Usuarios: 'usuarios',
         Validar: 'validar',
         CambiarClave: 'cambioClave',

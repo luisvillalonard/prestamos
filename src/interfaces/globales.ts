@@ -34,15 +34,6 @@ export interface ControlProps {
     setFocus?: () => void,
 }
 
-export interface MenuItem {
-    menuid: number,
-    key: string,
-    label: string | React.ReactNode,
-    icon?: React.ReactNode,
-    children?: MenuItem[],
-    element?: JSX.Element
-}
-
 export interface GlobalState<DataType> {
     data: DataType | undefined,
     isProcessing: boolean,

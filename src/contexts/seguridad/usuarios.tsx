@@ -25,6 +25,7 @@ export default function UsuariosProvider(props: Pick<ControlProps, "children">) 
         editar({
             id: 0,
             acceso: '',
+            rol: undefined,
             cambio: false,
             activo: false
         });

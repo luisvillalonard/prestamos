@@ -1,9 +1,10 @@
+import Loading from '@components/containers/loading'
 import { Urls } from '@hooks/useConstants'
 import { useData } from '@hooks/useData'
-import { IconClient, IconConfig, IconForm, IconListNumbered, IconLoans, IconReceiveMoney, IconUserPermission, IconUserProfile, IconUsers, IconUserShield } from '@hooks/useIconos'
-import { MenuItem } from '@interfaces/globales'
+import { IconClient, IconConfig, IconForm, IconListNumbered, IconLoans, IconReceiveMoney, IconUserPermission, IconUser, IconUserShield } from '@hooks/useIconos'
+import { MenuItem, Permiso } from '@interfaces/seguridad'
 import { Layout, Menu, MenuProps } from 'antd'
-import { useEffect, useState } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 
 const headerStyle: React.CSSProperties = {
@@ -16,7 +17,7 @@ interface LevelKeysProps {
     children?: LevelKeysProps[];
 }
 
-const menuItems: MenuItem[] = [
+export const menuItems: MenuItem[] = [
     {
         menuid: 10,
         key: Urls.Clientes.Base,
@@ -58,11 +59,10 @@ const menuItems: MenuItem[] = [
         menuid: 40,
         key: Urls.Seguridad.Base,
         label: <span style={headerStyle}>Seguridad</span>,
-        icon: <IconUserShield />,
+        icon: <IconUserPermission />,
         children: [
-            { menuid: 41, key: `${Urls.Seguridad.Base}/${Urls.Seguridad.Roles}`, label: 'Perfiles de Usuarios', icon: <IconUserProfile /> },
-            { menuid: 42, key: `${Urls.Seguridad.Base}/${Urls.Seguridad.Permisos}`, label: 'Permisos', icon: <IconUserPermission /> },
-            { menuid: 43, key: `${Urls.Seguridad.Base}/${Urls.Seguridad.Usuarios}`, label: 'Usuarios', icon: <IconUsers /> },
+            { menuid: 41, key: `${Urls.Seguridad.Base}/${Urls.Seguridad.Permisos}`, label: 'Roles y Permisos', icon: <IconUserShield /> },
+            { menuid: 42, key: `${Urls.Seguridad.Base}/${Urls.Seguridad.Usuarios}`, label: 'Usuarios', icon: <IconUser /> },
         ],
     },
 ]
@@ -88,15 +88,13 @@ const levelKeys = getLevelKeys(menuItems as LevelKeysProps[]);
 export default function MenuApp() {
 
     const url = useLocation()
-    const { contextAuth: { state: { viewMenu } } } = useData()
+    const {
+        contextAuth: { state: { user, viewMenu } },
+        contextPermisos: { state: { procesando }, getByRolId },
+    } = useData()
     const [items, setItems] = useState<MenuItem[] | undefined>(undefined)
     const [stateOpenKeys, setStateOpenKeys] = useState([''])
     const [current, setCurrent] = useState<string>('')
-    /*     const {
-            IconClient, IconForm, IconListNumbered, IconReceiveMoney,
-            IconUserShield, IconUsers, IconUserProfile, IconUserPermission,
-            IconConfig, IconChecklist
-        } = useIconos() */
     const nav = useNavigate()
     const { Sider } = Layout
     const siderStyle: React.CSSProperties = {
@@ -130,18 +128,45 @@ export default function MenuApp() {
         }
     }
 
+    const loadMenu = async () => {
+
+        let asignados: Permiso[] = [];
+
+        if (user && user.rol) {
+            const result = await getByRolId(user.rol.id);
+            if (result && result.ok) {
+                asignados = result.datos?.permisos ?? [];
+            }
+        }
+
+        const permissions = menuItems.reduce((acc: MenuItem[], parent: MenuItem) => {
+
+            let children: MenuItem[] = [];
+            parent.children?.forEach(child => {
+                if (asignados.filter(perm => perm.menuId === child.menuid).shift()) {
+                    children.push(child);
+                }
+            })
+            acc.push({ ...parent, children: children });
+            return acc;
+        }, []);
+        setItems(permissions.filter(opt => opt.children && opt.children.length > 0));
+    }
+
+    useEffect(() => { if (!items) loadMenu() }, [items])
+
     useEffect(() => {
-        setItems(menuItems);
         const path = url.pathname.startsWith('/') ? url.pathname.slice(1, url.pathname.length) : url.pathname;
         const openKey = path.split('/')[0];
         setStateOpenKeys([openKey]);
         setCurrent(path);
     }, [url.pathname])
 
-    /* if (!user) {
+    if (!user) {
         return <></>
-    } */
+    }
 
+    console.log('ITEMS', items)
     return (
         <Sider
             width={250}
@@ -149,16 +174,18 @@ export default function MenuApp() {
             collapsible
             collapsed={!viewMenu}
             style={siderStyle}>
-            <Menu
-                theme='dark'
-                mode='inline'
-                selectedKeys={[current]}
-                openKeys={stateOpenKeys}
-                onOpenChange={onOpenChange}
-                onClick={onClick}
-                items={items}
-                style={{ height: '100%', borderRight: 0, overflow: 'auto' }}
-            />
+            <Suspense fallback={<Loading />}>
+                <Menu
+                    theme='dark'
+                    mode='inline'
+                    selectedKeys={[current]}
+                    openKeys={stateOpenKeys}
+                    onOpenChange={onOpenChange}
+                    onClick={onClick}
+                    items={items}
+                    style={{ height: '100%', borderRight: 0, overflow: 'auto' }}
+                />
+            </Suspense>
         </Sider>
     )
 
