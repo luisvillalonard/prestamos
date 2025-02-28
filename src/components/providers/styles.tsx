@@ -1,6 +1,6 @@
+import { Colors } from "@hooks/useConstants"
 import { ConfigProvider } from "antd"
 import { ControlProps } from "../../interfaces/globales"
-import { Colors } from "@hooks/useConstants"
 
 const StyleProvider = (props: Pick<ControlProps, "children">) => {
 

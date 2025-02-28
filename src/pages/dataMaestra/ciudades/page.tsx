@@ -22,7 +22,7 @@ export default function PageCiudades() {
                     <ButtonPrimary size="large" onClick={nuevo}>Nueva Ciudad</ButtonPrimary>
                 </Flex>
                 <Divider className='my-3' />
-                <Flex align="center" justify="flex-end" className="w-100 mb-3">
+                <Flex align="center" justify="flex-end" className="w-100">
                     <Searcher size="large" onChange={setFilter} style={{ borderColor: token.colorBorderSecondary }} />
                 </Flex>
                 <Listado filter={filter} />

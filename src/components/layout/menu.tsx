@@ -1,10 +1,9 @@
-import Loading from '@components/containers/loading'
 import { Urls } from '@hooks/useConstants'
 import { useData } from '@hooks/useData'
-import { IconClient, IconConfig, IconForm, IconListNumbered, IconLoans, IconReceiveMoney, IconUserPermission, IconUser, IconUserShield } from '@hooks/useIconos'
+import { IconClient, IconConfig, IconForm, IconListNumbered, IconLoans, IconReceiveMoney, IconUser, IconUserPermission, IconUserShield } from '@hooks/useIconos'
 import { MenuItem, Permiso } from '@interfaces/seguridad'
 import { Layout, Menu, MenuProps } from 'antd'
-import { Suspense, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 
 const headerStyle: React.CSSProperties = {
@@ -166,7 +165,6 @@ export default function MenuApp() {
         return <></>
     }
 
-    console.log('ITEMS', items)
     return (
         <Sider
             width={250}
@@ -174,18 +172,16 @@ export default function MenuApp() {
             collapsible
             collapsed={!viewMenu}
             style={siderStyle}>
-            <Suspense fallback={<Loading />}>
-                <Menu
-                    theme='dark'
-                    mode='inline'
-                    selectedKeys={[current]}
-                    openKeys={stateOpenKeys}
-                    onOpenChange={onOpenChange}
-                    onClick={onClick}
-                    items={items}
-                    style={{ height: '100%', borderRight: 0, overflow: 'auto' }}
-                />
-            </Suspense>
+            <Menu
+                theme='dark'
+                mode='inline'
+                selectedKeys={[current]}
+                openKeys={stateOpenKeys}
+                onOpenChange={onOpenChange}
+                onClick={onClick}
+                items={items}
+                style={{ height: '100%', borderRight: 0, overflow: 'auto' }}
+            />
         </Sider>
     )
 

@@ -1,9 +1,10 @@
 import FormModal from "@components/containers/form"
-import InputText from "@components/inputs/text"
+import FormItem from "@components/forms/item"
 import { useData } from "@hooks/useData"
 import { useForm } from "@hooks/useForm"
 import { Alerta, Exito } from "@hooks/useMensaje"
 import { PrestamoEstado } from "@interfaces/dataMaestra"
+import { Input } from "antd"
 import { useEffect } from "react"
 
 export default function FormPrestamoEstado() {
@@ -48,8 +49,9 @@ export default function FormPrestamoEstado() {
             initialValues={modelo}
             onFinish={guardar}
             onClose={cancelar}>
-            <InputText name="nombre" label="Nombre" maxLength={100} value={entidad?.nombre || ''}
-                rules={[{ required: true, message: 'Obligatorio' }]} onChange={handleChangeInput} />
+            <FormItem name="nombre" label="Nombre" rules={[{ required: true, message: 'Obligatorio' }]}>
+                <Input name="nombre" maxLength={150} value={entidad?.nombre || ''} onChange={handleChangeInput} />
+            </FormItem>
         </FormModal>
     )
 }
