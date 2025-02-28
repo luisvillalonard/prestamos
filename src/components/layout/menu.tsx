@@ -1,7 +1,7 @@
 import { Urls } from '@hooks/useConstants'
 import { useData } from '@hooks/useData'
 import { IconClient, IconConfig, IconForm, IconListNumbered, IconLoans, IconReceiveMoney, IconUser, IconUserPermission, IconUserShield } from '@hooks/useIconos'
-import { MenuItem, Permiso } from '@interfaces/seguridad'
+import { MenuItem } from '@interfaces/seguridad'
 import { Layout, Menu, MenuProps } from 'antd'
 import { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
@@ -89,7 +89,6 @@ export default function MenuApp() {
     const url = useLocation()
     const {
         contextAuth: { state: { user, viewMenu } },
-        contextPermisos: { getByRolId },
     } = useData()
     const [items, setItems] = useState<MenuItem[] | undefined>(undefined)
     const [stateOpenKeys, setStateOpenKeys] = useState([''])
@@ -127,7 +126,7 @@ export default function MenuApp() {
         }
     }
 
-    const loadMenu = async () => {
+    /* const loadMenu = async () => {
 
         let asignados: Permiso[] = [];
 
@@ -150,11 +149,12 @@ export default function MenuApp() {
             return acc;
         }, []);
         setItems(permissions.filter(opt => opt.children && opt.children.length > 0));
-    }
+    } */
 
-    useEffect(() => { if (!items) loadMenu() }, [items])
+    //useEffect(() => { if (!items) loadMenu() }, [items])
 
     useEffect(() => {
+        setItems(menuItems);
         const path = url.pathname.startsWith('/') ? url.pathname.slice(1, url.pathname.length) : url.pathname;
         const openKey = path.split('/')[0];
         setStateOpenKeys([openKey]);
