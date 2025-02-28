@@ -1,6 +1,6 @@
-import { useNavigate } from "react-router-dom"
 import { ButtonDefault } from "@components/buttons/default"
 import { ButtonPrimary } from "@components/buttons/primary"
+import Loading from "@components/containers/loading"
 import FormItem from "@components/forms/item"
 import { menuItems } from "@components/layout/menu"
 import { Colors, Urls } from "@hooks/useConstants"
@@ -10,7 +10,7 @@ import { Alerta, Exito } from "@hooks/useMensaje"
 import { MenuItem, Permiso, Rol } from "@interfaces/seguridad"
 import { Avatar, Col, Divider, Flex, Form, Input, List, Row, Space, Switch, Typography, theme } from "antd"
 import { useEffect } from "react"
-import Loading from "@components/containers/loading"
+import { useNavigate } from "react-router-dom"
 
 export default function FormPermisos() {
 
@@ -178,7 +178,7 @@ export default function FormPermisos() {
                                                                         <Flex key={indexChild} gap={16} align="center" style={{ marginBottom: 8 }}>
                                                                             <Switch
                                                                                 checked={!perm ? false : true}
-                                                                                onChange={(checked) => changePermition(child, checked)} />
+                                                                                onChange={() => changePermition(child)} />
                                                                             <Space>
                                                                                 {child.icon}
                                                                                 {child.label}
