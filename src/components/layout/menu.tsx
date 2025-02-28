@@ -152,9 +152,10 @@ export default function MenuApp() {
         setItems(permissions.filter(opt => opt.children && opt.children.length > 0));
     }
 
-    useEffect(() => { if (!items) loadMenu() }, [items])
+    //useEffect(() => { if (!items) loadMenu() }, [items])
 
     useEffect(() => {
+        setItems(menuItems);
         const path = url.pathname.startsWith('/') ? url.pathname.slice(1, url.pathname.length) : url.pathname;
         const openKey = path.split('/')[0];
         setStateOpenKeys([openKey]);
