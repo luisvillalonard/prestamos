@@ -2,7 +2,7 @@ import { menuItems } from "@components/layout/menu"
 import { Urls } from "@hooks/useConstants"
 import { useFetch } from "@hooks/useFetch"
 import { useReducerHook } from "@hooks/useReducer"
-import { ControlProps, MenuItem, ResponseResult } from "@interfaces/globales"
+import { ControlProps, ResponseResult } from "@interfaces/globales"
 import { Permiso, Rol } from "@interfaces/seguridad"
 import { ACTIONS, GlobalContextState } from "@reducers/global"
 import { createContext } from "react"
@@ -43,9 +43,9 @@ export default function PermisosProvider(props: Pick<ControlProps, "children">) 
         dispatch({ type: ACTIONS.FETCH_COMPLETE, recargar: false });
         return resp;
     }
-    
+
     const permitionList = (): MenuItem[] => {
-        
+
         return menuItems.reduce((acc: MenuItem[], item: MenuItem) => {
             if (item.children && item.children.length > 0) {
                 item.children?.forEach((child: MenuItem) => {
