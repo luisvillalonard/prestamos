@@ -127,7 +127,7 @@ export default function MenuApp() {
         }
     }
 
-    const loadMenu = async () => {
+    /*const loadMenu = async () => {
 
         let asignados: Permiso[] = [];
 
@@ -150,7 +150,7 @@ export default function MenuApp() {
             return acc;
         }, []);
         setItems(permissions.filter(opt => opt.children && opt.children.length > 0));
-    }
+    }*/
 
     //useEffect(() => { if (!items) loadMenu() }, [items])
 
