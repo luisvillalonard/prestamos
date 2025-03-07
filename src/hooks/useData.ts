@@ -1,5 +1,5 @@
 import { ContextsProviders } from "@components/providers/contexts";
-import ClientesProvider, { ClientesContext } from "@contexts/clientes/cliente";
+import ClientesProvider, { ClienteContextState, ClientesContext } from "@contexts/clientes/cliente";
 import AcesoresProvider, { AcesoresContext } from "@contexts/dataMaestra/acesores";
 import CiudadesProvider, { CiudadesContext } from "@contexts/dataMaestra/ciudades";
 import DocumentosTiposProvider, { DocumentosTiposContext } from "@contexts/dataMaestra/documentosTipo";
@@ -51,7 +51,7 @@ export const ContextsProvidersTree = ContextsProviders([
 export const useData = () => {
 
     /* Clientes */
-    const contextClientes = useContext(ClientesContext) as GlobalContextState<Cliente>;
+    const contextClientes = useContext(ClientesContext) as ClienteContextState<Cliente>;
 
     /* Data Maestra */
     const contextCiudades = useContext(CiudadesContext) as GlobalContextState<Ciudad>;

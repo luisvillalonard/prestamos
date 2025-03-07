@@ -26,6 +26,7 @@ export const getParamsUrlToString = (params: RequestFilter | null | undefined) =
 }
 
 export const FormatDate_DDMMYYYY = (fecha: StringOrNull) => {
+
     if (!fecha)
         return undefined;
 
@@ -36,7 +37,7 @@ export const FormatDate_DDMMYYYY = (fecha: StringOrNull) => {
         day = day.length <= 1 ? '0'.concat(day) : day;
         month = month.length <= 1 ? '0'.concat(month) : month;
 
-        // 01/01/1900 - DAY-MONTH-YEAR
+        // 01-01-1900 - DAY-MONTH-YEAR
         return [day, month, year].reverse().join('-');
     } catch (e) { }
 }

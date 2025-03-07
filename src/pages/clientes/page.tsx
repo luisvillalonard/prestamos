@@ -1,8 +1,10 @@
 import { ButtonPrimary } from "@components/buttons/primary"
+import { ButtonSuccess } from "@components/buttons/success"
 import Loading from "@components/containers/loading"
 import Searcher from "@components/inputs/searcher"
 import { Urls } from "@hooks/useConstants"
 import { useData } from "@hooks/useData"
+import { exportClientToExcel } from "@hooks/useFile"
 import { Col, Divider, Flex, Typography, theme } from "antd"
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
@@ -10,7 +12,7 @@ import Listado from "./listado"
 
 export default function PageClientes() {
 
-    const { contextClientes: { state: { procesando }, nuevo } } = useData()
+    const { contextClientes: { state: { datos, procesando }, nuevo } } = useData()
     const [filter, setFilter] = useState<string>('')
     const nav = useNavigate()
     const { Title } = Typography
@@ -26,6 +28,7 @@ export default function PageClientes() {
             <Col span={24}>
                 <Flex align="center" justify="space-between">
                     <Title level={3} style={{ fontWeight: 'bolder', marginBottom: 0, color: token.colorPrimary }}>Clientes</Title>
+                    <ButtonSuccess size="large" onClick={() => exportClientToExcel(datos)}>Exportar</ButtonSuccess>
                     <ButtonPrimary size="large" onClick={onNew}>Nuevo Cliente</ButtonPrimary>
                 </Flex>
                 <Divider className='my-3' />

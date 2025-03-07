@@ -2,7 +2,7 @@ import bglogin from '@assets/bglogin.svg'
 import { Urls } from "@hooks/useConstants"
 import { useData } from "@hooks/useData"
 import { UserApp } from "@interfaces/seguridad"
-import { Col, Divider, Flex, Image, Layout, Row, theme } from "antd"
+import { Col, Flex, Image, Layout, Row, theme } from "antd"
 import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import FormCambioClave from './cambioClave'
@@ -27,18 +27,14 @@ export default function PageLogin() {
             <Row style={{ height: '100%' }}>
                 <Col xl={{ span: 15, order: 1 }} lg={{ span: 14, order: 1 }} md={{ span: 14, order: 1 }} sm={{ span: 24, order: 2 }} xs={{ span: 24, order: 2 }} style={{ alignSelf: 'center' }}>
                     <Col span={20} offset={2}>
-                        <Flex vertical align='center'>
-                            <Flex align='center' justify='center' gap={10}>
-                                <h1 className='display-5' style={{ fontWeight: 'bolder', margin: 0, color: token.colorWhite }}>Sistema</h1>
-                                <h1 className='display-5' style={{ fontWeight: 'bolder', margin: 0, color: token.colorPrimary }}>Prestamos</h1>
-                            </Flex>
-                            <Divider style={{ borderColor: token.colorWhite }} />
+                        <Flex align='center' justify='center'>
                             <Image preview={false} width='70%' src={bglogin} />
                         </Flex>
                     </Col>
                 </Col>
                 <Col xl={{ span: 9, order: 2 }} lg={{ span: 10, order: 2 }} md={{ span: 10, order: 2 }} sm={{ span: 24, order: 1 }} xs={{ span: 24, order: 1 }} style={{ backgroundColor: token.colorBgContainer }}>
                     <Flex vertical align="center" justify="center" className="h-100 p-5">
+                        <h1 className='display-5' style={{ fontWeight: 'bolder', color: token.colorPrimary }}>Prestamos</h1>
                         {
                             !user
                                 ? <LoginForm onChange={setUser} />

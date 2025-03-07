@@ -6,11 +6,12 @@ export interface Prestamo {
     id: number,
     codigo: string,
     cliente: Cliente | undefined,
+    fechaRegistro: string,
     fechaCredito: string,
     formaPago: FormaPago | undefined,
     metodoPago: MetodoPago | undefined,
     moneda: Moneda | undefined,
-    cuotas: number,
+    cantidadCuotas: number,
     fechaCuotas: number,
     deudaInicial: number,
     interes: number,
@@ -19,14 +20,25 @@ export interface Prestamo {
     saldoFinal: number,
     abonoCuota: number,
     multaRetrazo: number,
-    fechaPago: string,
     estado: PrestamoEstado | undefined,
     diasMora: number,
     destino: string,
     acesor: Acesor | undefined,
     usuario: Usuario | undefined,
     fechaActualizado?: string,
-    usuarioActualizado?: Usuario
+    usuarioActualizado?: Usuario,
+    cuotas: PrestamoCuota[],
+}
+
+export interface PrestamoCuota {
+    id: number,
+    prestamoId: number,
+    fechaPago: string,
+    deudaInicial: number,
+    capital: number,
+    interes: number,
+    amortizacion: number,
+    saldoFinal: number,
 }
 
 export interface PrestamoPago {

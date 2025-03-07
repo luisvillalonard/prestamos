@@ -4,7 +4,7 @@ import { useData } from "@hooks/useData"
 import { useForm } from "@hooks/useForm"
 import { Alerta, Exito } from "@hooks/useMensaje"
 import { PrestamoEstado } from "@interfaces/dataMaestra"
-import { Input } from "antd"
+import { Input, Space, Switch } from "antd"
 import { useEffect } from "react"
 
 export default function FormPrestamoEstado() {
@@ -51,6 +51,30 @@ export default function FormPrestamoEstado() {
             onClose={cancelar}>
             <FormItem name="nombre" label="Nombre" rules={[{ required: true, message: 'Obligatorio' }]}>
                 <Input name="nombre" maxLength={150} value={entidad?.nombre || ''} onChange={handleChangeInput} />
+            </FormItem>
+            <FormItem>
+                <Space>
+                    <Switch
+                        checked={entidad?.inicial}
+                        onChange={(value) => {
+                            if (entidad) {
+                                editar({ ...entidad, inicial: value })
+                            }
+                        }} />
+                    <span>Este estado ser&aacute; con el que se cree el prestamo.</span>
+                </Space>
+            </FormItem>
+            <FormItem>
+                <Space>
+                    <Switch
+                        checked={entidad?.final}
+                        onChange={(value) => {
+                            if (entidad) {
+                                editar({ ...entidad, final: value })
+                            }
+                        }} />
+                    <span>Este ser&aacute; el estado con el que se cierre el prestamo, luego de este no existir&aacute; otro estado</span>
+                </Space>
             </FormItem>
         </FormModal>
     )

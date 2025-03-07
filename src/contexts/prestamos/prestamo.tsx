@@ -1,5 +1,6 @@
 import { Urls } from "@hooks/useConstants"
 import { useReducerHook } from "@hooks/useReducer"
+import { FormatDate_DDMMYYYY } from "@hooks/useUtils"
 import { ControlProps } from "@interfaces/globales"
 import { Prestamo } from "@interfaces/prestamos"
 import { GlobalContextState } from "@reducers/global"
@@ -17,11 +18,12 @@ export default function PrestamosProvider(props: Pick<ControlProps, "children">)
             id: 0,
             codigo: '',
             cliente: undefined,
-            fechaCredito: new Date().toISOString().substring(0, 10),
+            fechaRegistro: FormatDate_DDMMYYYY(new Date().toISOString().substring(0, 10))!,
+            fechaCredito: FormatDate_DDMMYYYY(new Date().toISOString().substring(0, 10))!,
             formaPago: undefined,
             metodoPago: undefined,
             moneda: undefined,
-            cuotas: 0,
+            cantidadCuotas: 0,
             fechaCuotas: 0,
             deudaInicial: 0,
             interes: 0,
@@ -30,12 +32,12 @@ export default function PrestamosProvider(props: Pick<ControlProps, "children">)
             saldoFinal: 0,
             abonoCuota: 0,
             multaRetrazo: 0,
-            fechaPago: '',
             estado: undefined,
             diasMora: 0,
             destino: '',
             acesor: undefined,
             usuario: undefined,
+            cuotas: [],
         });
     }
 

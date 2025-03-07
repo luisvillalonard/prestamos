@@ -1,7 +1,7 @@
 import { ButtonEdit } from "@components/buttons/edit"
 import { useData } from "@hooks/useData"
-import { Prestamo } from "@interfaces/prestamos"
 import { ControlProps } from "@interfaces/globales"
+import { Prestamo } from "@interfaces/prestamos"
 import { Flex, Table, Tag, Tooltip } from "antd"
 import { useEffect } from "react"
 import { useLocation } from "react-router-dom"
@@ -47,8 +47,12 @@ export default function Listado(props: Pick<ControlProps, "filter">) {
             <Column title="Capital" render={(record: Prestamo) => (record.capital)} />
             <Column title="Interes" render={(record: Prestamo) => (record.interes)} />
             <Column title="M&eacute;todo de Pago" render={(record: Prestamo) => (record.metodoPago?.nombre)} />
-            <Column title="Estado" render={(record: Prestamo) => (
-                <Tag color={record.estado?.id ? '#87d068' : 'red'}>{record.estado?.nombre ? 'Activo' : 'Inactivo'}</Tag>
+            <Column title="Estado" align="center" render={(record: Prestamo) => (
+                <Tag
+                    color={record.estado?.inicial ? '' : record.estado?.final ? 'blue' : '#87d068'}
+                    style={{ fontWeight: 600, borderRadius: 10 }}>
+                    {record.estado?.nombre}
+                </Tag>
             )} />
             <Column title="Acci&oacute;n" align="center" width={80} render={(record: Prestamo) => (
                 <Tooltip title={`Editar el prestamo (${record.codigo})`}>

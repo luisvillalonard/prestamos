@@ -15,7 +15,10 @@ export interface Moneda extends DataMaestraBase { }
 
 export interface Ocupacion extends DataMaestraBase { }
 
-export interface PrestamoEstado extends DataMaestraBase { }
+export interface PrestamoEstado extends DataMaestraBase {
+    inicial: boolean,
+    final: boolean,
+}
 
 export interface Sexo extends DataMaestraBase { }
 

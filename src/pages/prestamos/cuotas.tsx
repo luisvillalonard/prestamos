@@ -1,23 +1,29 @@
+import { PrestamoCuota } from "@interfaces/prestamos"
 import { Flex, Table } from "antd"
 
-export default function PrestamoCuotas() {
+interface PrestamoCuotasProps {
+    cuotas: PrestamoCuota[]
+}
 
+export default function PrestamoCuotas(props: PrestamoCuotasProps) {
+
+    const { cuotas } = props
     const { Column } = Table
 
     return (
-        <Table<any>
+        <Table<PrestamoCuota>
             size="middle"
             bordered={false}
             pagination={{ size: 'default' }}
-            dataSource={[]}
+            dataSource={cuotas && cuotas.map((item, index) => { return { ...item, key: index + 1 } })}
             locale={{ emptyText: <Flex>0 cuotas</Flex> }}>
-            <Column title={<span style={{ textWrap: 'nowrap' }}># Cuotas</span>} width={50} render={() => ('')} />
-            <Column title="Fecha Pago" render={() => ('')} />
-            <Column title="Deuda Inicial" render={() => ('')} />
-            <Column title="Tasa Interes" render={() => ('')} />
-            <Column title="Capital" render={() => ('')} />
-            <Column title="Amortización" render={() => ('')} />
-            <Column title="Saldo Final" render={() => ('')} />
+            <Column title="# Cuota" dataIndex="key" key="key" align="center" fixed='left' width={60} />
+            <Column title="Fecha Pago" render={(record: PrestamoCuota) => (record.fechaPago)} />
+            <Column title="Deuda Inicial" render={(record: PrestamoCuota) => (record.deudaInicial)} />
+            <Column title="Tasa Interes" render={(record: PrestamoCuota) => (record.interes)} />
+            <Column title="Capital" render={(record: PrestamoCuota) => (record.capital)} />
+            <Column title="Amortización" render={(record: PrestamoCuota) => (record.amortizacion)} />
+            <Column title="Saldo Final" render={(record: PrestamoCuota) => (record.saldoFinal)} />
         </Table>
     )
 
