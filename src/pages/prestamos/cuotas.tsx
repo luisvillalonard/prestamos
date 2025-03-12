@@ -17,7 +17,7 @@ export default function PrestamoCuotas(props: PrestamoCuotasProps) {
             pagination={{ size: 'default' }}
             dataSource={cuotas && cuotas.map((item, index) => { return { ...item, key: index + 1 } })}
             locale={{ emptyText: <Flex>0 cuotas</Flex> }}>
-            <Column title="# Cuota" dataIndex="key" key="key" align="center" fixed='left' width={60} />
+            <Column title="# Cuota" dataIndex="key" key="key" align="center" fixed='left' width={80} />
             <Column title="Fecha Pago" render={(record: PrestamoCuota) => (record.fechaPago)} />
             <Column title="Deuda Inicial" render={(record: PrestamoCuota) => (record.deudaInicial)} />
             <Column title="Tasa Interes" render={(record: PrestamoCuota) => (record.interes)} />

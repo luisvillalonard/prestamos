@@ -38,12 +38,13 @@ export const Urls = {
 }
 
 export const Colors = {
-    Gris51: '#515151',
-    Primary: '#85a5ff',
-    Success: '#95de64',
+    Primary: '#108ee9',
+    Success: '#87d068',
     Secondary: "#969696e0",
     Warning: '#ffd666',
     Danger: '#ff4d4f',
     White: "#FFFFFF",
+    Gris51: '#515151',
+    Azul: '#001529',
 }
 

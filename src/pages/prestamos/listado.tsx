@@ -45,7 +45,7 @@ export default function Listado(props: Pick<ControlProps, "filter">) {
             <Column title="Cliente" render={(record: Prestamo) => (`${record.cliente?.nombres} ${record.cliente?.apellidos}`.trim())} />
             <Column title="Monto" render={(record: Prestamo) => (record.deudaInicial)} />
             <Column title="Capital" render={(record: Prestamo) => (record.capital)} />
-            <Column title="Interes" render={(record: Prestamo) => (record.interes)} />
+            <Column title="Inter&eacute;s" render={(record: Prestamo) => (record.interes)} />
             <Column title="M&eacute;todo de Pago" render={(record: Prestamo) => (record.metodoPago?.nombre)} />
             <Column title="Estado" align="center" render={(record: Prestamo) => (
                 <Tag

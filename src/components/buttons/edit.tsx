@@ -12,11 +12,8 @@ export const ButtonEdit = (props: ButtonProps) => {
             {...props}
             variant='text'
             shape='default'
-            icon={<IconEdit style={{ fontSize: 20 }} />}
-            onClick={onClick}
-            style={{
-                borderColor: '#ccc'
-            }}>
+            icon={<IconEdit style={{ fontSize: 24 }} />}
+            onClick={onClick}>
         </Button>
     )
 }

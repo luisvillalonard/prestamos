@@ -54,14 +54,14 @@ const StyleProvider = (props: Pick<ControlProps, "children">) => {
                         subMenuItemBorderRadius: 0,
                         subMenuItemSelectedColor: 'yellow',
                     },
-                    Table: {
-                        headerBg: '#ffffff',
-                        headerBorderRadius: 0,
-                    },
                     Form: {
                         itemMarginBottom: 2,
                         verticalLabelMargin: 3,
                         verticalLabelPadding: 0,
+                    },
+                    Table: {
+                        headerBg: 'rgba(0,0,0,0.85)',
+                        headerColor: Colors.White,
                     }
                 }
             }}

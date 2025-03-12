@@ -1,9 +1,10 @@
 import { ButtonEdit } from "@components/buttons/edit"
+import { TagDanger, TagDefault, TagSuccess } from "@components/tags/tags"
 import { Urls } from "@hooks/useConstants"
 import { useData } from "@hooks/useData"
 import { ControlProps } from "@interfaces/globales"
 import { Rol } from "@interfaces/seguridad"
-import { Flex, Table, Tag, Tooltip } from "antd"
+import { Flex, Table, Tooltip } from "antd"
 import { useEffect } from "react"
 import { useLocation, useNavigate } from "react-router-dom"
 
@@ -49,10 +50,10 @@ export default function Listado(props: Pick<ControlProps, "filter">) {
             <Column title="Código" dataIndex="nombre" key="nombre" />
             <Column title="Descripci&oacute;n" dataIndex="descripcion" key="descripcion" />
             <Column title="Es Administrador" align="center" render={(record: Rol) => (
-                <Tag color={record.esAdmin ? '#87d068' : 'red'}>{record.activo ? 'Si' : 'No'}</Tag>
+                record.esAdmin ? <TagSuccess text="Si" /> : <TagDanger text="No" />
             )} />
             <Column title="Estado" align="center" render={(record: Rol) => (
-                <Tag color={record.activo ? '#87d068' : 'red'}>{record.activo ? 'Activo' : 'Inactivo'}</Tag>
+                record.activo ? <TagSuccess text="Activo" /> : <TagDefault text="Inactivo" />
             )} />
             <Column title="Acci&oacute;n" align="center" width={80} render={(record: Rol) => (
                 <Tooltip title={`Editar el perfíl de usuario (${record.nombre})`}>

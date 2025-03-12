@@ -15,20 +15,22 @@ import { HiOutlineCog6Tooth, HiOutlineUsers } from "react-icons/hi2"
 import { IoShieldCheckmarkOutline } from "react-icons/io5"
 import { LuCalculator } from "react-icons/lu"
 import { MdOutlineFormatListNumbered, MdOutlinePassword } from "react-icons/md"
+import { PiMicrosoftExcelLogoFill } from "react-icons/pi"
 
 export const IconCalculator = LuCalculator;
 export const IconChecklist = GoChecklist;
 export const IconClient = FaRegAddressCard;
 export const IconConfig = HiOutlineCog6Tooth;
 export const IconEdit = EditOutlined;
+export const IconExcel = PiMicrosoftExcelLogoFill;
 export const IconForm = CiViewList;
 export const IconListNumbered = MdOutlineFormatListNumbered;
 export const IconLoading = LoadingOutlined;
 export const IconLock = LockOutlined;
-export const IconMenu = MenuOutlined;
 export const IconLoans = GiTakeMyMoney;
 export const IconLogout = PoweroffOutlined;
 export const IconPassword = MdOutlinePassword;
+export const IconMenu = MenuOutlined;
 export const IconReceiveMoney = GiReceiveMoney;
 export const IconSearch = BsSearch;
 export const IconUserProfile = BsPersonVcard;

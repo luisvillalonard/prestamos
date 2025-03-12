@@ -1,7 +1,7 @@
 import { Urls } from '@hooks/useConstants'
 import { useData } from '@hooks/useData'
 import { IconClient, IconConfig, IconForm, IconListNumbered, IconLoans, IconReceiveMoney, IconUser, IconUserPermission, IconUserShield } from '@hooks/useIconos'
-import { MenuItem, Permiso } from '@interfaces/seguridad'
+import { MenuItem } from '@interfaces/seguridad'
 import { Layout, Menu, MenuProps } from 'antd'
 import { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
@@ -89,7 +89,7 @@ export default function MenuApp() {
     const url = useLocation()
     const {
         contextAuth: { state: { user, viewMenu } },
-        contextPermisos: { state: { procesando }, getByRolId },
+        contextPermisos: { state: { procesando } },
     } = useData()
     const [items, setItems] = useState<MenuItem[] | undefined>(undefined)
     const [stateOpenKeys, setStateOpenKeys] = useState([''])
@@ -127,32 +127,22 @@ export default function MenuApp() {
         }
     }
 
-    const loadMenu = async () => {
-
-        let asignados: Permiso[] = [];
-
+    useEffect(() => {
         if (user && user.rol) {
-            const result = await getByRolId(user.rol.id);
-            if (result && result.ok) {
-                asignados = result.datos?.permisos ?? [];
-            }
+            const permissions = menuItems.reduce((acc: MenuItem[], parent: MenuItem) => {
+
+                let children: MenuItem[] = [];
+                parent.children?.forEach(child => {
+                    if (user.rol?.permisos.filter(perm => perm.menuId === child.menuid).shift()) {
+                        children.push(child);
+                    }
+                })
+                acc.push({ ...parent, children: children });
+                return acc;
+            }, []);
+            setItems(permissions.filter(opt => opt.children && opt.children.length > 0));
         }
-
-        const permissions = menuItems.reduce((acc: MenuItem[], parent: MenuItem) => {
-
-            let children: MenuItem[] = [];
-            parent.children?.forEach(child => {
-                if (asignados.filter(perm => perm.menuId === child.menuid).shift()) {
-                    children.push(child);
-                }
-            })
-            acc.push({ ...parent, children: children });
-            return acc;
-        }, []);
-        setItems(permissions.filter(opt => opt.children && opt.children.length > 0));
-    }
-
-    useEffect(() => { if (!items) loadMenu() }, [items])
+    }, [user])
 
     useEffect(() => {
         const path = url.pathname.startsWith('/') ? url.pathname.slice(1, url.pathname.length) : url.pathname;
@@ -161,7 +151,7 @@ export default function MenuApp() {
         setCurrent(path);
     }, [url.pathname])
 
-    if (!user) {
+    if (!user || !user.rol || user.rol.permisos.length === 0) {
         return <></>
     }
 

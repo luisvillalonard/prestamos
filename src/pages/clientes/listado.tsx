@@ -1,9 +1,10 @@
 import { ButtonEdit } from "@components/buttons/edit"
+import { TagDanger, TagSuccess } from "@components/tags/tags"
 import { Urls } from "@hooks/useConstants"
 import { useData } from "@hooks/useData"
 import { Cliente } from "@interfaces/clientes"
 import { ControlProps } from "@interfaces/globales"
-import { Flex, Table, Tag, Tooltip } from "antd"
+import { Flex, Table, Tooltip } from "antd"
 import { useEffect } from "react"
 import { useLocation, useNavigate } from "react-router-dom"
 
@@ -65,7 +66,7 @@ export default function Listado(props: Pick<ControlProps, "filter">) {
                 <span style={{ textWrap: 'nowrap' }}>{record.telefonoCelular}</span>
             )} />
             <Column title="Estado" render={(record: Cliente) => (
-                <Tag color={record.activo ? '#87d068' : 'red'}>{record.activo ? 'Activo' : 'Inactivo'}</Tag>
+                record.activo ? <TagSuccess text="Activo" /> : <TagDanger text="Inactivo" />
             )} />
             <Column title="Acci&oacute;n" align="center" width={80} render={(record: Cliente) => (
                 <Tooltip title={`Editar el cliente (${record.nombres} ${record.apellidos})`.trim()}>

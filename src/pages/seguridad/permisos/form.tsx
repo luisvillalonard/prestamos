@@ -3,22 +3,25 @@ import { ButtonPrimary } from "@components/buttons/primary"
 import Loading from "@components/containers/loading"
 import FormItem from "@components/forms/item"
 import { menuItems } from "@components/layout/menu"
+import TitlePage from "@components/titles/titlePage"
+import TitleSesion from "@components/titles/titleSesion"
 import { Colors, Urls } from "@hooks/useConstants"
 import { useData } from "@hooks/useData"
 import { useForm } from "@hooks/useForm"
 import { Alerta, Exito } from "@hooks/useMensaje"
 import { MenuItem, Permiso, Rol } from "@interfaces/seguridad"
-import { Avatar, Col, Divider, Flex, Form, Input, List, Row, Space, Switch, Typography, theme } from "antd"
+import { Avatar, Col, Divider, Flex, Form, Input, List, Row, Space, Switch } from "antd"
 import { useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 
 export default function FormPermisos() {
 
-    const { contextPermisos: { state: { modelo, procesando }, editar: modificar, agregar, actualizar, cancelar } } = useData()
+    const {
+        contextAuth: { state: { user }, LoggedIn },
+        contextPermisos: { state: { modelo, procesando }, agregar, actualizar, cancelar },
+    } = useData()
     const { entidad, editar, handleChangeInput } = useForm<Rol | undefined>(modelo)
     const nav = useNavigate()
-    const { Title } = Typography
-    const { token } = theme.useToken()
 
     const changePermition = (item: MenuItem) => {
 
@@ -61,9 +64,13 @@ export default function FormPermisos() {
                 } else if (!resp.ok) {
                     Alerta(resp.mensaje || 'Situación inesperada tratando de guardar los permisos del perfíl.');
                 } else {
-                    if (resp.datos) {
-                        modificar(resp.datos)
+
+                    // Si el rol modificado es el que tiene el usuario logeado en la aplicación, lo actualizo
+                    if (user?.rol?.id === entidad.id) {
+                        LoggedIn({ ...user, rol: entidad })
                     }
+
+                    // Muestro el mensaje de exito
                     Exito(
                         `Rol y permisos ${esNuevo ? 'registrados' : 'actualizados'}  exitosamente!`,
                         () => nav(`/${Urls.Seguridad.Base}/${Urls.Seguridad.Permisos}`, { replace: true })
@@ -91,16 +98,17 @@ export default function FormPermisos() {
         <>
             <Col span={18} offset={3}>
 
-                <Flex align="center" justify="space-between">
-                    <Title level={3} style={{ fontWeight: 'bolder', color: token.colorPrimary }}>Rol y Permisos</Title>
+                <TitlePage title="Rol y Permisos" />
+                <Divider style={{ borderColor: Colors.Gris51 }} className='my-3' />
+                <Flex align="center" justify="end" className="mb-3">
                     <Space>
-                        <ButtonDefault key="1" size="large" htmlType="button" onClick={onClose}>Ir a Perf&iacute;les</ButtonDefault>
-                        <ButtonPrimary key="2" size="large" htmlType="submit" form="FormPermisos">
+                        <ButtonDefault key="1" htmlType="button" onClick={onClose}>Ir a Perf&iacute;les</ButtonDefault>
+                        <ButtonPrimary key="2" htmlType="submit" form="FormPermisos">
                             {entidad && entidad.id > 0 ? 'Actualizar' : 'Guardar'}
                         </ButtonPrimary>
                     </Space>
                 </Flex>
-                <Divider className='my-3' />
+                <Divider style={{ borderColor: Colors.Gris51 }} className='my-3' />
 
                 <Form
                     name="FormPermisos"
@@ -109,10 +117,10 @@ export default function FormPermisos() {
                     size="large"
                     initialValues={modelo}
                     onFinish={guardar}>
-                    <Row gutter={[10, 10]}>
+                    <Row gutter={[30, 20]}>
                         <Col lg={12} md={12} xs={24}>
-                            <Title level={4} style={{ fontWeight: 'bolder' }}>Rol de Usuario</Title>
-                            <Divider className="my-1 mb-2" />
+                            <TitleSesion title="Rol de Usuario" color={Colors.Primary} />
+                            <Divider style={{ borderColor: Colors.Gris51 }} className='my-3' />
 
                             <Row gutter={[10, 10]}>
                                 <Col xs={24}>
@@ -158,8 +166,8 @@ export default function FormPermisos() {
                             </Row>
                         </Col>
                         <Col lg={12} md={12} xs={24}>
-                            <Title level={4} style={{ fontWeight: 'bolder' }}>Permisos</Title>
-                            <Divider className="my-1 mb-2" />
+                            <TitleSesion title="Permisos" color={Colors.Primary} />
+                            <Divider style={{ borderColor: Colors.Gris51 }} className='my-3' />
 
                             <List>
                                 {

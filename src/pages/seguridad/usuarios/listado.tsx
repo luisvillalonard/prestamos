@@ -1,8 +1,9 @@
 import { ButtonEdit } from "@components/buttons/edit";
+import { TagDanger, TagSuccess } from "@components/tags/tags";
 import { useData } from "@hooks/useData";
 import { ControlProps } from "@interfaces/globales";
 import { Usuario } from "@interfaces/seguridad";
-import { Flex, Table, Tag, Tooltip } from "antd";
+import { Flex, Table, Tooltip } from "antd";
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 
@@ -44,10 +45,10 @@ export default function Listado(props: Pick<ControlProps, "filter">) {
             <Column title="C&oacute;digo Empleado" render={(record: Usuario) => (record.empleadoId)} />
             <Column title="Correo" dataIndex="correo" key="correo" />
             <Column title="Cambio Clave" render={(record: Usuario) => (
-                <Tag color={record.cambio ? '#87d068' : 'red'}>{record.cambio ? 'Si' : 'No'}</Tag>
+                record.cambio ? <TagSuccess text="Si" /> : <TagDanger text="No" />
             )} />
             <Column title="Estado" render={(record: Usuario) => (
-                <Tag color={record.activo ? '#87d068' : 'red'}>{record.activo ? 'Activo' : 'Inactivo'}</Tag>
+                record.activo ? <TagSuccess text="Activo" /> : <TagDanger text="Inactivo" />
             )} />
             <Column title="Acci&oacute;n" align="center" width={80} render={(record: Usuario) => (
                 <Tooltip title={`Editar el usuario (${record.acceso})`}>
