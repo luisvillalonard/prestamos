@@ -1,7 +1,8 @@
-import { Colors } from "@hooks/useConstants"
+import { Colors, Urls } from "@hooks/useConstants"
 import { useData } from "@hooks/useData"
 import { useIconos } from "@hooks/useIconos"
-import { Button, Flex, Layout, Popconfirm, Space, Tooltip, Typography } from "antd"
+import { Button, Flex, Layout, Popconfirm, Tooltip, Typography } from "antd"
+import { Link } from "react-router-dom"
 
 const HeaderApp = () => {
 
@@ -16,7 +17,7 @@ const HeaderApp = () => {
     width: '100%',
     display: 'flex',
     alignItems: 'center',
-    paddingLeft: 26, 
+    paddingLeft: 26,
     paddingRight: 26,
   }
 
@@ -24,10 +25,14 @@ const HeaderApp = () => {
     <Header style={headerStyle}>
       <Flex align="center" justify="space-between" style={{ width: '100%' }}>
         <Flex align="center" gap={20}>
-          <Space>
-            <Title level={2} style={{ margin: 0, color: 'rgba(255,255,255,0.8)' }}>SISTEMA</Title>
-            <Title level={2} style={{ margin: 0, color: Colors.Primary }}>PRUEBA</Title>
-          </Space>
+          <Tooltip title="Ir a la p&aacute;gina de inicio">
+            <Link to={Urls.Home}>
+              <Flex align="center" gap={10}>
+                <Title level={2} style={{ margin: 0, color: 'rgba(255,255,255,0.8)' }}>SISTEMA</Title>
+                <Title level={2} style={{ margin: 0, color: Colors.Primary }}>PRUEBA</Title>
+              </Flex>
+            </Link>
+          </Tooltip>
           <Button type="text" icon={<IconMenu style={{ fontSize: 24, color: Colors.White }} />} onClick={showMenu} />
         </Flex>
         <Flex align="center">

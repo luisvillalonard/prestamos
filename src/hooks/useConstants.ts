@@ -2,6 +2,7 @@ export const secretKey = 'D7B9F2FD64B04F18B4D1EC4869FC52BA';
 
 export const Urls = {
     Home: '/',
+    Dashboard: '/dashboard',
     Login: '/login',
     Clientes: {
         Base: 'clientes',

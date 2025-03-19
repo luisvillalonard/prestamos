@@ -1,6 +1,7 @@
 import { Urls } from '@hooks/useConstants'
 import FormCliente from '@pages/clientes/form'
 import PageClientes from '@pages/clientes/page'
+import PageDashboard from '@pages/dashboard/dash'
 import PageAcesores from '@pages/dataMaestra/acesores/page'
 import PageCiudades from '@pages/dataMaestra/ciudades/page'
 import PageDocumentosTipos from '@pages/dataMaestra/documentosTipos/page'
@@ -25,6 +26,7 @@ const RutasApp = () => {
     return (
         <Routes>
             <Route path={'/'} element={<PageHome />} />
+            <Route path={Urls.Dashboard} element={<PageDashboard />} />
             <Route path='*' element={<PageNotFound />} />
             <Route path={Urls.Login} element={<PageLogin />} />
             <Route path={Urls.Clientes.Base}>

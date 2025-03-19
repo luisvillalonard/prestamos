@@ -6,7 +6,7 @@ import { Col, Divider, Flex, Space, theme } from "antd"
 import { useState } from "react"
 import FormCiudades from "./form"
 import Listado from "./listado"
-import TitleOne from "@components/titles/titlePage"
+import TitlePage from "@components/titles/titlePage"
 import { Colors } from "@hooks/useConstants"
 
 export default function PageCiudades() {
@@ -18,7 +18,7 @@ export default function PageCiudades() {
     return (
         <>
             <Col span={18} offset={3}>
-                <TitleOne title="Ciudades" />
+                <TitlePage title="Ciudades" />
                 <Divider style={{ borderColor: Colors.Gris51 }} className='my-3' />
                 <Flex align="center" justify="space-between" className="mb-3">
                     <Space>
