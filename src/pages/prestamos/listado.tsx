@@ -1,5 +1,6 @@
 import { ButtonEdit } from "@components/buttons/edit"
 import { useData } from "@hooks/useData"
+import { FormatNumber } from "@hooks/useUtils"
 import { ControlProps } from "@interfaces/globales"
 import { Prestamo } from "@interfaces/prestamos"
 import { Flex, Table, Tag, Tooltip } from "antd"
@@ -43,9 +44,9 @@ export default function Listado(props: Pick<ControlProps, "filter">) {
             <Column title="Código" dataIndex="codigo" key="codigo" />
             <Column title="Fecha Cr&eacute;dito" render={(record: Prestamo) => (record.fechaCredito)} />
             <Column title="Cliente" render={(record: Prestamo) => (`${record.cliente?.nombres} ${record.cliente?.apellidos}`.trim())} />
-            <Column title="Monto" render={(record: Prestamo) => (record.deudaInicial)} />
-            <Column title="Capital" render={(record: Prestamo) => (record.capital)} />
-            <Column title="Inter&eacute;s" render={(record: Prestamo) => (record.interes)} />
+            <Column title="Monto" render={(record: Prestamo) => (FormatNumber(record.deudaInicial, 2))} />
+            <Column title="Capital" render={(record: Prestamo) => (FormatNumber(Math.round(record.cuotas.reduce((acc, item) => { return acc + item.capital }, 0)), 2))} />
+            <Column title="Inter&eacute;s" render={(record: Prestamo) => (FormatNumber(Math.round(record.cuotas.reduce((acc, item) => { return acc + item.interes }, 0)), 2))} />
             <Column title="M&eacute;todo de Pago" render={(record: Prestamo) => (record.metodoPago?.nombre)} />
             <Column title="Estado" align="center" render={(record: Prestamo) => (
                 <Tag

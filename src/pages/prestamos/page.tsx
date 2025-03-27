@@ -1,16 +1,16 @@
 import { ButtonPrimary } from "@components/buttons/primary"
+import { ButtonSuccess } from "@components/buttons/success"
 import Loading from "@components/containers/loading"
 import Searcher from "@components/inputs/searcher"
+import TitlePage from "@components/titles/titlePage"
 import { Colors, Urls } from "@hooks/useConstants"
 import { useData } from "@hooks/useData"
+import { exportarPrestamosExcel } from "@hooks/useFile"
+import { IconExcel } from "@hooks/useIconos"
 import { Col, Divider, Flex, Space, theme } from "antd"
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import Listado from "./listado"
-import TitlePage from "@components/titles/titlePage"
-import { ButtonSuccess } from "@components/buttons/success"
-import { exportarPrestamosExcel } from "@hooks/useFile"
-import { IconExcel } from "@hooks/useIconos"
 
 export default function PagePrestamos() {
 
@@ -20,7 +20,7 @@ export default function PagePrestamos() {
     const nav = useNavigate()
 
     const onNew = () => {
-        nav(`/${Urls.Prestamos.Base}/${Urls.Prestamos.Formulario.replace(':id', '0')}`);
+        nav(`/${Urls.Prestamos.Base}/${Urls.Prestamos.Formulario.replace(':codigo?', '')}`);
     }
 
     return (

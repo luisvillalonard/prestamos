@@ -1,7 +1,7 @@
 import { ButtonPrimary } from "@components/buttons/primary"
 import FormItem from "@components/forms/item"
 import InputDate from "@components/inputs/date"
-import { Urls } from "@hooks/useConstants"
+import { Colors, Urls } from "@hooks/useConstants"
 import { useData } from "@hooks/useData"
 import { useForm } from "@hooks/useForm"
 import { IconSearch, useIconos } from "@hooks/useIconos"
@@ -9,8 +9,8 @@ import { Alerta, Exito } from "@hooks/useMensaje"
 import { FormatDate_DDMMYYYY, FormatNumber } from "@hooks/useUtils"
 import { Cliente } from "@interfaces/clientes"
 import { Prestamo, PrestamoCuota } from "@interfaces/prestamos"
-import { Button, Col, Divider, Flex, Form, Input, InputNumber, InputRef, List, message, Row, Select, Space, Tag, theme, Typography } from "antd"
-import { useEffect, useRef } from "react"
+import { Alert, Button, Col, Divider, Flex, Form, Input, InputNumber, InputRef, List, message, Row, Select, Space, Tag, theme, Typography } from "antd"
+import { useEffect, useRef, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import PrestamoCuotas from "./cuotas"
 
@@ -18,7 +18,7 @@ export default function FormPrestamo() {
 
     const {
         contextClientes: { porCodigo },
-        contextPrestamos: { state: { modelo }, nuevo, agregar, actualizar },
+        contextPrestamos: { state: { modelo }, nuevo, agregar },
         contextPrestamosEstados: { state: { datos: estados }, todos: cargarEstados },
         contextFormasPago: { state: { datos: formasPago }, todos: cargarFormasPago },
         contextMetodosPago: { state: { datos: metodosPago }, todos: cargarMetodosPago },
@@ -26,13 +26,13 @@ export default function FormPrestamo() {
         contextAcesores: { state: { datos: acesores }, todos: cargarAcesores },
     } = useData()
     const { entidad, editar } = useForm<Prestamo | undefined>(modelo)
+    const [errores, setErrores] = useState<string[]>([])
     const [messageApi, contextHolder] = message.useMessage()
     const searchRef = useRef<InputRef>(null)
     const { IconCalculator } = useIconos()
     const { token } = theme.useToken()
+    const { codigo } = useParams()
     const nav = useNavigate()
-    const { Title } = Typography
-    const { id } = useParams()
 
     const cargarAuxiliares = async () => await Promise.all([
         cargarFormasPago(),
@@ -86,19 +86,24 @@ export default function FormPrestamo() {
 
         if (entidad.deudaInicial && entidad.interes && entidad.cantidadCuotas) {
 
-            const porcientoInteres = (entidad.interes / 100)
-            const capitalCuota = Number(Number((entidad.deudaInicial / entidad.cantidadCuotas) * porcientoInteres).toFixed(2))
-            const interesCuota = Number(Number(entidad.deudaInicial * porcientoInteres).toFixed(2))
+            const porcientoInteres = (entidad.interes / 100);
+            const totalIntereses = entidad.deudaInicial * porcientoInteres;
+            const interesCuota = Number(Number(totalIntereses / entidad.cantidadCuotas).toFixed(2))
+            const capitalCuota = Number((entidad.deudaInicial / entidad.cantidadCuotas).toFixed(2))
+            let saldoFinal: number = entidad.deudaInicial;
 
             const cuotas = Array.from(Array(entidad.cantidadCuotas).keys()).map(() => {
 
+                saldoFinal = Number((saldoFinal - capitalCuota).toFixed(2));
                 return {
-                    fechaPago: FormatDate_DDMMYYYY(new Date().toISOString().substring(0, 10)),
+                    fechaPago: entidad.fechaCredito,
                     deudaInicial: entidad.deudaInicial,
                     capital: capitalCuota,
-                    interes: interesCuota / 2, // dividir aqui entre las formas de pago
-                    saldoFinal: capitalCuota + (interesCuota / 2),
+                    interes: interesCuota, // dividir aqui entre las formas de pago
+                    amortizacion: Number((interesCuota + capitalCuota).toFixed(2)),
+                    saldoFinal,
                 } as PrestamoCuota
+
             });
             editar({
                 ...entidad,
@@ -109,27 +114,48 @@ export default function FormPrestamo() {
 
     }
 
+    const validaPrestamo = () => {
+
+        if (!entidad) return false;
+
+        const alertas: string[] = [];
+
+        if (!entidad.cliente) alertas.push('Debe establecer el cliente del prestamo.');
+        if (entidad.cuotas.length === 0) alertas.push('Debe calcular las cuotas del prestamo.');
+
+        setErrores(alertas);
+        return alertas.length === 0;
+    }
+
     const guardar = async () => {
 
+        //console.log('prestamo', entidad)
         if (entidad) {
 
-            let resp;
+            if (!validaPrestamo()) return;
+
+            let estado;
             const esNuevo = entidad.id === 0;
             if (esNuevo) {
-                const estado = estados.filter(est => est.inicial).shift();
+                estado = estados.filter(est => est.inicial).shift();
                 if (!estado) {
                     Alerta('Estado inicial no encontrado. Debe configurarse en Data Maestra un estado de prestamo como inicial.');
                     return;
                 }
+            }
 
-                resp = await agregar({ ...entidad, estado: estado });
-            } else {
-                resp = await actualizar(entidad);
+            let resp;
+            try {
+                resp = await agregar({ ...entidad, estado: estado, fechaRegistro: FormatDate_DDMMYYYY(new Date().toISOString().substring(0, 10))! });
+            } catch (error: any) {
+                Alerta(error.message || 'Situación inesperada tratando de guardar los datos del prestamo.');
             }
 
             if (!resp) {
+                editar(entidad);
                 Alerta('Situación inesperada tratando de guardar los datos del prestamo.');
             } else if (!resp.ok) {
+                editar(entidad);
                 Alerta(resp.mensaje || 'Situación inesperada tratando de guardar los datos del prestamo.');
             } else {
                 Exito(
@@ -144,24 +170,40 @@ export default function FormPrestamo() {
 
     useEffect(() => { cargarAuxiliares() }, [])
     useEffect(() => {
-        if (!id || Number(id) === 0) {
+        if (!codigo || !Number(codigo)) {
             nuevo()
         }
-    }, [id])
+    }, [codigo])
     useEffect(() => { editar(modelo) }, [modelo])
+    useEffect(() => { searchRef && searchRef.current && searchRef.current.focus() }, [searchRef])
 
     return (
         <Col xl={{ span: 20, offset: 2 }} lg={{ span: 24 }} md={{ span: 24 }} xs={{ span: 24 }}>
 
             <Flex align="center" justify="space-between">
-                <Title level={3} style={{ fontWeight: 'bolder', marginBottom: 0, color: token.colorPrimary }}>
+                <Typography.Title level={3} style={{ fontWeight: 'bolder', marginBottom: 0, color: token.colorPrimary }}>
                     Formulario de C&aacute;lculo y Registro de Prestamo
-                </Title>
+                </Typography.Title>
                 <ButtonPrimary size="large" htmlType="submit" form="FormPrestamo">
                     {entidad && entidad.id > 0 ? 'Actualizar' : 'Guardar'}
                 </ButtonPrimary>
             </Flex>
             <Divider className='my-3' />
+
+            {
+                errores.length === 0
+                    ? <></>
+                    :
+                    <Alert
+                        type="error"
+                        closable={false}
+                        showIcon
+                        description={errores.length === 0 ? <></> : <ul className="m-0 ps-3">{errores.map(err => <li>{err}</li>)}</ul>}
+                        message={<h1 className="fs-5" style={{ color: Colors.Danger }}>Alerta</h1>}
+                        className="mb-3"
+                        style={{ borderLeftWidth: 6, borderLeftColor: Colors.Danger }}
+                    />
+            }
 
             <Form
                 name="FormPrestamo"
@@ -181,7 +223,7 @@ export default function FormPrestamo() {
                 <Row gutter={[20, 30]}>
 
                     <Col lg={8} md={8} sm={24} xs={24}>
-                        <Title level={4} style={{ fontWeight: 'bolder' }}>Datos del Cliente</Title>
+                        <Typography.Title level={4} style={{ fontWeight: 'bolder' }}>Datos del Cliente</Typography.Title>
                         <Divider className="my-1 mb-2" />
 
                         <Flex vertical style={{ position: 'relative' }}>
@@ -221,9 +263,9 @@ export default function FormPrestamo() {
 
                     <Col lg={16} md={16} sm={24} xs={24}>
                         <Flex align="center" justify="space-between">
-                            <Title level={4} style={{ fontWeight: 'bolder' }}>Datos del Prestamo</Title>
+                            <Typography.Title level={4} style={{ fontWeight: 'bolder' }}>Datos del Prestamo</Typography.Title>
                             <Space>
-                                <Title level={5} style={{ fontWeight: 'bolder', margin: 0 }}>C&oacute;digo</Title>
+                                <Typography.Title level={5} style={{ fontWeight: 'bolder', margin: 0 }}>C&oacute;digo</Typography.Title>
                                 <Tag color='blue' style={{ fontWeight: 'bolder', fontSize: 16, borderRadius: 10 }}>{entidad?.codigo || 'P-000000'}</Tag>
                             </Space>
                         </Flex>
@@ -244,11 +286,11 @@ export default function FormPrestamo() {
                                 </FormItem>
                             </Col>
                             <Col xl={6} lg={6} md={8} sm={24} xs={24}>
-                                <FormItem name="interes" label="Interes Mensual" rules={[{ required: true, message: 'Obligatorio' }]}>
+                                <FormItem name="interes" label="Interes (%)" rules={[{ required: true, message: 'Obligatorio' }]}>
                                     <InputNumber
                                         name="interes"
                                         value={entidad?.interes}
-                                        addonBefore="%"
+                                        style={{ width: '100%' }}
                                         onChange={(value) => {
                                             if (entidad && value) {
                                                 editar({ ...entidad, interes: value })
@@ -336,12 +378,12 @@ export default function FormPrestamo() {
                             </Col>
                             <Col xl={6} lg={6} md={6} sm={24} xs={24}>
                                 <FormItem label="Monto Cuota">
-                                    <Input disabled value={FormatNumber(0, 2)} />
+                                    <Input disabled value={FormatNumber(!entidad || !entidad.deudaInicial || !entidad.cantidadCuotas ? 0 : (entidad.deudaInicial / entidad.cantidadCuotas), 2)} />
                                 </FormItem>
                             </Col>
                             <Col xl={6} lg={6} md={6} sm={24} xs={24}>
                                 <FormItem label="Total Interes">
-                                    <Input disabled value={FormatNumber(0, 2)} />
+                                    <Input disabled value={FormatNumber(!entidad || !entidad.deudaInicial || !entidad.interes ? 0 : (entidad.deudaInicial * (entidad.interes / 100)), 2)} />
                                 </FormItem>
                             </Col>
                             <Col xl={6} lg={6} md={6} sm={24} xs={24}>
@@ -354,7 +396,7 @@ export default function FormPrestamo() {
 
                     <Col xs={24}>
                         <Flex align="center" justify="space-between">
-                            <Title level={4} style={{ fontWeight: 'bolder' }}>Informaci&oacute;n de Cr&eacute;dito</Title>
+                            <Typography.Title level={4} style={{ fontWeight: 'bolder' }}>Informaci&oacute;n de Cr&eacute;dito</Typography.Title>
                             <ButtonPrimary size="middle" icon={<IconCalculator />} onClick={calcularCuotas}>Calcular</ButtonPrimary>
                         </Flex>
                         <Divider className="my-1 mb-2" />

@@ -85,7 +85,7 @@ export default function LoginForm(props: Pick<ControlProps, "onChange">) {
                 <FormItem>
                     <Flex justify="space-between" align="center">
                         <Form.Item name="recuerdame" valuePropName="checked" noStyle>
-                            <Checkbox value={user.recuerdame}>Recuerdame</Checkbox>
+                            <Checkbox value={user.recuerdame} disabled={procesando}>Recuerdame</Checkbox>
                         </Form.Item>
                     </Flex>
                 </FormItem>

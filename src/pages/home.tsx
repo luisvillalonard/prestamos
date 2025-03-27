@@ -1,20 +1,19 @@
-import { useData } from "@hooks/useData"
-import PageDashboard from "./dashboard/dash"
-import { Outlet } from "react-router-dom"
+import { Flex } from "antd";
 
 export default function PageHome() {
 
-    const { contextAuth: { state: { user } } } = useData()
+    /* const { contextAuth: { state: { user } } } = useData()
 
     if (!user) {
         return <Outlet />
     } else if (user.rol?.esAdmin) {
         return <PageDashboard />
-    }
-    
+    } */
+
     return (
-        <div>
-            <h1>Home Page</h1>
-        </div>
+        <Flex vertical align="center" justify="center" className="h-100">
+            <h1 className="display-2">Bienvenido(a),</h1>
+            <h1 className="fs-2">Bienvenido(a),</h1>
+        </Flex>
     )
 }

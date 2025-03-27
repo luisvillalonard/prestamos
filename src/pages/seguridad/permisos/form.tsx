@@ -12,7 +12,7 @@ import { Alerta, Exito } from "@hooks/useMensaje"
 import { MenuItem, Permiso, Rol } from "@interfaces/seguridad"
 import { Avatar, Col, Divider, Flex, Form, Input, List, Row, Space, Switch } from "antd"
 import { useEffect } from "react"
-import { useNavigate } from "react-router-dom"
+import { Outlet, useNavigate } from "react-router-dom"
 
 export default function FormPermisos() {
 
@@ -91,7 +91,7 @@ export default function FormPermisos() {
     useEffect(() => { editar(modelo) }, [modelo])
 
     if (!entidad) {
-        return <></>
+        return <Outlet />
     }
 
     return (
