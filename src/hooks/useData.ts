@@ -1,5 +1,6 @@
 import { ContextsProviders } from "@components/providers/contexts";
 import ClientesProvider, { ClienteContextState, ClientesContext } from "@contexts/clientes/cliente";
+import ConfiguracionesGeneralesProvider, { ConfiguracionesGeneralesContext, ConfiguracionesGeneralesContextState } from "@contexts/configuraciones/general";
 import AcesoresProvider, { AcesoresContext } from "@contexts/dataMaestra/acesores";
 import CiudadesProvider, { CiudadesContext } from "@contexts/dataMaestra/ciudades";
 import DocumentosTiposProvider, { DocumentosTiposContext } from "@contexts/dataMaestra/documentosTipo";
@@ -16,6 +17,7 @@ import PermisosProvider, { PermisosContext, PermisosContextState } from "@contex
 import RolesProvider, { RolesContext } from "@contexts/seguridad/roles";
 import UsuariosProvider, { UsuariosContext, UsuariosContextState } from "@contexts/seguridad/usuarios";
 import { Cliente } from "@interfaces/clientes";
+import { Configuracion } from "@interfaces/configuraciones";
 import { Acesor, Ciudad, DocumentoTipo, FormaPago, MetodoPago, Moneda, Ocupacion, PrestamoEstado, Sexo } from "@interfaces/dataMaestra";
 import { Prestamo, PrestamoPago } from "@interfaces/prestamos";
 import { Rol, Usuario } from "@interfaces/seguridad";
@@ -48,6 +50,9 @@ export const ContextsProvidersTree = ContextsProviders([
     [UsuariosProvider, {}],
     [PermisosProvider, {}],
 
+    /* Configuraciones */
+    [ConfiguracionesGeneralesProvider, {}],
+
 ]);
 
 export const useData = () => {
@@ -76,6 +81,9 @@ export const useData = () => {
     const contextUsuarios = useContext(UsuariosContext) as UsuariosContextState<Usuario>;
     const contextPermisos = useContext(PermisosContext) as PermisosContextState<Rol>;
 
+    /* Configuraciones */
+    const contextConfiguracionesGenerales = useContext(ConfiguracionesGeneralesContext) as ConfiguracionesGeneralesContextState<Configuracion>;
+
     return {
 
         /* Clientes */
@@ -101,6 +109,9 @@ export const useData = () => {
         contextRoles,
         contextUsuarios,
         contextPermisos,
+
+        /* Configuraciones */
+        contextConfiguracionesGenerales,
 
     }
 

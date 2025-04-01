@@ -6,7 +6,7 @@ import { useData } from "@hooks/useData"
 import { useForm } from "@hooks/useForm"
 import { IconSearch, useIconos } from "@hooks/useIconos"
 import { Alerta, Exito } from "@hooks/useMensaje"
-import { FormatDate_DDMMYYYY, FormatNumber } from "@hooks/useUtils"
+import { FormatNumber } from "@hooks/useUtils"
 import { Cliente } from "@interfaces/clientes"
 import { Prestamo, PrestamoCuota } from "@interfaces/prestamos"
 import { Alert, Button, Col, Divider, Flex, Form, Input, InputNumber, InputRef, List, message, Row, Select, Space, Tag, theme, Typography } from "antd"
@@ -19,7 +19,7 @@ export default function FormPrestamo() {
     const {
         contextClientes: { porCodigo },
         contextPrestamos: { state: { modelo }, nuevo, agregar },
-        contextPrestamosEstados: { state: { datos: estados }, todos: cargarEstados },
+        contextPrestamosEstados: { todos: cargarEstados },
         contextFormasPago: { state: { datos: formasPago }, todos: cargarFormasPago },
         contextMetodosPago: { state: { datos: metodosPago }, todos: cargarMetodosPago },
         contextMonedas: { state: { datos: monedas }, todos: cargarMonedas },
@@ -27,6 +27,9 @@ export default function FormPrestamo() {
     } = useData()
     const { entidad, editar } = useForm<Prestamo | undefined>(modelo)
     const [errores, setErrores] = useState<string[]>([])
+    const [montoCapitalCuota, setMontoCapitalCuota] = useState<number>(0)
+    const [montoTotalInteres, setMontoTotalInteres] = useState<number>(0)
+    const [montoAmortizacion, setMontoAmortizacion] = useState<number>(0)
     const [messageApi, contextHolder] = message.useMessage()
     const searchRef = useRef<InputRef>(null)
     const { IconCalculator } = useIconos()
@@ -86,11 +89,15 @@ export default function FormPrestamo() {
 
         if (entidad.deudaInicial && entidad.interes && entidad.cantidadCuotas) {
 
-            const porcientoInteres = (entidad.interes / 100);
-            const totalIntereses = entidad.deudaInicial * porcientoInteres;
-            const interesCuota = Number(Number(totalIntereses / entidad.cantidadCuotas).toFixed(2))
-            const capitalCuota = Number((entidad.deudaInicial / entidad.cantidadCuotas).toFixed(2))
             let saldoFinal: number = entidad.deudaInicial;
+            const totalIntereses = entidad.deudaInicial * (entidad.interes / 100);
+            setMontoTotalInteres(totalIntereses);
+
+            const capitalCuota = Number((entidad.deudaInicial / entidad.cantidadCuotas).toFixed(2));
+            setMontoCapitalCuota(capitalCuota);
+
+            const interesCuota = Number(Number(totalIntereses / entidad.cantidadCuotas).toFixed(2))
+            setMontoAmortizacion(capitalCuota + interesCuota);
 
             const cuotas = Array.from(Array(entidad.cantidadCuotas).keys()).map(() => {
 
@@ -101,7 +108,7 @@ export default function FormPrestamo() {
                     capital: capitalCuota,
                     interes: interesCuota, // dividir aqui entre las formas de pago
                     amortizacion: Number((interesCuota + capitalCuota).toFixed(2)),
-                    saldoFinal,
+                    saldoFinal: saldoFinal < 0 ? 0 : saldoFinal,
                 } as PrestamoCuota
 
             });
@@ -120,8 +127,11 @@ export default function FormPrestamo() {
 
         const alertas: string[] = [];
 
-        if (!entidad.cliente) alertas.push('Debe establecer el cliente del prestamo.');
-        if (entidad.cuotas.length === 0) alertas.push('Debe calcular las cuotas del prestamo.');
+        if (!entidad.cliente || !entidad.cliente.id || entidad.cliente.id <= 0)
+            alertas.push('Debe establecer el cliente del prestamo.');
+
+        if (entidad.cuotas.length === 0)
+            alertas.push('Debe calcular las cuotas del prestamo.');
 
         setErrores(alertas);
         return alertas.length === 0;
@@ -129,52 +139,43 @@ export default function FormPrestamo() {
 
     const guardar = async () => {
 
-        //console.log('prestamo', entidad)
-        if (entidad) {
+        console.log('prestamo', entidad);
 
-            if (!validaPrestamo()) return;
+        if (!entidad) {
+            Alerta('Debe completar los campos obligatorios del formulario antes de guardar.');
+            return;
+        }
+        if (!validaPrestamo()) return;
 
-            let estado;
-            const esNuevo = entidad.id === 0;
-            if (esNuevo) {
-                estado = estados.filter(est => est.inicial).shift();
-                if (!estado) {
-                    Alerta('Estado inicial no encontrado. Debe configurarse en Data Maestra un estado de prestamo como inicial.');
-                    return;
-                }
-            }
+        let resp;
+        try {
+            resp = await agregar(entidad);
+        } catch (error: any) {
+            Alerta(error.message || 'Situación inesperada tratando de guardar los datos del prestamo.');
+        }
 
-            let resp;
-            try {
-                resp = await agregar({ ...entidad, estado: estado, fechaRegistro: FormatDate_DDMMYYYY(new Date().toISOString().substring(0, 10))! });
-            } catch (error: any) {
-                Alerta(error.message || 'Situación inesperada tratando de guardar los datos del prestamo.');
-            }
-
-            if (!resp) {
-                editar(entidad);
-                Alerta('Situación inesperada tratando de guardar los datos del prestamo.');
-            } else if (!resp.ok) {
-                editar(entidad);
-                Alerta(resp.mensaje || 'Situación inesperada tratando de guardar los datos del prestamo.');
-            } else {
-                Exito(
-                    `Préstamo ${esNuevo ? 'registrado' : 'actualizado'}  exitosamente!`,
-                    () => nav(`/${Urls.Prestamos.Base}/${Urls.Prestamos.Registrados}`)
-                );
-            }
-
+        if (!resp) {
+            editar(entidad);
+            Alerta('Situación inesperada tratando de guardar los datos del prestamo.');
+        } else if (!resp.ok) {
+            editar(entidad);
+            Alerta(resp.mensaje || 'Situación inesperada tratando de guardar los datos del prestamo.');
+        } else {
+            Exito(
+                'Préstamo registrado exitosamente!',
+                () => nav(`/${Urls.Prestamos.Base}/${Urls.Prestamos.Registrados}`)
+            );
         }
 
     }
 
-    useEffect(() => { cargarAuxiliares() }, [])
+    useEffect(() => { if (!codigo || !Number(codigo)) nuevo() }, [])
     useEffect(() => {
-        if (!codigo || !Number(codigo)) {
-            nuevo()
+        editar(modelo);
+        if (modelo) {
+            cargarAuxiliares()
         }
-    }, [codigo])
-    useEffect(() => { editar(modelo) }, [modelo])
+    }, [modelo])
     useEffect(() => { searchRef && searchRef.current && searchRef.current.focus() }, [searchRef])
 
     return (
@@ -198,7 +199,7 @@ export default function FormPrestamo() {
                         type="error"
                         closable={false}
                         showIcon
-                        description={errores.length === 0 ? <></> : <ul className="m-0 ps-3">{errores.map(err => <li>{err}</li>)}</ul>}
+                        description={errores.length === 0 ? <></> : <ul className="m-0 ps-3">{errores.map((err, indexKey) => <li key={indexKey}>{err}</li>)}</ul>}
                         message={<h1 className="fs-5" style={{ color: Colors.Danger }}>Alerta</h1>}
                         className="mb-3"
                         style={{ borderLeftWidth: 6, borderLeftColor: Colors.Danger }}
@@ -212,11 +213,11 @@ export default function FormPrestamo() {
                 size="large"
                 disabled={false}
                 initialValues={{
-                    ...modelo,
-                    formaPagoId: modelo?.formaPago?.id,
-                    metodoPagoId: modelo?.metodoPago?.id,
-                    monedaId: modelo?.moneda?.id,
-                    acesorId: modelo?.acesor?.id,
+                    ...entidad,
+                    formaPagoId: entidad?.formaPago?.id,
+                    metodoPagoId: entidad?.metodoPago?.id,
+                    monedaId: entidad?.moneda?.id,
+                    acesorId: entidad?.acesor?.id,
                 }}
                 onFinish={guardar}>
 
@@ -378,17 +379,17 @@ export default function FormPrestamo() {
                             </Col>
                             <Col xl={6} lg={6} md={6} sm={24} xs={24}>
                                 <FormItem label="Monto Cuota">
-                                    <Input disabled value={FormatNumber(!entidad || !entidad.deudaInicial || !entidad.cantidadCuotas ? 0 : (entidad.deudaInicial / entidad.cantidadCuotas), 2)} />
+                                    <Input disabled value={FormatNumber(montoCapitalCuota, 2)} />
                                 </FormItem>
                             </Col>
                             <Col xl={6} lg={6} md={6} sm={24} xs={24}>
                                 <FormItem label="Total Interes">
-                                    <Input disabled value={FormatNumber(!entidad || !entidad.deudaInicial || !entidad.interes ? 0 : (entidad.deudaInicial * (entidad.interes / 100)), 2)} />
+                                    <Input disabled value={FormatNumber(montoTotalInteres, 2)} />
                                 </FormItem>
                             </Col>
                             <Col xl={6} lg={6} md={6} sm={24} xs={24}>
                                 <FormItem label="Monto a Pagar">
-                                    <Input disabled value={FormatNumber(0, 2)} />
+                                    <Input disabled value={FormatNumber(montoAmortizacion, 2)} />
                                 </FormItem>
                             </Col>
                         </Row>

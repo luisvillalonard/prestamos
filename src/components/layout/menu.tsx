@@ -1,6 +1,6 @@
 import { Urls } from '@hooks/useConstants'
 import { useData } from '@hooks/useData'
-import { IconClient, IconConfig, IconForm, IconListNumbered, IconLoans, IconReceiveMoney, IconUser, IconUserPermission, IconUserShield } from '@hooks/useIconos'
+import { IconClient, IconConfig, IconForm, IconListNumbered, IconListPoint, IconLoans, IconReceiveMoney, IconUser, IconUserPermission, IconUserShield } from '@hooks/useIconos'
 import { MenuItem } from '@interfaces/seguridad'
 import { Layout, Menu, MenuProps } from 'antd'
 import { useEffect, useState } from 'react'
@@ -42,16 +42,16 @@ export const menuItems: MenuItem[] = [
         menuid: 30,
         key: Urls.DataMaestra.Base,
         label: <span style={headerStyle}>Data Maestra</span>,
-        icon: <IconConfig />,
+        icon: <IconListPoint />,
         children: [
-            { menuid: 31, key: `${Urls.DataMaestra.Base}/${Urls.DataMaestra.Ciudades}`, label: 'Ciudades', icon: <IconConfig /> },
-            { menuid: 32, key: `${Urls.DataMaestra.Base}/${Urls.DataMaestra.DocumentosTipos}`, label: 'Tipos de Documentos', icon: <IconConfig /> },
-            { menuid: 33, key: `${Urls.DataMaestra.Base}/${Urls.DataMaestra.FormasPago}`, label: 'Formas de Pago', icon: <IconConfig /> },
-            { menuid: 34, key: `${Urls.DataMaestra.Base}/${Urls.DataMaestra.MetodosPago}`, label: 'Métodos de Pago', icon: <IconConfig /> },
-            { menuid: 35, key: `${Urls.DataMaestra.Base}/${Urls.DataMaestra.Monedas}`, label: 'Tipo de Monedas', icon: <IconConfig /> },
-            { menuid: 36, key: `${Urls.DataMaestra.Base}/${Urls.DataMaestra.Ocupaciones}`, label: 'Ocupaciones', icon: <IconConfig /> },
-            { menuid: 37, key: `${Urls.DataMaestra.Base}/${Urls.DataMaestra.PrestamosEstados}`, label: 'Estados de Prestamos', icon: <IconConfig /> },
-            { menuid: 38, key: `${Urls.DataMaestra.Base}/${Urls.DataMaestra.Acesores}`, label: 'Acesores', icon: <IconConfig /> },
+            { menuid: 31, key: `${Urls.DataMaestra.Base}/${Urls.DataMaestra.Ciudades}`, label: 'Ciudades', icon: <IconListPoint /> },
+            { menuid: 32, key: `${Urls.DataMaestra.Base}/${Urls.DataMaestra.DocumentosTipos}`, label: 'Tipos de Documentos', icon: <IconListPoint /> },
+            { menuid: 33, key: `${Urls.DataMaestra.Base}/${Urls.DataMaestra.FormasPago}`, label: 'Formas de Pago', icon: <IconListPoint /> },
+            { menuid: 34, key: `${Urls.DataMaestra.Base}/${Urls.DataMaestra.MetodosPago}`, label: 'Métodos de Pago', icon: <IconListPoint /> },
+            { menuid: 35, key: `${Urls.DataMaestra.Base}/${Urls.DataMaestra.Monedas}`, label: 'Tipo de Monedas', icon: <IconListPoint /> },
+            { menuid: 36, key: `${Urls.DataMaestra.Base}/${Urls.DataMaestra.Ocupaciones}`, label: 'Ocupaciones', icon: <IconListPoint /> },
+            { menuid: 37, key: `${Urls.DataMaestra.Base}/${Urls.DataMaestra.PrestamosEstados}`, label: 'Estados de Prestamos', icon: <IconListPoint /> },
+            { menuid: 38, key: `${Urls.DataMaestra.Base}/${Urls.DataMaestra.Acesores}`, label: 'Acesores', icon: <IconListPoint /> },
         ],
     },
     {
@@ -62,6 +62,15 @@ export const menuItems: MenuItem[] = [
         children: [
             { menuid: 41, key: `${Urls.Seguridad.Base}/${Urls.Seguridad.Permisos}`, label: 'Roles y Permisos', icon: <IconUserShield /> },
             { menuid: 42, key: `${Urls.Seguridad.Base}/${Urls.Seguridad.Usuarios}`, label: 'Usuarios', icon: <IconUser /> },
+        ],
+    },
+    {
+        menuid: 50,
+        key: Urls.Configuraciones.Base,
+        label: <span style={headerStyle}>Configuraciones</span>,
+        icon: <IconConfig />,
+        children: [
+            { menuid: 51, key: `${Urls.Configuraciones.Base}/${Urls.Configuraciones.Generales}`, label: 'Generales', icon: <IconConfig /> },
         ],
     },
 ]

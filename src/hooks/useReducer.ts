@@ -1,7 +1,7 @@
 import { Reducer, useReducer } from "react";
+import { ResponseResult } from "../interfaces/globales";
 import reducer, { ACTIONS, ACTIONTYPES, initState, State } from "../reducers/global";
 import { useFetch } from "./useFetch";
-import { ResponseResult } from "../interfaces/globales";
 
 export function useReducerHook<T extends unknown>(urlBase: string) {
     const [state, dispatch] = useReducer<Reducer<State<T>, ACTIONTYPES<T>>>(reducer, initState<T>());
@@ -44,6 +44,7 @@ export function useReducerHook<T extends unknown>(urlBase: string) {
     }
 
     const todos = async (): Promise<void> => {
+
         dispatch({ type: ACTIONS.FETCHING });
         let resp: ResponseResult<T[]>;
 

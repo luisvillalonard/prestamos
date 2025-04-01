@@ -1,6 +1,7 @@
 import { Urls } from '@hooks/useConstants'
 import FormCliente from '@pages/clientes/form'
 import PageClientes from '@pages/clientes/page'
+import PageConfiguraiones from '@pages/configuraciones/page'
 import PageDashboard from '@pages/dashboard/dash'
 import PageAcesores from '@pages/dataMaestra/acesores/page'
 import PageCiudades from '@pages/dataMaestra/ciudades/page'
@@ -52,6 +53,9 @@ const RutasApp = () => {
                 <Route path={Urls.Seguridad.Permisos} element={<PagePermisos />} />
                 <Route path={Urls.Seguridad.PermisosFormulario} element={<FormPermisos />} />
                 <Route path={Urls.Seguridad.Usuarios} element={<PageUsuarios />} />
+            </Route>
+            <Route path={Urls.Configuraciones.Base}>
+                <Route path={Urls.Configuraciones.Generales} element={<PageConfiguraiones />} />
             </Route>
         </Routes>
     )

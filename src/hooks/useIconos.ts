@@ -12,6 +12,7 @@ import { FaRegAddressCard, FaUserShield } from "react-icons/fa6"
 import { GiReceiveMoney, GiTakeMyMoney } from "react-icons/gi"
 import { GoChecklist } from "react-icons/go"
 import { HiOutlineCog6Tooth, HiOutlineUsers } from "react-icons/hi2"
+import { IoIosList } from "react-icons/io"
 import { IoShieldCheckmarkOutline } from "react-icons/io5"
 import { LuCalculator } from "react-icons/lu"
 import { MdOutlineFormatListNumbered, MdOutlinePassword } from "react-icons/md"
@@ -25,6 +26,7 @@ export const IconEdit = EditOutlined;
 export const IconExcel = PiMicrosoftExcelLogoFill;
 export const IconForm = CiViewList;
 export const IconListNumbered = MdOutlineFormatListNumbered;
+export const IconListPoint = IoIosList;
 export const IconLoading = LoadingOutlined;
 export const IconLock = LockOutlined;
 export const IconLoans = GiTakeMyMoney;

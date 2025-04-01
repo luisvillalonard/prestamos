@@ -14,12 +14,14 @@ export default function PrestamosProvider(props: Pick<ControlProps, "children">)
     const { state, editar, cancelar, agregar, actualizar, todos } = useReducerHook<Prestamo>(Urls.Prestamos.Base);
 
     const nuevo = async (): Promise<void> => {
+        const diaActual: string = FormatDate_DDMMYYYY(new Date().toISOString().substring(0, 10))!;
+
         editar({
             id: 0,
             codigo: '',
             cliente: undefined,
-            fechaRegistro: FormatDate_DDMMYYYY(new Date().toISOString().substring(0, 10))!,
-            fechaCredito: FormatDate_DDMMYYYY(new Date().toISOString().substring(0, 10))!,
+            fechaRegistro: diaActual,
+            fechaCredito: diaActual,
             formaPago: undefined,
             metodoPago: undefined,
             moneda: undefined,

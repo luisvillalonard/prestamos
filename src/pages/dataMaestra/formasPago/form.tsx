@@ -3,8 +3,8 @@ import FormItem from "@components/forms/item"
 import { useData } from "@hooks/useData"
 import { useForm } from "@hooks/useForm"
 import { Alerta, Exito } from "@hooks/useMensaje"
-import { FormaPago } from "@interfaces/dataMaestra"
-import { Input } from "antd"
+import { FormaPago, FormaPagoFecha } from "@interfaces/dataMaestra"
+import { Input, Select } from "antd"
 import { useEffect } from "react"
 
 export default function FormFormaPago() {
@@ -51,6 +51,25 @@ export default function FormFormaPago() {
             onClose={cancelar}>
             <FormItem name="nombre" label="Nombre" rules={[{ required: true, message: 'Obligatorio' }]}>
                 <Input name="nombre" maxLength={150} value={entidad?.nombre || ''} onChange={handleChangeInput} />
+            </FormItem>
+            <FormItem label="D&iacute;as" rules={[{ required: true, message: 'Obligatorio' }]}>
+                <Select
+                    mode="multiple"
+                    allowClear
+                    style={{ width: '100%' }}
+                    placeholder="seleccione los d&iacute;as"
+                    defaultValue={entidad.dias.map(item => item.dia)}
+                    onChange={(valores: number[]) => {
+                        editar({
+                            ...entidad,
+                            dias: valores.map(valor => ({
+                                formaPagoId: entidad.id,
+                                dia: valor,
+                            } as FormaPagoFecha))
+                        })
+                    }}
+                    options={Array.from(Array(31).keys()).map((dia) => ({ key: dia, value: dia + 1, label: dia + 1 }))}
+                />
             </FormItem>
         </FormModal>
     )

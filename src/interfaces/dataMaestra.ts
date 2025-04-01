@@ -7,7 +7,15 @@ export interface Ciudad extends DataMaestraBase { }
 
 export interface DocumentoTipo extends DataMaestraBase { }
 
-export interface FormaPago extends DataMaestraBase { }
+export interface FormaPago extends DataMaestraBase {
+    dias: FormaPagoFecha[],
+}
+
+export interface FormaPagoFecha {
+    id: number,
+    formaPagoId: number,
+    dia: number,
+}
 
 export interface MetodoPago extends DataMaestraBase { }
 

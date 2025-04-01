@@ -36,6 +36,10 @@ export const Urls = {
         Sexos: 'sexos',
         Acesores: 'acesores',
     },
+    Configuraciones: {
+        Base: 'configuraciones',
+        Generales: 'generales',
+    }
 }
 
 export const Colors = {
