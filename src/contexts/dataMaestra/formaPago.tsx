@@ -1,7 +1,7 @@
 import { Urls } from "@hooks/useConstants"
 import { useReducerHook } from "@hooks/useReducer"
-import { ControlProps } from "@interfaces/globales"
 import { FormaPago } from "@interfaces/dataMaestra"
+import { ControlProps } from "@interfaces/globales"
 import { GlobalContextState } from "@reducers/global"
 import { createContext } from "react"
 
@@ -16,6 +16,7 @@ export default function FormasPagoProvider(props: Pick<ControlProps, "children">
         editar({
             id: 0,
             nombre: '',
+            dias: [],
         });
     }
 
