@@ -22,7 +22,7 @@ export const getParamsUrlToString = (params: RequestFilter | null | undefined) =
     if (searchParams.length === 0)
         return '';
 
-    return '?' + searchParams.toString();
+    return `?${searchParams.toString()}`;
 }
 
 export const FormatDate_DDMMYYYY = (fecha: StringOrNull) => {

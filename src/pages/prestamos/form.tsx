@@ -9,15 +9,19 @@ import { Alerta, Exito } from "@hooks/useMensaje"
 import { FormatNumber } from "@hooks/useUtils"
 import { Cliente } from "@interfaces/clientes"
 import { Prestamo, PrestamoCuota } from "@interfaces/prestamos"
-import { Alert, Button, Col, Divider, Flex, Form, Input, InputNumber, InputRef, List, message, Row, Select, Space, Tag, theme, Typography } from "antd"
+import { Alert, Button, Card, Col, Divider, Flex, Form, Input, InputNumber, InputRef, Layout, List, message, Row, Select, Slider, Space, Table, Tag, Typography } from "antd"
 import { useEffect, useRef, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import PrestamoCuotas from "./cuotas"
+import TitlePage from "@components/titles/titlePage"
+import TitleSesion from "@components/titles/titleSesion"
+import TitlePanel from "@components/titles/titlePanel"
+import Searcher from "@components/inputs/searcher"
 
 export default function FormPrestamo() {
 
     const {
-        contextClientes: { porCodigo },
+        contextClientes: { state: { datos: clientes, procesando, paginacion }, porCodigo, todos },
         contextPrestamos: { state: { modelo }, nuevo, agregar },
         contextPrestamosEstados: { todos: cargarEstados },
         contextFormasPago: { state: { datos: formasPago }, todos: cargarFormasPago },
@@ -27,13 +31,13 @@ export default function FormPrestamo() {
     } = useData()
     const { entidad, editar } = useForm<Prestamo | undefined>(modelo)
     const [errores, setErrores] = useState<string[]>([])
+    const [filtroCliente, setFiltroCliente] = useState<string>('')
     const [montoCapitalCuota, setMontoCapitalCuota] = useState<number>(0)
     const [montoTotalInteres, setMontoTotalInteres] = useState<number>(0)
     const [montoAmortizacion, setMontoAmortizacion] = useState<number>(0)
     const [messageApi, contextHolder] = message.useMessage()
     const searchRef = useRef<InputRef>(null)
     const { IconCalculator } = useIconos()
-    const { token } = theme.useToken()
     const { codigo } = useParams()
     const nav = useNavigate()
 
@@ -47,7 +51,16 @@ export default function FormPrestamo() {
 
     const buscarCliente = async () => {
 
-        if (!entidad) return;
+        if (filtroCliente) {
+            await todos({
+                pageSize: 999999,
+                currentPage: 1,
+                filter: filtroCliente
+            })
+
+        }
+
+        /* if (!entidad) return;
 
         if (!entidad.cliente || !entidad.cliente.documento) {
             messageApi.open({
@@ -71,7 +84,7 @@ export default function FormPrestamo() {
                 ...entidad,
                 cliente: result.datos
             })
-        }
+        } */
     }
 
     const mensajeBusquedaCliente = (mensaje: string) => {
@@ -139,8 +152,6 @@ export default function FormPrestamo() {
 
     const guardar = async () => {
 
-        console.log('prestamo', entidad);
-
         if (!entidad) {
             Alerta('Debe completar los campos obligatorios del formulario antes de guardar.');
             return;
@@ -169,6 +180,7 @@ export default function FormPrestamo() {
 
     }
 
+    useEffect(() => { buscarCliente() }, [filtroCliente])
     useEffect(() => { if (!codigo || !Number(codigo)) nuevo() }, [])
     useEffect(() => {
         editar(modelo);
@@ -182,29 +194,29 @@ export default function FormPrestamo() {
         <Col xl={{ span: 20, offset: 2 }} lg={{ span: 24 }} md={{ span: 24 }} xs={{ span: 24 }}>
 
             <Flex align="center" justify="space-between">
-                <Typography.Title level={3} style={{ fontWeight: 'bolder', marginBottom: 0, color: token.colorPrimary }}>
-                    Formulario de C&aacute;lculo y Registro de Prestamo
-                </Typography.Title>
+                <TitlePage title="Formulario de C&aacute;lculo y Registro de Prestamo" />
                 <ButtonPrimary size="large" htmlType="submit" form="FormPrestamo">
                     {entidad && entidad.id > 0 ? 'Actualizar' : 'Guardar'}
                 </ButtonPrimary>
             </Flex>
             <Divider className='my-3' />
 
-            {
-                errores.length === 0
-                    ? <></>
-                    :
-                    <Alert
-                        type="error"
-                        closable={false}
-                        showIcon
-                        description={errores.length === 0 ? <></> : <ul className="m-0 ps-3">{errores.map((err, indexKey) => <li key={indexKey}>{err}</li>)}</ul>}
-                        message={<h1 className="fs-5" style={{ color: Colors.Danger }}>Alerta</h1>}
-                        className="mb-3"
-                        style={{ borderLeftWidth: 6, borderLeftColor: Colors.Danger }}
-                    />
-            }
+            <>
+                {
+                    errores.length === 0
+                        ? <></>
+                        :
+                        <Alert
+                            type="error"
+                            closable={false}
+                            showIcon
+                            description={errores.length === 0 ? <></> : <ul className="m-0 ps-3">{errores.map((err, indexKey) => <li key={indexKey}>{err}</li>)}</ul>}
+                            message={<h1 className="fs-5" style={{ color: Colors.Danger }}>Alerta</h1>}
+                            className="mb-3"
+                            style={{ borderLeftWidth: 6, borderLeftColor: Colors.Danger }}
+                        />
+                }
+            </>
 
             <Form
                 name="FormPrestamo"
@@ -221,10 +233,39 @@ export default function FormPrestamo() {
                 }}
                 onFinish={guardar}>
 
+                <Card size="small" title={<TitlePanel title="Datos del Cliente" />} extra={<Searcher variant="borderless" onChange={setFiltroCliente} />} className="mb-4 position-relative">
+                    <Space split={<Divider type="vertical" className="h-100 d-inline" style={{ borderColor: Colors.Secondary }} />}>
+                        <Flex vertical>
+                            <strong color={Colors.Secondary}>C&oacute;digo Empleado</strong>
+                            <span>{entidad?.cliente?.empleadoId || 'Desconocido'}</span>
+                        </Flex>
+                        <Flex vertical>
+                            <strong color={Colors.Secondary}>Nombres y Apellidos</strong>
+                            <span>{`${entidad?.cliente?.nombres || ''} ${entidad?.cliente?.apellidos || ''}`.trim() || 'Desconocido'}</span>
+                        </Flex>
+                        <Flex vertical>
+                            <strong color={Colors.Secondary}>Tel&eacute;fono Celular</strong>
+                            <span>{entidad?.cliente?.telefonoCelular || 'Desconocido'}</span>
+                        </Flex>
+                        <Flex vertical>
+                            <strong color={Colors.Secondary}>Ocupaci&oacute;n</strong>
+                            <span>{entidad?.cliente?.ocupacion?.nombre || 'Desconocido'}</span>
+                        </Flex>
+                    </Space>
+                    <Layout.Sider theme="light" collapsed={filtroCliente.length === 0}>
+                        <Table>
+                            da
+                        </Table>
+                    </Layout.Sider>
+                    <Space style={{ position: 'absolute', maxHeight: 250 }}>
+
+                    </Space>
+                </Card>
+
                 <Row gutter={[20, 30]}>
 
-                    <Col lg={8} md={8} sm={24} xs={24}>
-                        <Typography.Title level={4} style={{ fontWeight: 'bolder' }}>Datos del Cliente</Typography.Title>
+                    <Col xs={24}>
+                        <TitleSesion title="Datos del Cliente" color={Colors.Primary} />
                         <Divider className="my-1 mb-2" />
 
                         <Flex vertical style={{ position: 'relative' }}>
@@ -356,7 +397,7 @@ export default function FormPrestamo() {
                                     <InputDate
                                         name="fechaCredito"
                                         placeholder=""
-                                        value={entidad?.fechaCredito}
+                                        value={entidad?.fechaCredito || ''}
                                         onChange={(date) => {
                                             if (entidad) {
                                                 editar({ ...entidad, fechaCredito: date.format('DD-MM-YYYY') })

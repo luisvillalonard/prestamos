@@ -1,32 +1,48 @@
-import { useIconos } from "@hooks/useIconos"
+import { IconSearch } from "@hooks/useIconos"
 import { ControlProps } from '@interfaces/globales'
-import type { InputProps, InputRef } from 'antd'
+import type { InputProps } from 'antd'
 import { Input, Space, Tooltip } from "antd"
-import { ChangeEvent, useEffect, useRef, useState } from "react"
+import { useEffect, useState } from "react"
 
 const Searcher = (props: Omit<InputProps, "onChange"> & Pick<ControlProps, "onChange">) => {
 
     const { onChange } = props
-    const inputRef = useRef<InputRef>(null)
-    const [filter, setFilter] = useState<string>('')
-    const { IconSearch } = useIconos()
+    const [query, setQuery] = useState('');  // The search query typed by user
+    const [debouncedQuery, setDebouncedQuery] = useState(query);  // Debounced value
 
-    useEffect(() => { onChange && onChange(filter) }, [filter])
+
+    useEffect(() => {
+        // Set a timeout to update debounced value after 500ms
+        const handler = setTimeout(() => {
+            setDebouncedQuery(query);
+        }, 400);
+
+        // Cleanup the timeout if `query` changes before 500ms
+        return () => {
+            clearTimeout(handler);
+        };
+    }, [query]);
+
+    // Whenever debouncedQuery changes, simulate an API call
+    useEffect(() => {
+        onChange && onChange(debouncedQuery)
+    }, [debouncedQuery]);
+
+    //useEffect(() => { onChange && onChange(query) }, [query])
 
     return (
         <Space>
-            <Tooltip title="Escriba para buscar, presione escape para limpiar la busqueda">
+            <Tooltip title="Escriba aqui para buscar, presione escape para limpiar la busqueda">
                 <Input
                     {...props}
                     allowClear
                     placeholder="escriba aqui para buscar"
                     suffix={<IconSearch />}
-                    ref={inputRef}
-                    value={filter}
-                    onKeyUp={(evt) => {
-                        if (evt.code.toLowerCase() === 'escape') setFilter('')
-                    }}
-                    onChange={(evt: ChangeEvent<HTMLInputElement>) => setFilter(evt.target.value)} />
+                    value={query}
+                    style={props.style}
+                    onClear={() => setQuery('')}
+                    onChange={(e) => setQuery(e.target.value)}
+                    onKeyUp={(evt) => { if (evt.code.toLowerCase() === 'escape') setQuery('') }} />
             </Tooltip>
         </Space>
     )

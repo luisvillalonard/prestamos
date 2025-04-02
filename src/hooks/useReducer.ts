@@ -1,7 +1,8 @@
 import { Reducer, useReducer } from "react";
-import { ResponseResult } from "../interfaces/globales";
+import { RequestFilter, ResponseResult } from "../interfaces/globales";
 import reducer, { ACTIONS, ACTIONTYPES, initState, State } from "../reducers/global";
 import { useFetch } from "./useFetch";
+import { getParamsUrlToString } from "./useUtils";
 
 export function useReducerHook<T extends unknown>(urlBase: string) {
     const [state, dispatch] = useReducer<Reducer<State<T>, ACTIONTYPES<T>>>(reducer, initState<T>());
@@ -43,17 +44,18 @@ export function useReducerHook<T extends unknown>(urlBase: string) {
         return resp;
     }
 
-    const todos = async (): Promise<void> => {
+    const todos = async (req?: RequestFilter): Promise<void> => {
 
         dispatch({ type: ACTIONS.FETCHING });
         let resp: ResponseResult<T[]>;
 
         try {
-            resp = await api.Get<T[]>(urlBase);
+            const params = getParamsUrlToString(req);
+            resp = await api.Get<T[]>(`${urlBase}${params}`.trim());
             dispatch({
                 type: ACTIONS.FETCH_COMPLETE,
-                data: resp.datos ?? Array<T>(),
-                paginacion: resp.paginacion ?? initState<T>().paginacion,
+                data: resp.datos,
+                paginacion: resp.paginacion,
                 recargar: false
             });
         } catch {

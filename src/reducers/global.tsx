@@ -79,6 +79,7 @@ const reducer = <DataType extends unknown>(state: State<DataType>, action: ACTIO
                 editando: false,
                 procesando: false,
                 recargar: action.recargar ?? false,
+                paginacion: action.paginacion,
                 cargado: true,
             };
         }

@@ -2,7 +2,9 @@ import { ButtonDefault } from "@components/buttons/default"
 import { ButtonPrimary } from "@components/buttons/primary"
 import FormItem from "@components/forms/item"
 import InputText from "@components/inputs/text"
-import { Urls } from "@hooks/useConstants"
+import TitlePage from "@components/titles/titlePage"
+import TitleSesion from "@components/titles/titleSesion"
+import { Colors, Urls } from "@hooks/useConstants"
 import { useData } from "@hooks/useData"
 import { useForm } from "@hooks/useForm"
 import { Alerta, Exito } from "@hooks/useMensaje"
@@ -66,7 +68,7 @@ export default function FormCliente() {
             <Col span={18} offset={3}>
 
                 <Flex align="center" justify="space-between">
-                    <Title level={3} style={{ fontWeight: 'bolder', color: token.colorPrimary }}>Formulario de Cliente</Title>
+                    <TitlePage title="Formulario de Cliente" />
                     <Space>
                         <ButtonDefault key="1" size="large" htmlType="button" onClick={onClose}>Ir a Clientes</ButtonDefault>
                         <ButtonPrimary key="2" size="large" htmlType="submit" form="FormCliente">
@@ -89,12 +91,11 @@ export default function FormCliente() {
                         ocupacionId: modelo?.ocupacion?.id,
                     }}
                     onFinish={guardar}>
-                    <Row gutter={[10, 10]}>
+                    <Row gutter={[15, 14]}>
                         <Col xs={24}>
                             <Flex align="center" justify="space-between">
-                                <Title level={4} style={{ fontWeight: 'bolder' }}>Generales</Title>
+                                <TitleSesion title="Generales" color={Colors.Primary} />
                                 <Space>
-                                    {/* <span style={{ fontSize: 18 }}>C&oacute;digo</span> */}
                                     <Title level={4} style={{ fontWeight: 'bolder', margin: 0 }}>C&oacute;digo</Title>
                                     {
                                         !entidad?.codigo
@@ -193,10 +194,8 @@ export default function FormCliente() {
                                 </Radio.Group>
                             </FormItem>
                         </Col>
-                    </Row>
-                    <Row gutter={[10, 10]}>
-                        <Col xs={24}>
-                            <Title level={4} style={{ fontWeight: 'bolder', marginTop: 20 }}>Contacto</Title>
+                        <Col xs={24} style={{ paddingTop: 20 }}>
+                            <TitleSesion title="Contacto" color={Colors.Primary} />
                             <Divider className="my-1 mb-2" />
                         </Col>
                         <Col lg={12} md={12} sm={24} xs={24}>
