@@ -4,24 +4,28 @@ import InputDate from "@components/inputs/date"
 import { Colors, Urls } from "@hooks/useConstants"
 import { useData } from "@hooks/useData"
 import { useForm } from "@hooks/useForm"
-import { IconSearch, useIconos } from "@hooks/useIconos"
+import { IconCheck, IconCalculator } from "@hooks/useIconos"
 import { Alerta, Exito } from "@hooks/useMensaje"
 import { FormatNumber } from "@hooks/useUtils"
 import { Cliente } from "@interfaces/clientes"
 import { Prestamo, PrestamoCuota } from "@interfaces/prestamos"
-import { Alert, Button, Card, Col, Divider, Flex, Form, Input, InputNumber, InputRef, Layout, List, message, Row, Select, Slider, Space, Table, Tag, Typography } from "antd"
-import { useEffect, useRef, useState } from "react"
+import { Alert, Button, Card, Col, Collapse, Divider, Flex, Form, Input, InputNumber, InputRef, Row, Select, Space, Table, Tag } from "antd"
+import { CSSProperties, useEffect, useRef, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import PrestamoCuotas from "./cuotas"
 import TitlePage from "@components/titles/titlePage"
-import TitleSesion from "@components/titles/titleSesion"
 import TitlePanel from "@components/titles/titlePanel"
 import Searcher from "@components/inputs/searcher"
+import { ButtonDefault } from "@components/buttons/default"
+
+const styleInputTotal: CSSProperties = {
+    borderRadius: 0, fontWeight: 'bold', borderBottomWidth: 1, borderBottomStyle: 'solid', borderBottomColor: Colors.Secondary
+}
 
 export default function FormPrestamo() {
 
     const {
-        contextClientes: { state: { datos: clientes, procesando, paginacion }, porCodigo, todos },
+        contextClientes: { state: { datos: clientes, procesando }, todos },
         contextPrestamos: { state: { modelo }, nuevo, agregar },
         contextPrestamosEstados: { todos: cargarEstados },
         contextFormasPago: { state: { datos: formasPago }, todos: cargarFormasPago },
@@ -35,9 +39,7 @@ export default function FormPrestamo() {
     const [montoCapitalCuota, setMontoCapitalCuota] = useState<number>(0)
     const [montoTotalInteres, setMontoTotalInteres] = useState<number>(0)
     const [montoAmortizacion, setMontoAmortizacion] = useState<number>(0)
-    const [messageApi, contextHolder] = message.useMessage()
     const searchRef = useRef<InputRef>(null)
-    const { IconCalculator } = useIconos()
     const { codigo } = useParams()
     const nav = useNavigate()
 
@@ -59,42 +61,7 @@ export default function FormPrestamo() {
             })
 
         }
-
-        /* if (!entidad) return;
-
-        if (!entidad.cliente || !entidad.cliente.documento) {
-            messageApi.open({
-                duration: 3,
-                type: 'warning',
-                content: 'Debe indicar el documento del cliente.',
-            });
-            if (searchRef && searchRef.current) {
-                searchRef.current.focus()
-            }
-            return;
-        }
-
-        const result = await porCodigo(entidad?.cliente?.documento);
-        if (result) {
-            if (!result.ok) {
-                mensajeBusquedaCliente(result.mensaje || 'No fue posible obtener el cliente con el documento establecido.');
-                return;
-            }
-            editar({
-                ...entidad,
-                cliente: result.datos
-            })
-        } */
     }
-
-    const mensajeBusquedaCliente = (mensaje: string) => {
-
-        messageApi.open({
-            duration: 3,
-            type: 'warning',
-            content: mensaje || 'No fue posible obtener el cliente con el documento establecido',
-        });
-    };
 
     const calcularCuotas = () => {
 
@@ -233,7 +200,11 @@ export default function FormPrestamo() {
                 }}
                 onFinish={guardar}>
 
-                <Card size="small" title={<TitlePanel title="Datos del Cliente" />} extra={<Searcher variant="borderless" onChange={setFiltroCliente} />} className="mb-4 position-relative">
+                <Card
+                    size="small"
+                    title={<TitlePanel title="Datos del Cliente" color={Colors.Primary} />}
+                    extra={<Searcher variant="borderless" value={filtroCliente} onChange={setFiltroCliente} />}
+                    className="mb-4 position-relative">
                     <Space split={<Divider type="vertical" className="h-100 d-inline" style={{ borderColor: Colors.Secondary }} />}>
                         <Flex vertical>
                             <strong color={Colors.Secondary}>C&oacute;digo Empleado</strong>
@@ -252,199 +223,192 @@ export default function FormPrestamo() {
                             <span>{entidad?.cliente?.ocupacion?.nombre || 'Desconocido'}</span>
                         </Flex>
                     </Space>
-                    <Layout.Sider theme="light" collapsed={filtroCliente.length === 0}>
-                        <Table>
-                            da
-                        </Table>
-                    </Layout.Sider>
-                    <Space style={{ position: 'absolute', maxHeight: 250 }}>
-
-                    </Space>
+                    <Collapse
+                        bordered={false} ghost size="small" destroyInactivePanel
+                        defaultActiveKey={['1']}
+                        activeKey={[filtroCliente.length > 0 ? '1' : '']}
+                        items={[
+                            {
+                                key: '1',
+                                label: null,
+                                showArrow: false,
+                                styles: {
+                                    header: { padding: 0 },
+                                    body: { paddingLeft: 0, paddingRight: 0 }
+                                },
+                                children: <>
+                                    <Table<Cliente>
+                                        size="middle"
+                                        bordered={false}
+                                        loading={procesando}
+                                        locale={{ emptyText: <Flex style={{ textWrap: 'nowrap' }}>0 clientes</Flex> }}
+                                        dataSource={procesando ? [] : clientes.map((item, index) => { return { ...item, key: index + 1 } })}>
+                                        <Table.Column title="#" align="center" fixed='left' width={60} render={(record: Cliente) => (
+                                            <ButtonDefault size="small" shape="circle" icon={<IconCheck />} onClick={() => {
+                                                if (entidad) {
+                                                    console.log('entidad', entidad)
+                                                    console.log('cliente', record)
+                                                    editar({ ...entidad, cliente: record })
+                                                    setFiltroCliente('')
+                                                }
+                                            }} />
+                                        )} />
+                                        <Table.Column title="Código" dataIndex="codigo" key="codigo" fixed='left' width={80} />
+                                        <Table.Column title="Empleado Id" dataIndex="empleadoId" key="empleadoId" width={100} />
+                                        <Table.Column title="Nombres y Apellidos" fixed='left' render={(record: Cliente) => (
+                                            `${record.nombres || ''} ${record.apellidos || ''}`.trim()
+                                        )} />
+                                        <Table.Column title="Documento" render={(record: Cliente) => (
+                                            <span style={{ textWrap: 'nowrap' }}>{`(${record.documentoTipo?.nombre}) ${record.documento}`}</span>
+                                        )} />
+                                    </Table>
+                                </>,
+                            },
+                        ]}
+                    >
+                    </Collapse>
                 </Card>
 
-                <Row gutter={[20, 30]}>
-
-                    <Col xs={24}>
-                        <TitleSesion title="Datos del Cliente" color={Colors.Primary} />
-                        <Divider className="my-1 mb-2" />
-
-                        <Flex vertical style={{ position: 'relative' }}>
-                            {contextHolder}
-                            <label style={{ marginBottom: 6 }}>
-                                {`Documento ${entidad?.cliente?.documentoTipo?.nombre || ''}`.trim()}
-                            </label>
-                            <Space.Compact>
-                                <Input
-                                    ref={searchRef}
-                                    value={entidad?.cliente?.documento || ''}
-                                    onChange={(evt) => {
-                                        if (entidad) {
-                                            editar({ ...entidad, cliente: { ...entidad.cliente, documento: evt.target.value } as Cliente })
+                <Card
+                    size="small"
+                    className="mb-4"
+                    title={<TitlePanel title="Datos del Prestamo" color={Colors.Primary} />}
+                    extra={
+                        <Flex align="center" gap={10}>
+                            <TitlePanel title="C&oacute;digo" />
+                            <Tag color='blue' style={{ fontWeight: 'bolder', fontSize: 16, borderRadius: 10 }}>{entidad?.codigo || 'P-000000'}</Tag>
+                        </Flex>
+                    }>
+                    <Row gutter={[10, 10]}>
+                        <Col xl={4} lg={4} md={8} sm={24} xs={24}>
+                            <FormItem name="deudaInicial" label="Monto" rules={[{ required: true, message: 'Obligatorio' }]}>
+                                <InputNumber
+                                    name="deudaInicial"
+                                    value={entidad?.deudaInicial}
+                                    style={{ width: '100%' }}
+                                    onChange={(value) => {
+                                        if (entidad && value) {
+                                            editar({ ...entidad, deudaInicial: value })
                                         }
                                     }} />
-                                <Button icon={<IconSearch />} onClick={buscarCliente} />
-                            </Space.Compact>
-                        </Flex>
-                        <List size="small">
-                            <List.Item>
-                                <List.Item.Meta
-                                    title="Nombres y Apellidos"
-                                    description={`${entidad?.cliente?.nombres || ''} ${entidad?.cliente?.apellidos || ''}`.trim() || 'Desconocido'} />
-                            </List.Item>
-                            <List.Item>
-                                <List.Item.Meta title="C&oacute;digo Empleado" description={entidad?.cliente?.empleadoId || 'Desconocido'} />
-                            </List.Item>
-                            <List.Item>
-                                <List.Item.Meta title="Tel&eacute;fono Celular" description={entidad?.cliente?.telefonoCelular || 'Desconocido'} />
-                            </List.Item>
-                            <List.Item>
-                                <List.Item.Meta title="Ocupaci&oacute;n" description={entidad?.cliente?.ocupacion?.nombre || 'Desconocido'} />
-                            </List.Item>
-                        </List>
-                    </Col>
+                            </FormItem>
+                        </Col>
+                        <Col xl={4} lg={4} md={8} sm={24} xs={24}>
+                            <FormItem name="interes" label="Interes (%)" rules={[{ required: true, message: 'Obligatorio' }]}>
+                                <InputNumber
+                                    name="interes"
+                                    value={entidad?.interes}
+                                    style={{ width: '100%' }}
+                                    onChange={(value) => {
+                                        if (entidad && value) {
+                                            editar({ ...entidad, interes: value })
+                                        }
+                                    }} />
+                            </FormItem>
+                        </Col>
+                        <Col xl={4} lg={4} md={8} sm={24} xs={24}>
+                            <FormItem name="cantidadCuotas" label="N&uacute;mero Cuotas" rules={[{ required: true, message: 'Obligatorio' }]}>
+                                <InputNumber
+                                    name="cantidadCuotas"
+                                    value={entidad?.cantidadCuotas}
+                                    style={{ width: '100%' }}
+                                    onChange={(value) => {
+                                        if (entidad && value) {
+                                            editar({ ...entidad, cantidadCuotas: value })
+                                        }
+                                    }} />
+                            </FormItem>
+                        </Col>
+                        <Col xl={4} lg={4} md={8} sm={24} xs={24}>
+                            <FormItem name="formaPagoId" label="Forma de Pago" rules={[{ required: true, message: 'Obligatorio' }]}>
+                                <Select
+                                    allowClear
+                                    value={entidad?.formaPago?.id}
+                                    options={formasPago.map(item => ({ key: item.id, value: item.id, label: item.nombre }))}
+                                    onChange={(value) => {
+                                        if (entidad) {
+                                            editar({ ...entidad, formaPago: formasPago.filter(opt => opt.id === value).shift() });
+                                        }
+                                    }} />
+                            </FormItem>
+                        </Col>
+                        <Col xl={4} lg={4} md={8} sm={24} xs={24}>
+                            <FormItem name="metodoPagoId" label="M&eacute;todo Pago" rules={[{ required: true, message: 'Obligatorio' }]}>
+                                <Select
+                                    allowClear
+                                    value={entidad?.metodoPago?.id}
+                                    options={metodosPago.map(item => ({ key: item.id, value: item.id, label: item.nombre }))}
+                                    onChange={(value) => {
+                                        if (entidad) {
+                                            editar({ ...entidad, metodoPago: metodosPago.filter(opt => opt.id === value).shift() });
+                                        }
+                                    }} />
+                            </FormItem>
+                        </Col>
+                        <Col xl={4} lg={4} md={8} sm={24} xs={24}>
+                            <FormItem name="monedaId" label="Tipo Moneda" rules={[{ required: true, message: 'Obligatorio' }]}>
+                                <Select
+                                    allowClear
+                                    value={entidad?.moneda?.id}
+                                    options={monedas.map(item => ({ key: item.id, value: item.id, label: item.nombre }))}
+                                    onChange={(value) => {
+                                        if (entidad) {
+                                            editar({ ...entidad, moneda: monedas.filter(opt => opt.id === value).shift() });
+                                        }
+                                    }} />
+                            </FormItem>
+                        </Col>
+                        <Col xl={4} lg={4} md={8} sm={24} xs={24}>
+                            <FormItem name="fechaCredito" label="Fecha emisi&oacute;n" rules={[{ required: true, message: 'Obligatorio' }]}>
+                                <InputDate
+                                    name="fechaCredito"
+                                    placeholder=""
+                                    value={entidad?.fechaCredito || ''}
+                                    onChange={(date) => {
+                                        if (entidad) {
+                                            editar({ ...entidad, fechaCredito: date.format('DD-MM-YYYY') })
+                                        }
+                                    }} />
+                            </FormItem>
+                        </Col>
+                        <Col xl={4} lg={4} md={8} sm={24} xs={24}>
+                            <FormItem name="acesorId" label="Acesor">
+                                <Select
+                                    allowClear
+                                    value={entidad?.acesor?.id}
+                                    options={acesores.map(item => ({ key: item.id, value: item.id, label: item.nombre }))}
+                                    onChange={(value) => {
+                                        if (entidad) {
+                                            editar({ ...entidad, acesor: acesores.filter(opt => opt.id === value).shift() });
+                                        }
+                                    }} />
+                            </FormItem>
+                        </Col>
+                        <Col xl={4} lg={4} md={8} sm={24} xs={24}>
+                            <FormItem label="Monto Cuota">
+                                <Input disabled variant="borderless" value={FormatNumber(montoCapitalCuota, 2)} style={styleInputTotal} />
+                            </FormItem>
+                        </Col>
+                        <Col xl={4} lg={4} md={8} sm={24} xs={24}>
+                            <FormItem label="Total Interes">
+                                <Input disabled variant="borderless" value={FormatNumber(montoTotalInteres, 2)} style={styleInputTotal} />
+                            </FormItem>
+                        </Col>
+                        <Col xl={4} lg={4} md={8} sm={24} xs={24}>
+                            <FormItem label="Monto a Pagar">
+                                <Input disabled variant="borderless" value={FormatNumber(montoAmortizacion, 2)} style={styleInputTotal} />
+                            </FormItem>
+                        </Col>
+                    </Row>
+                </Card>
 
-                    <Col lg={16} md={16} sm={24} xs={24}>
-                        <Flex align="center" justify="space-between">
-                            <Typography.Title level={4} style={{ fontWeight: 'bolder' }}>Datos del Prestamo</Typography.Title>
-                            <Space>
-                                <Typography.Title level={5} style={{ fontWeight: 'bolder', margin: 0 }}>C&oacute;digo</Typography.Title>
-                                <Tag color='blue' style={{ fontWeight: 'bolder', fontSize: 16, borderRadius: 10 }}>{entidad?.codigo || 'P-000000'}</Tag>
-                            </Space>
-                        </Flex>
-                        <Divider className="my-1 mb-2" />
-
-                        <Row gutter={[10, 10]}>
-                            <Col xl={6} lg={6} md={8} sm={24} xs={24}>
-                                <FormItem name="deudaInicial" label="Monto" rules={[{ required: true, message: 'Obligatorio' }]}>
-                                    <InputNumber
-                                        name="deudaInicial"
-                                        value={entidad?.deudaInicial}
-                                        style={{ width: '100%' }}
-                                        onChange={(value) => {
-                                            if (entidad && value) {
-                                                editar({ ...entidad, deudaInicial: value })
-                                            }
-                                        }} />
-                                </FormItem>
-                            </Col>
-                            <Col xl={6} lg={6} md={8} sm={24} xs={24}>
-                                <FormItem name="interes" label="Interes (%)" rules={[{ required: true, message: 'Obligatorio' }]}>
-                                    <InputNumber
-                                        name="interes"
-                                        value={entidad?.interes}
-                                        style={{ width: '100%' }}
-                                        onChange={(value) => {
-                                            if (entidad && value) {
-                                                editar({ ...entidad, interes: value })
-                                            }
-                                        }} />
-                                </FormItem>
-                            </Col>
-                            <Col xl={6} lg={6} md={8} sm={24} xs={24}>
-                                <FormItem name="cantidadCuotas" label="N&uacute;mero Cuotas" rules={[{ required: true, message: 'Obligatorio' }]}>
-                                    <InputNumber
-                                        name="cantidadCuotas"
-                                        value={entidad?.cantidadCuotas}
-                                        style={{ width: '100%' }}
-                                        onChange={(value) => {
-                                            if (entidad && value) {
-                                                editar({ ...entidad, cantidadCuotas: value })
-                                            }
-                                        }} />
-                                </FormItem>
-                            </Col>
-                            <Col xl={6} lg={6} md={8} sm={24} xs={24}>
-                                <FormItem name="formaPagoId" label="Forma de Pago" rules={[{ required: true, message: 'Obligatorio' }]}>
-                                    <Select
-                                        allowClear
-                                        value={entidad?.formaPago?.id}
-                                        options={formasPago.map(item => ({ key: item.id, value: item.id, label: item.nombre }))}
-                                        onChange={(value) => {
-                                            if (entidad) {
-                                                editar({ ...entidad, formaPago: formasPago.filter(opt => opt.id === value).shift() });
-                                            }
-                                        }} />
-                                </FormItem>
-                            </Col>
-                            <Col xl={6} lg={6} md={6} sm={24} xs={24}>
-                                <FormItem name="metodoPagoId" label="M&eacute;todo Pago" rules={[{ required: true, message: 'Obligatorio' }]}>
-                                    <Select
-                                        allowClear
-                                        value={entidad?.metodoPago?.id}
-                                        options={metodosPago.map(item => ({ key: item.id, value: item.id, label: item.nombre }))}
-                                        onChange={(value) => {
-                                            if (entidad) {
-                                                editar({ ...entidad, metodoPago: metodosPago.filter(opt => opt.id === value).shift() });
-                                            }
-                                        }} />
-                                </FormItem>
-                            </Col>
-                            <Col xl={6} lg={6} md={6} sm={24} xs={24}>
-                                <FormItem name="monedaId" label="Tipo Moneda" rules={[{ required: true, message: 'Obligatorio' }]}>
-                                    <Select
-                                        allowClear
-                                        value={entidad?.moneda?.id}
-                                        options={monedas.map(item => ({ key: item.id, value: item.id, label: item.nombre }))}
-                                        onChange={(value) => {
-                                            if (entidad) {
-                                                editar({ ...entidad, moneda: monedas.filter(opt => opt.id === value).shift() });
-                                            }
-                                        }} />
-                                </FormItem>
-                            </Col>
-                            <Col xl={6} lg={6} md={6} sm={24} xs={24}>
-                                <FormItem name="fechaCredito" label="Fecha emisi&oacute;n" rules={[{ required: true, message: 'Obligatorio' }]}>
-                                    <InputDate
-                                        name="fechaCredito"
-                                        placeholder=""
-                                        value={entidad?.fechaCredito || ''}
-                                        onChange={(date) => {
-                                            if (entidad) {
-                                                editar({ ...entidad, fechaCredito: date.format('DD-MM-YYYY') })
-                                            }
-                                        }} />
-                                </FormItem>
-                            </Col>
-                            <Col xl={6} lg={6} md={6} sm={24} xs={24}>
-                                <FormItem name="acesorId" label="Acesor">
-                                    <Select
-                                        allowClear
-                                        value={entidad?.acesor?.id}
-                                        options={acesores.map(item => ({ key: item.id, value: item.id, label: item.nombre }))}
-                                        onChange={(value) => {
-                                            if (entidad) {
-                                                editar({ ...entidad, acesor: acesores.filter(opt => opt.id === value).shift() });
-                                            }
-                                        }} />
-                                </FormItem>
-                            </Col>
-                            <Col xl={6} lg={6} md={6} sm={24} xs={24}>
-                                <FormItem label="Monto Cuota">
-                                    <Input disabled value={FormatNumber(montoCapitalCuota, 2)} />
-                                </FormItem>
-                            </Col>
-                            <Col xl={6} lg={6} md={6} sm={24} xs={24}>
-                                <FormItem label="Total Interes">
-                                    <Input disabled value={FormatNumber(montoTotalInteres, 2)} />
-                                </FormItem>
-                            </Col>
-                            <Col xl={6} lg={6} md={6} sm={24} xs={24}>
-                                <FormItem label="Monto a Pagar">
-                                    <Input disabled value={FormatNumber(montoAmortizacion, 2)} />
-                                </FormItem>
-                            </Col>
-                        </Row>
-                    </Col>
-
-                    <Col xs={24}>
-                        <Flex align="center" justify="space-between">
-                            <Typography.Title level={4} style={{ fontWeight: 'bolder' }}>Informaci&oacute;n de Cr&eacute;dito</Typography.Title>
-                            <ButtonPrimary size="middle" icon={<IconCalculator />} onClick={calcularCuotas}>Calcular</ButtonPrimary>
-                        </Flex>
-                        <Divider className="my-1 mb-2" />
-                        <PrestamoCuotas cuotas={entidad?.cuotas ?? []} />
-                    </Col>
-                </Row>
+                <Card
+                    size="small"
+                    className="mb-4"
+                    title={<TitlePanel title="Informaci&oacute;n de Cr&eacute;dito" color={Colors.Primary} />}
+                    extra={<Button size="middle" type="link" icon={<IconCalculator />} onClick={calcularCuotas}>Calcular</Button>}>
+                    <PrestamoCuotas cuotas={entidad?.cuotas ?? []} />
+                </Card>
 
             </Form>
         </Col>

@@ -1,9 +1,10 @@
-import { ButtonEdit } from "@components/buttons/edit"
+import { Colors } from "@hooks/useConstants"
 import { useData } from "@hooks/useData"
+import { IconPayMoney } from "@hooks/useIconos"
 import { FormatNumber } from "@hooks/useUtils"
 import { ControlProps } from "@interfaces/globales"
 import { Prestamo } from "@interfaces/prestamos"
-import { Flex, Table, Tag, Tooltip } from "antd"
+import { Button, Flex, Table, Tag, Tooltip } from "antd"
 import { useEffect } from "react"
 import { useLocation } from "react-router-dom"
 
@@ -25,6 +26,7 @@ export default function Listado(props: Pick<ControlProps, "filter">) {
             size="middle"
             bordered={false}
             pagination={{ size: 'default' }}
+            locale={{ emptyText: <Flex>0 prestamos</Flex> }}
             dataSource={
                 procesando
                     ? []
@@ -39,7 +41,7 @@ export default function Listado(props: Pick<ControlProps, "filter">) {
                             )
                         })
                         .map((item, index) => { return { ...item, key: index + 1 } })
-            } locale={{ emptyText: <Flex>0 prestamos</Flex> }}>
+            }>
             <Column title="#" dataIndex="key" key="key" align="center" fixed='left' width={60} />
             <Column title="Código" dataIndex="codigo" key="codigo" />
             <Column title="Fecha Cr&eacute;dito" render={(record: Prestamo) => (record.fechaCredito)} />
@@ -50,14 +52,14 @@ export default function Listado(props: Pick<ControlProps, "filter">) {
             <Column title="M&eacute;todo de Pago" render={(record: Prestamo) => (record.metodoPago?.nombre)} />
             <Column title="Estado" align="center" render={(record: Prestamo) => (
                 <Tag
-                    color={record.estado?.inicial ? '' : record.estado?.final ? 'blue' : '#87d068'}
+                    color={record.estado?.inicial ? '' : record.estado?.final ? 'blue' : Colors.Success}
                     style={{ fontWeight: 600, borderRadius: 10 }}>
                     {record.estado?.nombre}
                 </Tag>
             )} />
             <Column title="Acci&oacute;n" align="center" width={80} render={(record: Prestamo) => (
                 <Tooltip title={`Editar el prestamo (${record.codigo})`}>
-                    <ButtonEdit type="text" onClick={() => { editar(record) }} />
+                    <Button shape="round" icon={<IconPayMoney color="primary" />} onClick={() => { editar(record) }}>Pagar</Button>
                 </Tooltip>
             )} />
         </Table>

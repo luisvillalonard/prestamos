@@ -19,9 +19,7 @@ export default function PagePrestamos() {
     const { token } = theme.useToken()
     const nav = useNavigate()
 
-    const onNew = () => {
-        nav(`/${Urls.Prestamos.Base}/${Urls.Prestamos.Formulario.replace(':codigo?', '')}`);
-    }
+    const onNew = () => nav(`/${Urls.Prestamos.Base}/${Urls.Prestamos.Formulario}`)
 
     return (
         <>

@@ -8,9 +8,9 @@ import { IconType } from "react-icons"
 import { AiOutlineUser } from "react-icons/ai"
 import { BsPersonVcard, BsSearch } from "react-icons/bs"
 import { CiViewList } from "react-icons/ci"
-import { FaRegAddressCard, FaUserShield } from "react-icons/fa6"
-import { GiReceiveMoney, GiTakeMyMoney } from "react-icons/gi"
-import { GoChecklist } from "react-icons/go"
+import { FaRegAddressCard, FaRegMoneyBill1, FaUserShield } from "react-icons/fa6"
+import { GiPayMoney, GiReceiveMoney, GiTakeMyMoney } from "react-icons/gi"
+import { GoCheck, GoChecklist } from "react-icons/go"
 import { HiOutlineCog6Tooth, HiOutlineUsers } from "react-icons/hi2"
 import { IoIosList } from "react-icons/io"
 import { IoShieldCheckmarkOutline } from "react-icons/io5"
@@ -19,6 +19,7 @@ import { MdOutlineFormatListNumbered, MdOutlinePassword } from "react-icons/md"
 import { PiMicrosoftExcelLogoFill } from "react-icons/pi"
 
 export const IconCalculator = LuCalculator;
+export const IconCheck = GoCheck;
 export const IconChecklist = GoChecklist;
 export const IconClient = FaRegAddressCard;
 export const IconConfig = HiOutlineCog6Tooth;
@@ -33,6 +34,8 @@ export const IconLoans = GiTakeMyMoney;
 export const IconLogout = PoweroffOutlined;
 export const IconPassword = MdOutlinePassword;
 export const IconMenu = MenuOutlined;
+export const IconMoney = FaRegMoneyBill1;
+export const IconPayMoney = GiPayMoney;
 export const IconReceiveMoney = GiReceiveMoney;
 export const IconSearch = BsSearch;
 export const IconUserProfile = BsPersonVcard;

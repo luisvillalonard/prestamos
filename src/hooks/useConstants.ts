@@ -11,7 +11,7 @@ export const Urls = {
     },
     Prestamos: {
         Base: 'prestamos',
-        Formulario: 'formulario/:codigo?',
+        Formulario: 'formulario',
         Registrados: 'registrados',
         Cobro: 'cobro',
     },

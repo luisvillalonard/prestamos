@@ -9,7 +9,7 @@ import { useData } from "@hooks/useData"
 import { useForm } from "@hooks/useForm"
 import { Alerta, Exito } from "@hooks/useMensaje"
 import { Cliente } from "@interfaces/clientes"
-import { Col, DatePicker, Divider, Flex, Form, Input, Radio, RadioChangeEvent, Row, Select, Space, Switch, Tag, Typography, theme } from "antd"
+import { Col, DatePicker, Divider, Flex, Form, Input, Radio, RadioChangeEvent, Row, Select, Space, Switch, Tag, Typography } from "antd"
 import { useEffect } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 
@@ -25,7 +25,6 @@ export default function FormCliente() {
     const { entidad, editar, handleChangeInput } = useForm<Cliente | undefined>(modelo)
     const nav = useNavigate()
     const { Title } = Typography
-    const { token } = theme.useToken()
     useParams();
 
     const cargarAuxiliares = async () => await Promise.all([cargarDocumentosTipos(), cargarSexos(), cargarCiudades(), cargarOcupaciones()])
