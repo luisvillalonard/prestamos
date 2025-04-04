@@ -28,18 +28,16 @@ const Searcher = (props: Omit<InputProps, "onChange"> & Pick<ControlProps, "onCh
         onChange && onChange(debouncedQuery)
     }, [debouncedQuery]);
 
-    //useEffect(() => { onChange && onChange(query) }, [query])
-
     return (
         <Space>
             <Tooltip title="Escriba aqui para buscar, presione escape para limpiar la busqueda">
                 <Input
                     {...props}
                     allowClear
-                    placeholder="escriba aqui para buscar"
+                    placeholder={props.placeholder || "escriba aqui para buscar"}
                     suffix={<IconSearch />}
                     value={query}
-                    style={props.style}
+                    style={{ width: '100%', ...props.style }}
                     onClear={() => setQuery('')}
                     onChange={(e) => setQuery(e.target.value)}
                     onKeyUp={(evt) => { if (evt.code.toLowerCase() === 'escape') setQuery('') }} />
