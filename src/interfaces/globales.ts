@@ -3,8 +3,6 @@ import { SizeType } from 'antd/es/config-provider/SizeContext';
 import { CSSProperties } from 'react';
 import { IconType } from 'react-icons';
 
-//export type MenuItem = Required<MenuProps>['items'][number] & { menuid: number }
-
 export interface ControlProps {
     children: React.ReactNode | React.ReactNode[],
     title?: string | React.ReactNode,

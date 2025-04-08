@@ -10,7 +10,7 @@ export const PrestamosPagosContext = createContext<GlobalContextState<PrestamoPa
 export default function PrestamosPagosProvider(props: Pick<ControlProps, "children">) {
 
     const { children } = props
-    const { state, editar, cancelar, agregar, actualizar, todos } = useReducerHook<PrestamoPago>(Urls.Prestamos.Base);
+    const { state, editar, cancelar, agregar, actualizar, todos } = useReducerHook<PrestamoPago>(`${Urls.Prestamos.Base}/pagos`);
 
     const nuevo = async (): Promise<void> => {
         editar({

@@ -1,4 +1,5 @@
 //DatePicker
+import { FormatDate_DDMMYYYY } from "@hooks/useUtils";
 import { DatePicker, DatePickerProps, Form } from "antd";
 import { Rule } from "antd/es/form";
 import dayjs from 'dayjs';
@@ -9,13 +10,18 @@ dayjs.extend(customParseFormat);
 
 const dateFormat = 'DD-MM-YYYY';
 
-export default function InputDate(props: Pick<DatePickerProps, Required<"name"> | "onChange" | "readOnly" | "disabled" | "placeholder" | "width" | "style"> & Omit<DatePickerProps, "value"> & {
-    value: string | undefined,
-    label?: React.ReactNode,
-    rules?: Rule[]
-}) {
+export default function InputDate(props: Pick<DatePickerProps, Required<"name"> | "onChange" | "readOnly" | "disabled" | "placeholder" | "width" | "style"> &
+    Omit<DatePickerProps, "value" | "minDate" | "defaultValue"> & {
+        value: string | undefined,
+        label?: React.ReactNode,
+        minDate: Date | undefined,
+        defaultValue: Date | undefined,
+        rules?: Rule[]
+    }) {
 
-    const { name, value, label, rules, disabled, placeholder, style, onChange } = props
+    const { name, value, label, minDate, defaultValue, rules, disabled, placeholder, style, onChange } = props
+    const startInDate = !minDate ? undefined : dayjs(FormatDate_DDMMYYYY(new Date().toISOString().substring(0, 10))!, dateFormat)
+    const startDefaultValue = !defaultValue ? undefined : dayjs(FormatDate_DDMMYYYY(new Date().toISOString().substring(0, 10))!, dateFormat)
 
     return (
         <Form.Item
@@ -32,7 +38,8 @@ export default function InputDate(props: Pick<DatePickerProps, Required<"name"> 
                     format: dateFormat,
                     type: 'mask',
                 }}
-                //value={dayjs('09-10-1980', dateFormat)}
+                minDate={startInDate}
+                defaultValue={startDefaultValue}
                 disabled={disabled}
                 onChange={onChange}
                 style={{

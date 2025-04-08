@@ -10,7 +10,7 @@ import MonedasProvider, { MonedasContext } from "@contexts/dataMaestra/moneda";
 import OcupacionesProvider, { OcupacionesContext } from "@contexts/dataMaestra/ocupacion";
 import PrestamosEstadosProvider, { PrestamosEstadosContext } from "@contexts/dataMaestra/prestamoEstado";
 import SexosProvider, { SexosContext } from "@contexts/dataMaestra/sexo";
-import PrestamosProvider, { PrestamosContext } from "@contexts/prestamos/prestamo";
+import PrestamosProvider, { PrestamoContextState, PrestamosContext } from "@contexts/prestamos/prestamo";
 import PrestamosPagosProvider, { PrestamosPagosContext } from "@contexts/prestamos/prestamoPago";
 import { AuthContext, AuthProvider, AuthReducerState } from "@contexts/seguridad/auth";
 import PermisosProvider, { PermisosContext, PermisosContextState } from "@contexts/seguridad/permisos";
@@ -72,7 +72,7 @@ export const useData = () => {
     const contextAcesores = useContext(AcesoresContext) as GlobalContextState<Acesor>;
 
     /* Prestamos */
-    const contextPrestamos = useContext(PrestamosContext) as GlobalContextState<Prestamo>;
+    const contextPrestamos = useContext(PrestamosContext) as PrestamoContextState<Prestamo>;
     const contextPrestamosPagos = useContext(PrestamosPagosContext) as GlobalContextState<PrestamoPago>;
 
     /* Seguridad */

@@ -1,22 +1,23 @@
+import AlertStatic from "@components/alerts/alert"
+import { ButtonDefault } from "@components/buttons/default"
 import { ButtonPrimary } from "@components/buttons/primary"
 import FormItem from "@components/forms/item"
 import InputDate from "@components/inputs/date"
+import Searcher from "@components/inputs/searcher"
+import TitlePage from "@components/titles/titlePage"
+import TitlePanel from "@components/titles/titlePanel"
 import { Colors, Urls } from "@hooks/useConstants"
 import { useData } from "@hooks/useData"
 import { useForm } from "@hooks/useForm"
-import { IconCheck, IconCalculator } from "@hooks/useIconos"
+import { IconCalculator, IconCheck } from "@hooks/useIconos"
 import { Alerta, Exito } from "@hooks/useMensaje"
-import { FormatNumber } from "@hooks/useUtils"
+import { FormatDate_DDMMYYYY, FormatDate_YYYYMMDD, FormatNumber } from "@hooks/useUtils"
 import { Cliente } from "@interfaces/clientes"
 import { Prestamo, PrestamoCuota } from "@interfaces/prestamos"
-import { Alert, Button, Card, Col, Collapse, Divider, Flex, Form, Input, InputNumber, InputRef, Row, Select, Space, Table, Tag } from "antd"
+import { Button, Card, Col, Collapse, Divider, Flex, Form, Input, InputNumber, InputRef, Row, Select, Space, Table, Tag } from "antd"
 import { CSSProperties, useEffect, useRef, useState } from "react"
-import { useNavigate, useParams } from "react-router-dom"
+import { useLocation, useNavigate, useParams } from "react-router-dom"
 import PrestamoCuotas from "./cuotas"
-import TitlePage from "@components/titles/titlePage"
-import TitlePanel from "@components/titles/titlePanel"
-import Searcher from "@components/inputs/searcher"
-import { ButtonDefault } from "@components/buttons/default"
 
 const styleInputTotal: CSSProperties = {
     borderRadius: 0, fontWeight: 'bold', borderBottomWidth: 1, borderBottomStyle: 'solid', borderBottomColor: Colors.Secondary
@@ -25,8 +26,9 @@ const styleInputTotal: CSSProperties = {
 export default function FormPrestamo() {
 
     const {
+        contextConfiguracionesGenerales: { ultima },
         contextClientes: { state: { datos: clientes, procesando }, todos },
-        contextPrestamos: { state: { modelo }, nuevo, agregar },
+        contextPrestamos: { state: { modelo }, nuevo, agregar, actual },
         contextPrestamosEstados: { todos: cargarEstados },
         contextFormasPago: { state: { datos: formasPago }, todos: cargarFormasPago },
         contextMetodosPago: { state: { datos: metodosPago }, todos: cargarMetodosPago },
@@ -39,17 +41,33 @@ export default function FormPrestamo() {
     const [montoCapitalCuota, setMontoCapitalCuota] = useState<number>(0)
     const [montoTotalInteres, setMontoTotalInteres] = useState<number>(0)
     const [montoAmortizacion, setMontoAmortizacion] = useState<number>(0)
+    const [fechasPago, setFechasPago] = useState<Date[]>([])
+    const [primeraFechaPago, setPrimeraFechaPago] = useState<string>('')
+    const [minDate, setMinDate] = useState<Date | undefined>(undefined)
+    const [isAlert, setIsAlert] = useState<boolean>(false)
     const searchRef = useRef<InputRef>(null)
     const { codigo } = useParams()
     const nav = useNavigate()
+    const url = useLocation()
 
     const cargarAuxiliares = async () => await Promise.all([
+        ultima(),
         cargarFormasPago(),
         cargarMetodosPago(),
         cargarMonedas(),
         cargarAcesores(),
         cargarEstados()
-    ])
+    ]).then((result) => {
+        const config = result.shift()?.datos;
+        const strDate = FormatDate_YYYYMMDD(new Date().toLocaleDateString('es-DO').substring(0, 10));
+        if (strDate) {
+            console.log(strDate)
+            const [anio, mes, dia] = strDate.split('-')
+            const fechaMinima = new Date(Number(anio), Number(mes), Number(dia) - 1);
+            console.log(fechaMinima)
+            setMinDate(!config || !config.permiteFechaAnteriorHoy ? fechaMinima : undefined)
+        }
+    })
 
     const buscarCliente = async () => {
 
@@ -63,11 +81,40 @@ export default function FormPrestamo() {
         }
     }
 
+    const calcularFechaPago = (dia: number): Date => {
+
+        if (dia <= 0) return new Date()
+
+        const fechaHoy = new Date()
+        const diaDeHoy = fechaHoy.getDate()
+        let mes = (fechaHoy.getMonth() + 1)
+        let anio = fechaHoy.getFullYear()
+
+        if (dia < diaDeHoy) {
+            mes = fechaHoy.getMonth() + 2
+            if ((fechaHoy.getMonth() + 2) === 1) {
+                anio = fechaHoy.getFullYear() + 1
+            }
+        }
+
+        return new Date(anio, mes, dia)
+
+    }
+
+    const getDateFormated = (date: Date) => FormatDate_DDMMYYYY(date.toISOString().substring(0, 10))
+
     const calcularCuotas = () => {
 
         if (!entidad) return;
 
         if (entidad.deudaInicial && entidad.interes && entidad.cantidadCuotas) {
+
+            if (!primeraFechaPago) {
+                setErrores(['Debe seleccionar la fecha de inicio de pago.']);
+                setIsAlert(true);
+                return;
+            }
+            setErrores([]);
 
             let saldoFinal: number = entidad.deudaInicial;
             const totalIntereses = entidad.deudaInicial * (entidad.interes / 100);
@@ -79,14 +126,29 @@ export default function FormPrestamo() {
             const interesCuota = Number(Number(totalIntereses / entidad.cantidadCuotas).toFixed(2))
             setMontoAmortizacion(capitalCuota + interesCuota);
 
-            const cuotas = Array.from(Array(entidad.cantidadCuotas).keys()).map(() => {
+            const [dia, mes, anio] = primeraFechaPago.split('-')
+            const date = new Date(Number(anio), Number(mes) - 1, Number(dia))
+            const dias = entidad.formaPago?.dias.map(item => item.dia) ?? []
+            let fechas: string[] = [];
+
+            fechas.push(`${dia}-${mes}-${anio}`)
+            while (fechas.length < entidad?.cantidadCuotas) {
+                date.setDate(date.getDate() + 1);
+                if (dias.filter(num => num === date.getDate()).length > 0) {
+                    const nuevaFecha = FormatDate_DDMMYYYY(date.toISOString().substring(0, 10))
+                    if (nuevaFecha) fechas.push(nuevaFecha)
+                }
+            }
+
+            const cuotas = Array.from(Array(entidad.cantidadCuotas).keys()).map((_num, index) => {
 
                 saldoFinal = Number((saldoFinal - capitalCuota).toFixed(2));
+
                 return {
-                    fechaPago: entidad.fechaCredito,
+                    fechaPago: fechas[index],
                     deudaInicial: entidad.deudaInicial,
                     capital: capitalCuota,
-                    interes: interesCuota, // dividir aqui entre las formas de pago
+                    interes: interesCuota,
                     amortizacion: Number((interesCuota + capitalCuota).toFixed(2)),
                     saldoFinal: saldoFinal < 0 ? 0 : saldoFinal,
                 } as PrestamoCuota
@@ -113,6 +175,7 @@ export default function FormPrestamo() {
         if (entidad.cuotas.length === 0)
             alertas.push('Debe calcular las cuotas del prestamo.');
 
+        setIsAlert(false);
         setErrores(alertas);
         return alertas.length === 0;
     }
@@ -154,7 +217,7 @@ export default function FormPrestamo() {
         if (modelo) {
             cargarAuxiliares()
         }
-    }, [modelo])
+    }, [modelo, url.pathname])
     useEffect(() => { searchRef && searchRef.current && searchRef.current.focus() }, [searchRef])
 
     return (
@@ -168,22 +231,7 @@ export default function FormPrestamo() {
             </Flex>
             <Divider className='my-3' />
 
-            <>
-                {
-                    errores.length === 0
-                        ? <></>
-                        :
-                        <Alert
-                            type="error"
-                            closable={false}
-                            showIcon
-                            description={errores.length === 0 ? <></> : <ul className="m-0 ps-3">{errores.map((err, indexKey) => <li key={indexKey}>{err}</li>)}</ul>}
-                            message={<h1 className="fs-5" style={{ color: Colors.Danger }}>Alerta</h1>}
-                            className="mb-3"
-                            style={{ borderLeftWidth: 6, borderLeftColor: Colors.Danger }}
-                        />
-                }
-            </>
+            <AlertStatic errors={errores} isAlert={isAlert} />
 
             <Form
                 name="FormPrestamo"
@@ -244,10 +292,18 @@ export default function FormPrestamo() {
                                         locale={{ emptyText: <Flex style={{ textWrap: 'nowrap' }}>0 clientes</Flex> }}
                                         dataSource={procesando ? [] : clientes.map((item, index) => { return { ...item, key: index + 1 } })}>
                                         <Table.Column title="#" align="center" fixed='left' width={60} render={(record: Cliente) => (
-                                            <ButtonDefault size="small" shape="circle" icon={<IconCheck />} onClick={() => {
+                                            <ButtonDefault size="small" shape="circle" icon={<IconCheck />} onClick={async () => {
+                                                const result = await actual(record.id);
+                                                if (result && result.ok) {
+                                                    const prest = result.datos;
+                                                    if (!prest?.estado?.final) {
+                                                        setErrores(['Este cliente ya tiene un prestamo en curso. Si lo desea haga un reenganche.']);
+                                                        setIsAlert(true);
+                                                        return;
+                                                    }
+                                                }
+
                                                 if (entidad) {
-                                                    console.log('entidad', entidad)
-                                                    console.log('cliente', record)
                                                     editar({ ...entidad, cliente: record })
                                                     setFiltroCliente('')
                                                 }
@@ -280,7 +336,7 @@ export default function FormPrestamo() {
                         </Flex>
                     }>
                     <Row gutter={[10, 10]}>
-                        <Col xl={4} lg={4} md={8} sm={24} xs={24}>
+                        <Col xl={4} lg={4} md={8} sm={24} xs={24} style={{ alignSelf: 'end' }}>
                             <FormItem name="deudaInicial" label="Monto" rules={[{ required: true, message: 'Obligatorio' }]}>
                                 <InputNumber
                                     name="deudaInicial"
@@ -293,7 +349,7 @@ export default function FormPrestamo() {
                                     }} />
                             </FormItem>
                         </Col>
-                        <Col xl={4} lg={4} md={8} sm={24} xs={24}>
+                        <Col xl={4} lg={4} md={8} sm={24} xs={24} style={{ alignSelf: 'end' }}>
                             <FormItem name="interes" label="Interes (%)" rules={[{ required: true, message: 'Obligatorio' }]}>
                                 <InputNumber
                                     name="interes"
@@ -306,7 +362,7 @@ export default function FormPrestamo() {
                                     }} />
                             </FormItem>
                         </Col>
-                        <Col xl={4} lg={4} md={8} sm={24} xs={24}>
+                        <Col xl={4} lg={4} md={8} sm={24} xs={24} style={{ alignSelf: 'end' }}>
                             <FormItem name="cantidadCuotas" label="N&uacute;mero Cuotas" rules={[{ required: true, message: 'Obligatorio' }]}>
                                 <InputNumber
                                     name="cantidadCuotas"
@@ -319,7 +375,7 @@ export default function FormPrestamo() {
                                     }} />
                             </FormItem>
                         </Col>
-                        <Col xl={4} lg={4} md={8} sm={24} xs={24}>
+                        <Col xl={4} lg={4} md={8} sm={24} xs={24} style={{ alignSelf: 'end' }}>
                             <FormItem name="formaPagoId" label="Forma de Pago" rules={[{ required: true, message: 'Obligatorio' }]}>
                                 <Select
                                     allowClear
@@ -327,12 +383,17 @@ export default function FormPrestamo() {
                                     options={formasPago.map(item => ({ key: item.id, value: item.id, label: item.nombre }))}
                                     onChange={(value) => {
                                         if (entidad) {
-                                            editar({ ...entidad, formaPago: formasPago.filter(opt => opt.id === value).shift() });
+                                            const forma = formasPago.filter(opt => opt.id === value).shift()
+                                            editar({ ...entidad, formaPago: forma })
+                                            if (forma) {
+                                                const fechas = forma.dias.map(item => calcularFechaPago(item.dia))
+                                                setFechasPago(fechas.sort((a, b) => (a < b ? -1 : 1)))
+                                            }
                                         }
                                     }} />
                             </FormItem>
                         </Col>
-                        <Col xl={4} lg={4} md={8} sm={24} xs={24}>
+                        <Col xl={4} lg={4} md={8} sm={24} xs={24} style={{ alignSelf: 'end' }}>
                             <FormItem name="metodoPagoId" label="M&eacute;todo Pago" rules={[{ required: true, message: 'Obligatorio' }]}>
                                 <Select
                                     allowClear
@@ -345,7 +406,7 @@ export default function FormPrestamo() {
                                     }} />
                             </FormItem>
                         </Col>
-                        <Col xl={4} lg={4} md={8} sm={24} xs={24}>
+                        <Col xl={4} lg={4} md={8} sm={24} xs={24} style={{ alignSelf: 'end' }}>
                             <FormItem name="monedaId" label="Tipo Moneda" rules={[{ required: true, message: 'Obligatorio' }]}>
                                 <Select
                                     allowClear
@@ -358,11 +419,27 @@ export default function FormPrestamo() {
                                     }} />
                             </FormItem>
                         </Col>
-                        <Col xl={4} lg={4} md={8} sm={24} xs={24}>
+                        <Col xl={4} lg={4} md={8} sm={24} xs={24} style={{ alignSelf: 'end' }}>
+                            <FormItem name="acesorId" label="Acesor">
+                                <Select
+                                    allowClear
+                                    value={entidad?.acesor?.id}
+                                    options={acesores.map(item => ({ key: item.id, value: item.id, label: item.nombre }))}
+                                    notFoundContent={''}
+                                    onChange={(value) => {
+                                        if (entidad) {
+                                            editar({ ...entidad, acesor: acesores.filter(opt => opt.id === value).shift() });
+                                        }
+                                    }} />
+                            </FormItem>
+                        </Col>
+                        <Col xl={4} lg={4} md={8} sm={24} xs={24} style={{ alignSelf: 'end' }}>
                             <FormItem name="fechaCredito" label="Fecha emisi&oacute;n" rules={[{ required: true, message: 'Obligatorio' }]}>
                                 <InputDate
                                     name="fechaCredito"
                                     placeholder=""
+                                    minDate={minDate}
+                                    defaultValue={new Date()}
                                     value={entidad?.fechaCredito || ''}
                                     onChange={(date) => {
                                         if (entidad) {
@@ -371,30 +448,28 @@ export default function FormPrestamo() {
                                     }} />
                             </FormItem>
                         </Col>
-                        <Col xl={4} lg={4} md={8} sm={24} xs={24}>
-                            <FormItem name="acesorId" label="Acesor">
+                        <Col xl={4} lg={4} md={8} sm={24} xs={24} style={{ alignSelf: 'end' }}>
+                            <FormItem name="fechaInicioPago" label="Inicio de Pago" rules={[{ required: true, message: 'Obligatorio' }]}>
                                 <Select
-                                    allowClear
-                                    value={entidad?.acesor?.id}
-                                    options={acesores.map(item => ({ key: item.id, value: item.id, label: item.nombre }))}
-                                    onChange={(value) => {
-                                        if (entidad) {
-                                            editar({ ...entidad, acesor: acesores.filter(opt => opt.id === value).shift() });
-                                        }
-                                    }} />
+                                    options={fechasPago.map((item, index) => {
+                                        const fecha = getDateFormated(item)!
+                                        return { key: index, value: fecha, label: fecha }
+                                    })}
+                                    notFoundContent={''}
+                                    onChange={setPrimeraFechaPago} />
                             </FormItem>
                         </Col>
-                        <Col xl={4} lg={4} md={8} sm={24} xs={24}>
+                        <Col xl={4} lg={4} md={8} sm={24} xs={24} style={{ alignSelf: 'end' }}>
                             <FormItem label="Monto Cuota">
                                 <Input disabled variant="borderless" value={FormatNumber(montoCapitalCuota, 2)} style={styleInputTotal} />
                             </FormItem>
                         </Col>
-                        <Col xl={4} lg={4} md={8} sm={24} xs={24}>
+                        <Col xl={4} lg={4} md={8} sm={24} xs={24} style={{ alignSelf: 'end' }}>
                             <FormItem label="Total Interes">
                                 <Input disabled variant="borderless" value={FormatNumber(montoTotalInteres, 2)} style={styleInputTotal} />
                             </FormItem>
                         </Col>
-                        <Col xl={4} lg={4} md={8} sm={24} xs={24}>
+                        <Col xl={4} lg={4} md={8} sm={24} xs={24} style={{ alignSelf: 'end' }}>
                             <FormItem label="Monto a Pagar">
                                 <Input disabled variant="borderless" value={FormatNumber(montoAmortizacion, 2)} style={styleInputTotal} />
                             </FormItem>

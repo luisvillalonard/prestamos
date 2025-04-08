@@ -42,13 +42,13 @@ export const FormatDate_DDMMYYYY = (fecha: StringOrNull) => {
     } catch (e) { }
 }
 
-export const FormatDate_YYYYMMDD = (fecha: string): StringOrNull => {
-    if (!fecha)
+export const FormatDate_YYYYMMDD = (fecha_dd_mm_yyyy: string): StringOrNull => {
+    if (!fecha_dd_mm_yyyy)
         return undefined;
 
     try {
         // 01/01/1900 - DAY-MONTH-YEAR
-        let [day, month, year] = fecha.split('/');
+        let [day, month, year] = fecha_dd_mm_yyyy.indexOf('/') >= 0 ? fecha_dd_mm_yyyy.split('/') : fecha_dd_mm_yyyy.split('-');
 
         day = day.length <= 1 ? '0'.concat(day) : day;
         month = month.length <= 1 ? '0'.concat(month) : month;

@@ -1,20 +1,26 @@
 import { Urls } from "@hooks/useConstants"
+import { useFetch } from "@hooks/useFetch"
 import { useReducerHook } from "@hooks/useReducer"
-import { FormatDate_DDMMYYYY } from "@hooks/useUtils"
-import { ControlProps } from "@interfaces/globales"
+import { FormatDate_DDMMYYYY, FormatDate_YYYYMMDD } from "@hooks/useUtils"
+import { ControlProps, ResponseResult } from "@interfaces/globales"
 import { Prestamo } from "@interfaces/prestamos"
-import { GlobalContextState } from "@reducers/global"
+import { ACTIONS, GlobalContextState } from "@reducers/global"
 import { createContext } from "react"
 
-export const PrestamosContext = createContext<GlobalContextState<Prestamo>>({} as GlobalContextState<Prestamo>)
+export interface PrestamoContextState<T> extends GlobalContextState<T> {
+    actual: (id: number) => Promise<ResponseResult<T>>,
+}
+
+export const PrestamosContext = createContext<PrestamoContextState<Prestamo>>({} as PrestamoContextState<Prestamo>)
 
 export default function PrestamosProvider(props: Pick<ControlProps, "children">) {
 
     const { children } = props
-    const { state, editar, cancelar, agregar, actualizar, todos } = useReducerHook<Prestamo>(Urls.Prestamos.Base);
+    const { state, dispatch, editar, cancelar, agregar, actualizar, todos, errorResult } = useReducerHook<Prestamo>(Urls.Prestamos.Base);
+    const api = useFetch();
 
     const nuevo = async (): Promise<void> => {
-        const diaActual: string = FormatDate_DDMMYYYY(new Date().toISOString().substring(0, 10))!;
+        const diaActual: string = FormatDate_DDMMYYYY(FormatDate_YYYYMMDD(new Date().toLocaleDateString('es-DO').substring(0, 10)))!;
 
         editar({
             id: 0,
@@ -40,6 +46,22 @@ export default function PrestamosProvider(props: Pick<ControlProps, "children">)
         });
     }
 
+    const actual = async (id: number): Promise<ResponseResult<Prestamo>> => {
+
+        dispatch({ type: ACTIONS.FETCHING });
+        let resp: ResponseResult<Prestamo>;
+
+        try {
+            resp = await api.Get<Prestamo>(`${Urls.Prestamos.Base}/actual?id=${id}`);
+        } catch (error: any) {
+            resp = errorResult<Prestamo>(error);
+        }
+
+        dispatch({ type: ACTIONS.FETCH_COMPLETE, recargar: false });
+        return resp;
+
+    }
+
     return (
         <PrestamosContext.Provider value={{
             state,
@@ -49,6 +71,7 @@ export default function PrestamosProvider(props: Pick<ControlProps, "children">)
             agregar,
             actualizar,
             todos,
+            actual,
         }}>
             {children}
         </PrestamosContext.Provider>

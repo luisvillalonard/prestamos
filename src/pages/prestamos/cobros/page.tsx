@@ -1,27 +1,28 @@
-import Loading from "@components/containers/loading"
-import { useData } from "@hooks/useData"
-import { Card, Col, Divider, Flex, Form, Input, Row, Space, Table, Tabs, Tag } from "antd"
-import { useNavigate, useParams } from "react-router-dom"
-import { CSSProperties, useEffect, useState } from "react"
-import TitlePage from "@components/titles/titlePage"
-import { Colors, Urls } from "@hooks/useConstants"
-import { useForm } from "@hooks/useForm"
-import { Prestamo, PrestamoPago } from "@interfaces/prestamos"
-import { Alerta, Exito } from "@hooks/useMensaje"
-import TitlePanel from "@components/titles/titlePanel"
-import Searcher from "@components/inputs/searcher"
-import { ButtonDefault } from "@components/buttons/default"
-import { IconCheck, IconListPoint, IconSearch } from "@hooks/useIconos"
-import { FormatNumber } from "@hooks/useUtils"
-import PrestamoCuotas from "../cuotas"
 import AlertStatic from "@components/alerts/alert"
+import { ButtonDefault } from "@components/buttons/default"
+import { ButtonPrimary } from "@components/buttons/primary"
+import Loading from "@components/containers/loading"
+import FormItem from "@components/forms/item"
+import Searcher from "@components/inputs/searcher"
+import TitlePage from "@components/titles/titlePage"
+import TitlePanel from "@components/titles/titlePanel"
+import { Colors, Urls } from "@hooks/useConstants"
+import { useData } from "@hooks/useData"
+import { useForm } from "@hooks/useForm"
+import { IconCheck, IconListPoint, IconSearch } from "@hooks/useIconos"
+import { Alerta, Exito } from "@hooks/useMensaje"
+import { FormatNumber } from "@hooks/useUtils"
+import { Prestamo, PrestamoPago } from "@interfaces/prestamos"
+import { Card, Col, Divider, Flex, Form, Input, Row, Space, Table, Tabs, Tag } from "antd"
+import { CSSProperties, useEffect, useState } from "react"
+import { useNavigate, useParams } from "react-router-dom"
+import PrestamoCuotas from "../cuotas"
 
 const styleInput: CSSProperties = {
-    width: '100%', 
-    borderRadius: 0, 
-    fontWeight: 'bold', 
-    borderBottomWidth: 1, 
-    borderBottomStyle: 'solid', 
+    width: '100%',
+    borderRadius: 0,
+    borderBottomWidth: 1,
+    borderBottomStyle: 'solid',
     borderBottomColor: Colors.Secondary
 }
 
@@ -67,7 +68,7 @@ export default function PagePrestamoCobro() {
 
         const alertas: string[] = [];
 
-        if (!entidad.id || entidad.id <= 0)
+        if (!entidad || entidad.prestamoId <= 0)
             alertas.push('No se ha establececido el prestamo para hacer el pago.');
 
         setErrores(alertas);
@@ -119,7 +120,7 @@ export default function PagePrestamoCobro() {
             <TitlePage title="M&oacute;lculo de Cobros de Prestamo" />
             <Divider className='my-3' />
 
-            <AlertStatic errors={errores} />
+            <AlertStatic errors={errores} isAlert={false} />
 
             <Tabs
                 defaultActiveKey={activeKey}
@@ -148,10 +149,13 @@ export default function PagePrestamoCobro() {
                                 <Table.Column title="#" align="center" fixed='left' width={60} render={(record: Prestamo) => (
                                     <ButtonDefault size="small" shape="circle" icon={<IconCheck />} onClick={() => {
                                         if (entidad) {
-                                            console.log('entidad', entidad)
-                                            console.log('prestamo', record)
                                             editar({ ...entidad, prestamoId: record.id })
                                             setPrestamo(record)
+                                            editar({
+                                                ...entidad,
+                                                prestamoId: record.id,
+                                                formaPago: record.formaPago,
+                                            })
                                             setActiveKey('2')
                                         }
                                     }} />
@@ -185,6 +189,22 @@ export default function PagePrestamoCobro() {
                                     title={<TitlePanel title="Datos del Pago" color={Colors.Primary} />}
                                     className="mb-4">
 
+                                    <Row gutter={[10, 10]}>
+                                        <Col xl={6} lg={6} md={8} sm={24} xs={24} style={{ alignSelf: 'end' }}>
+                                            <FormItem name="monto" label="Pago de Cuota" rules={[{ required: true, message: 'Obligatorio' }]}>
+                                                <Input size="large" name="monto" value={entidad?.monto} />
+                                            </FormItem>
+                                        </Col>
+                                        <Col xl={6} lg={6} md={8} sm={24} xs={24} style={{ alignSelf: 'end' }}>
+                                            <FormItem name="multaMora" label="Multa por Mora" rules={[{ required: true, message: 'Obligatorio' }]}>
+                                                <Input size="large" name="multaMora" value={entidad?.monto} />
+                                            </FormItem>
+                                        </Col>
+                                        <Col xl={6} lg={6} md={8} sm={24} xs={24} style={{ alignSelf: 'end' }}>
+                                            <ButtonPrimary htmlType="submit">Pagar</ButtonPrimary>
+                                        </Col>
+                                    </Row>
+
                                 </Card>
 
                             </Form>
@@ -192,7 +212,6 @@ export default function PagePrestamoCobro() {
                             <Card
                                 size="small"
                                 title={<TitlePanel title="Datos del Cliente" color={Colors.Primary} />}
-                                extra={<Searcher variant="borderless" value={filtroPrestamo} onChange={setFiltroPrestamo} />}
                                 className="mb-4">
                                 <Space split={<Divider type="vertical" className="h-100 d-inline" style={{ borderColor: Colors.Secondary }} />}>
                                     <Flex vertical>
@@ -222,73 +241,72 @@ export default function PagePrestamoCobro() {
                                         <TitlePanel title="Datos del Prestamo" color={Colors.Primary} />
                                         <Tag color='blue' style={{ fontSize: 16, borderRadius: 10 }}>{prestamo?.codigo || 'P-000000'}</Tag>
                                     </Flex>
-                                }
-                                extra={<Searcher variant="borderless" value={''} />}>
+                                }>
                                 <Row gutter={[10, 10]}>
                                     <Col xl={4} lg={4} md={8} sm={24} xs={24}>
                                         <Flex vertical>
                                             <label>Monto</label>
-                                            <Input size="large" readOnly value={FormatNumber(prestamo?.deudaInicial, 2)} style={styleInput} />
+                                            <Input size="large" variant="borderless" readOnly value={FormatNumber(prestamo?.deudaInicial, 2)} style={styleInput} />
                                         </Flex>
                                     </Col>
                                     <Col xl={4} lg={4} md={8} sm={24} xs={24}>
                                         <Flex vertical>
                                             <label>Interes (%)</label>
-                                            <Input size="large" readOnly value={FormatNumber(prestamo?.interes, 2)} style={styleInput} />
+                                            <Input size="large" variant="borderless" readOnly value={FormatNumber(prestamo?.interes, 2)} style={styleInput} />
                                         </Flex>
                                     </Col>
                                     <Col xl={4} lg={4} md={8} sm={24} xs={24}>
                                         <Flex vertical>
                                             <label>N&uacute;mero Cuotas</label>
-                                            <Input size="large" readOnly value={FormatNumber(prestamo?.cantidadCuotas, 2)} style={styleInput} />
+                                            <Input size="large" variant="borderless" readOnly value={FormatNumber(prestamo?.cantidadCuotas, 0)} style={styleInput} />
                                         </Flex>
                                     </Col>
                                     <Col xl={4} lg={4} md={8} sm={24} xs={24}>
                                         <Flex vertical>
                                             <label>Forma de Pago</label>
-                                            <Input size="large" readOnly value={prestamo?.formaPago?.nombre} style={styleInput} />
+                                            <Input size="large" variant="borderless" readOnly value={prestamo?.formaPago?.nombre} style={styleInput} />
                                         </Flex>
                                     </Col>
                                     <Col xl={4} lg={4} md={8} sm={24} xs={24}>
                                         <Flex vertical>
                                             <label>M&eacute;todo Pago</label>
-                                            <Input size="large" readOnly value={prestamo?.metodoPago?.nombre} style={styleInput} />
+                                            <Input size="large" variant="borderless" readOnly value={prestamo?.metodoPago?.nombre} style={styleInput} />
                                         </Flex>
                                     </Col>
                                     <Col xl={4} lg={4} md={8} sm={24} xs={24}>
                                         <Flex vertical>
                                             <label>Tipo Moneda</label>
-                                            <Input size="large" readOnly value={prestamo?.moneda?.nombre} style={styleInput} />
+                                            <Input size="large" variant="borderless" readOnly value={prestamo?.moneda?.nombre} style={styleInput} />
                                         </Flex>
                                     </Col>
                                     <Col xl={4} lg={4} md={8} sm={24} xs={24}>
                                         <Flex vertical>
                                             <label>Fecha emisi&oacute;n</label>
-                                            <Input size="large" readOnly value={prestamo?.fechaCredito} style={styleInput} />
+                                            <Input size="large" variant="borderless" readOnly value={prestamo?.fechaCredito} style={styleInput} />
                                         </Flex>
                                     </Col>
                                     <Col xl={4} lg={4} md={8} sm={24} xs={24}>
                                         <Flex vertical>
                                             <label>Acesor</label>
-                                            <Input size="large" readOnly value={prestamo?.acesor?.nombre} style={styleInput} />
+                                            <Input size="large" variant="borderless" readOnly value={prestamo?.acesor?.nombre} style={styleInput} />
                                         </Flex>
                                     </Col>
                                     <Col xl={4} lg={4} md={8} sm={24} xs={24}>
                                         <Flex vertical>
                                             <label>Monto Cuota</label>
-                                            <Input size="large" readOnly value={FormatNumber(montoCapitalCuota, 2)} style={{ ...styleInput, width: '100%' }} />
+                                            <Input size="large" variant="borderless" readOnly value={FormatNumber(montoCapitalCuota, 2)} style={{ ...styleInput, width: '100%' }} />
                                         </Flex>
                                     </Col>
                                     <Col xl={4} lg={4} md={8} sm={24} xs={24}>
                                         <Flex vertical>
                                             <label>Total Interes</label>
-                                            <Input size="large" readOnly value={FormatNumber(montoTotalInteres, 2)} style={{ width: '100%' }} />
+                                            <Input size="large" variant="borderless" readOnly value={FormatNumber(montoTotalInteres, 2)} style={{ ...styleInput, width: '100%' }} />
                                         </Flex>
                                     </Col>
                                     <Col xl={4} lg={4} md={8} sm={24} xs={24}>
                                         <Flex vertical>
                                             <label>Monto a Pagar</label>
-                                            <Input size="large" readOnly value={FormatNumber(montoAmortizacion, 2)} style={{ width: '100%' }} />
+                                            <Input size="large" variant="borderless" readOnly value={FormatNumber(montoAmortizacion, 2)} style={{ ...styleInput, width: '100%' }} />
                                         </Flex>
                                     </Col>
                                 </Row>

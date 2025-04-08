@@ -1,7 +1,7 @@
 import { IconSearch } from "@hooks/useIconos"
 import { ControlProps } from '@interfaces/globales'
 import type { InputProps } from 'antd'
-import { Input, Space, Tooltip } from "antd"
+import { Button, Input, Space, Tooltip } from "antd"
 import { useEffect, useState } from "react"
 
 const Searcher = (props: Omit<InputProps, "onChange"> & Pick<ControlProps, "onChange">) => {
@@ -29,20 +29,20 @@ const Searcher = (props: Omit<InputProps, "onChange"> & Pick<ControlProps, "onCh
     }, [debouncedQuery]);
 
     return (
-        <Space>
-            <Tooltip title="Escriba aqui para buscar, presione escape para limpiar la busqueda">
+        <Tooltip title="Escriba aqui para buscar, presione escape para limpiar la busqueda">
+            <Space.Compact>
                 <Input
                     {...props}
                     allowClear
                     placeholder={props.placeholder || "escriba aqui para buscar"}
-                    suffix={<IconSearch />}
                     value={query}
                     style={{ width: '100%', ...props.style }}
                     onClear={() => setQuery('')}
                     onChange={(e) => setQuery(e.target.value)}
                     onKeyUp={(evt) => { if (evt.code.toLowerCase() === 'escape') setQuery('') }} />
-            </Tooltip>
-        </Space>
+                <Button size={props.size} type="text" variant="outlined" icon={<IconSearch />} onClick={() => onChange && onChange(query)}></Button>
+            </Space.Compact>
+        </Tooltip>
     )
 }
 export default Searcher;
