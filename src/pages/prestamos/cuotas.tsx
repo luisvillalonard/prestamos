@@ -13,9 +13,11 @@ export default function PrestamoCuotas(props: PrestamoCuotasProps) {
 
     const montoPendiente = (cuota: PrestamoCuota): number => {
 
-        const montoPagos = cuota.pagos.reduce((acc: number, item: PrestamoPago) => {
-            return acc + item.monto
-        }, 0);
+        let montoPagos: number = !cuota.pagos
+            ? 0
+            : cuota.pagos.reduce((acc: number, item: PrestamoPago) => {
+                return acc + item.monto
+            }, 0);
 
         if (montoPagos >= cuota.amortizacion)
             return 0;

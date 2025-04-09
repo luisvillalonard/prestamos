@@ -42,7 +42,7 @@ export default function FormPrestamo() {
     const [montoCapitalCuota, setMontoCapitalCuota] = useState<number>(0)
     const [montoTotalInteres, setMontoTotalInteres] = useState<number>(0)
     const [montoAmortizacion, setMontoAmortizacion] = useState<number>(0)
-    const [fechasPago, setFechasPago] = useState<Date[]>([])
+    const [fechasPago, setFechasPago] = useState<string[]>([])
     const [primeraFechaPago, setPrimeraFechaPago] = useState<string>('')
     const [minDate, setMinDate] = useState<Date | undefined>(undefined)
     const [isAlert, setIsAlert] = useState<boolean>(false)
@@ -80,23 +80,27 @@ export default function FormPrestamo() {
         }
     }
 
-    const calcularFechaPago = (dia: number): Date => {
+    const calcularFechaPago = () => {
 
-        if (dia <= 0) return new Date()
+        if (!entidad || !entidad.fechaCredito || !entidad.formaPago) return;
 
-        const fechaHoy = new Date()
-        const diaDeHoy = fechaHoy.getDate()
-        let mes = (fechaHoy.getMonth() + 1)
-        let anio = fechaHoy.getFullYear()
+        const [strDia, strMes, strAnio] = entidad?.fechaCredito?.split('-');
+        const fechaInicio = new Date(Number(strAnio), Number(strMes) - 1, Number(strDia));
+        const dias = entidad.formaPago?.dias.map(item => item.dia) ?? [];
+        let fechas: string[] = [];
 
-        if (dia < diaDeHoy) {
-            mes = fechaHoy.getMonth() + 2
-            if ((fechaHoy.getMonth() + 2) === 1) {
-                anio = fechaHoy.getFullYear() + 1
+        while (fechas.length < dias.length) {
+            fechaInicio.setDate(fechaInicio.getDate() + 1);
+            if (dias.filter(num => num === fechaInicio.getDate()).length > 0) {
+                const nuevaFecha = FormatDate_DDMMYYYY(fechaInicio.toISOString().substring(0, 10))
+                if (nuevaFecha) {
+                    fechas.push(nuevaFecha);
+                }
             }
         }
 
-        return new Date(anio, mes, dia)
+        setFechasPago(fechas.sort((a, b) => a.localeCompare(b)));
+        setPrimeraFechaPago('');
 
     }
 
@@ -222,6 +226,7 @@ export default function FormPrestamo() {
         if (modelo) { cargarAuxiliares() }
     }, [modelo, url.pathname])
     useEffect(() => { searchRef && searchRef.current && searchRef.current.focus() }, [searchRef])
+    useEffect(() => { calcularFechaPago() }, [entidad?.fechaCredito, entidad?.formaPago])
 
     return (
         <>
@@ -230,7 +235,7 @@ export default function FormPrestamo() {
                 <Flex align="center" justify="space-between" className="mb-3">
                     <TitlePage title="Formulario de C&aacute;lculo y Registro de Prestamo" />
                     <Space>
-                        <ButtonPrimary size="large" htmlType="submit" form="FormPrestamo">
+                        <ButtonPrimary size="large" htmlType="submit" form="FormPrestamo" disabled={isBlocked}>
                             {entidad && entidad.id > 0 ? 'Actualizar' : 'Guardar'}
                         </ButtonPrimary>
                     </Space>
@@ -396,14 +401,11 @@ export default function FormPrestamo() {
                                         value={entidad?.formaPago?.id}
                                         options={formasPago.map(item => ({ key: item.id, value: item.id, label: item.nombre }))}
                                         disabled={isBlocked}
+                                        onClear={() => setFechasPago([])}
                                         onChange={(value) => {
                                             if (entidad) {
                                                 const forma = formasPago.filter(opt => opt.id === value).shift()
                                                 editar({ ...entidad, formaPago: forma })
-                                                if (forma) {
-                                                    const fechas = forma.dias.map(item => calcularFechaPago(item.dia))
-                                                    setFechasPago(fechas.sort((a, b) => (a < b ? -1 : 1)))
-                                                }
                                             }
                                         }} />
                                 </FormItem>
@@ -462,7 +464,7 @@ export default function FormPrestamo() {
                                         value={entidad?.fechaCredito || ''}
                                         onChange={(date) => {
                                             if (entidad) {
-                                                editar({ ...entidad, fechaCredito: date.format('DD-MM-YYYY') })
+                                                editar({ ...entidad, fechaCredito: !date ? '' : date.format('DD-MM-YYYY') })
                                             }
                                         }} />
                                 </FormItem>
@@ -470,6 +472,8 @@ export default function FormPrestamo() {
                             <Col xl={4} lg={4} md={8} sm={24} xs={24} style={{ alignSelf: 'end' }}>
                                 <FormItem name="fechaInicioPago" label="Inicio de Pago" rules={[{ required: true, message: 'Obligatorio' }]}>
                                     <Select
+                                        defaultActiveFirstOption={true}
+                                        value={primeraFechaPago}
                                         options={fechasPago.map((item, index) => {
                                             const fecha = getDateFormated(item)!
                                             return { key: index, value: fecha, label: fecha }
