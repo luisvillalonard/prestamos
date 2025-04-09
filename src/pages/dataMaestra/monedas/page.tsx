@@ -2,12 +2,12 @@ import { ButtonPrimary } from "@components/buttons/primary"
 import Loading from "@components/containers/loading"
 import Searcher from "@components/inputs/searcher"
 import { useData } from "@hooks/useData"
-import { Col, Divider, Flex, Space, theme } from "antd"
+import { Col, Flex, Space, theme } from "antd"
 import { useState } from "react"
 import FormMoneda from "./form"
 import Listado from "./listado"
 import TitlePage from "@components/titles/titlePage"
-import { Colors } from "@hooks/useConstants"
+import Container from "@components/containers/container"
 
 export default function PageMonedas() {
 
@@ -18,17 +18,16 @@ export default function PageMonedas() {
     return (
         <>
             <Col span={18} offset={3}>
-                <TitlePage title="Monedas" />
-                <Divider style={{ borderColor: Colors.Gris51 }} className='my-3' />
                 <Flex align="center" justify="space-between" className="mb-3">
+                    <TitlePage title="Monedas" />
                     <Space>
-                        <Searcher size="large" onChange={setFilter} style={{ borderColor: token.colorBorderSecondary }} />
-                    </Space>
-                    <Space>
-                        <ButtonPrimary onClick={nuevo}>Nueva Moneda</ButtonPrimary>
+                        <Searcher key="1" size="large" onChange={setFilter} style={{ borderColor: token.colorBorderSecondary }} />
+                        <ButtonPrimary key="2" size="large" onClick={nuevo}>Nueva Moneda</ButtonPrimary>
                     </Space>
                 </Flex>
-                <Listado filter={filter} />
+                <Container>
+                    <Listado filter={filter} />
+                </Container>
                 {!modelo ? <></> : <FormMoneda />}
             </Col>
             <Loading active={procesando} message="Procesando, espere..." />

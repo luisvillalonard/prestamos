@@ -171,21 +171,16 @@ export default function MenuApp() {
             collapsible
             collapsed={!viewMenu}
             style={siderStyle}>
-            {
-                procesando
-                    ? <span>Cargando...</span>
-                    :
-                    <Menu
-                        theme='dark'
-                        mode='inline'
-                        selectedKeys={[current]}
-                        openKeys={stateOpenKeys}
-                        onOpenChange={onOpenChange}
-                        onClick={onClick}
-                        items={items}
-                        style={{ height: '100%', borderRight: 0, overflow: 'auto' }}
-                    />
-            }
+            <Menu
+                theme='dark'
+                mode='inline'
+                selectedKeys={[current]}
+                openKeys={stateOpenKeys}
+                onOpenChange={onOpenChange}
+                onClick={onClick}
+                items={items}
+                style={{ height: '100%', borderRight: 0, overflow: 'auto' }}
+            />
         </Sider>
     )
 

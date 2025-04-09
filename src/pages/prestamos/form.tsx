@@ -10,12 +10,12 @@ import TitlePanel from "@components/titles/titlePanel"
 import { Colors, Urls } from "@hooks/useConstants"
 import { useData } from "@hooks/useData"
 import { useForm } from "@hooks/useForm"
-import { IconCalculator, IconCheck } from "@hooks/useIconos"
+import { IconCalculator } from "@hooks/useIconos"
 import { Alerta, Exito } from "@hooks/useMensaje"
 import { FormatDate_DDMMYYYY, FormatDate_YYYYMMDD, FormatNumber } from "@hooks/useUtils"
 import { Cliente } from "@interfaces/clientes"
 import { Prestamo, PrestamoCuota } from "@interfaces/prestamos"
-import { Button, Card, Col, Collapse, Divider, Flex, Form, Input, InputNumber, InputRef, Row, Select, Space, Table, Tag } from "antd"
+import { Button, Card, Col, Collapse, Divider, Flex, Form, Input, InputNumber, InputRef, Row, Select, Space, Table, Tag, theme, Typography } from "antd"
 import { CSSProperties, useEffect, useRef, useState } from "react"
 import { useLocation, useNavigate } from "react-router-dom"
 import PrestamoCuotas from "./cuotas"
@@ -46,6 +46,7 @@ export default function FormPrestamo() {
     const [primeraFechaPago, setPrimeraFechaPago] = useState<string>('')
     const [minDate, setMinDate] = useState<Date | undefined>(undefined)
     const [isAlert, setIsAlert] = useState<boolean>(false)
+    const [isBlocked, setIsBlocked] = useState<boolean>(false)
     const searchRef = useRef<InputRef>(null)
     const nav = useNavigate()
     const url = useLocation()
@@ -226,13 +227,14 @@ export default function FormPrestamo() {
         <>
             <Col xl={{ span: 20, offset: 2 }} lg={{ span: 24 }} md={{ span: 24 }} xs={{ span: 24 }}>
 
-                <Flex align="center" justify="space-between">
+                <Flex align="center" justify="space-between" className="mb-3">
                     <TitlePage title="Formulario de C&aacute;lculo y Registro de Prestamo" />
-                    <ButtonPrimary size="large" htmlType="submit" form="FormPrestamo">
-                        {entidad && entidad.id > 0 ? 'Actualizar' : 'Guardar'}
-                    </ButtonPrimary>
+                    <Space>
+                        <ButtonPrimary size="large" htmlType="submit" form="FormPrestamo">
+                            {entidad && entidad.id > 0 ? 'Actualizar' : 'Guardar'}
+                        </ButtonPrimary>
+                    </Space>
                 </Flex>
-                <Divider className='my-3' />
 
                 <AlertStatic errors={errores} isAlert={isAlert} />
 
@@ -252,9 +254,8 @@ export default function FormPrestamo() {
                     onFinish={guardar}>
 
                     <Card
-                        size="small"
-                        title={<TitlePanel title="Datos del Cliente" color={Colors.Primary} />}
-                        extra={<Searcher variant="borderless" value={filtroCliente} onChange={setFiltroCliente} />}
+                        title={<Typography.Title level={4} style={{ margin: 0, color: Colors.Primary }}>Datos del Cliente</Typography.Title>}
+                        extra={<Searcher value={filtroCliente} onChange={setFiltroCliente} />}
                         className="mb-4 position-relative">
                         <Space split={<Divider type="vertical" className="h-100 d-inline" style={{ borderColor: Colors.Secondary }} />}>
                             <Flex vertical>
@@ -294,31 +295,39 @@ export default function FormPrestamo() {
                                             loading={procesando}
                                             locale={{ emptyText: <Flex style={{ textWrap: 'nowrap' }}>0 clientes</Flex> }}
                                             dataSource={procesando ? [] : clientes.map((item, index) => { return { ...item, key: index + 1 } })}>
-                                            <Table.Column title="#" align="center" fixed='left' width={60} render={(record: Cliente) => (
-                                                <ButtonDefault size="small" shape="circle" icon={<IconCheck />} onClick={async () => {
+                                            <Table.Column title="Acci&oacute;n" align="center" fixed='left' width={60} render={(record: Cliente) => (
+                                                <ButtonDefault size="small" shape="round" onClick={async () => {
                                                     const result = await actual(record.id);
                                                     if (result && result.ok) {
                                                         const prest = result.datos;
                                                         if (!prest?.estado?.final) {
                                                             setErrores(['Este cliente ya tiene un prestamo en curso. Si lo desea haga un reenganche.']);
                                                             setIsAlert(true);
+                                                            setIsBlocked(true);
                                                             return;
                                                         }
                                                     }
 
                                                     if (entidad) {
-                                                        editar({ ...entidad, cliente: record })
+                                                        editar({ ...entidad, cliente: record });
+                                                        setIsBlocked(false);
                                                         setFiltroCliente('')
                                                     }
-                                                }} />
+                                                }}>Seleccionar</ButtonDefault>
                                             )} />
                                             <Table.Column title="Código" dataIndex="codigo" key="codigo" fixed='left' width={80} />
                                             <Table.Column title="Empleado Id" dataIndex="empleadoId" key="empleadoId" width={100} />
-                                            <Table.Column title="Nombres y Apellidos" fixed='left' render={(record: Cliente) => (
+                                            <Table.Column title="Nombres y Apellidos" render={(record: Cliente) => (
                                                 `${record.nombres || ''} ${record.apellidos || ''}`.trim()
                                             )} />
                                             <Table.Column title="Documento" render={(record: Cliente) => (
                                                 <span style={{ textWrap: 'nowrap' }}>{`(${record.documentoTipo?.nombre}) ${record.documento}`}</span>
+                                            )} />
+                                            <Table.Column title="Sexo" render={(record: Cliente) => (record.sexo?.nombre)} />
+                                            <Table.Column title="Ciudad" render={(record: Cliente) => (record.ciudad?.nombre)} />
+                                            <Table.Column title="Ocupaci&oacute;n" render={(record: Cliente) => (record.ocupacion?.nombre)} />
+                                            <Table.Column title="Celular" render={(record: Cliente) => (
+                                                <span style={{ textWrap: 'nowrap' }}>{record.telefonoCelular}</span>
                                             )} />
                                         </Table>
                                     </>,
@@ -329,9 +338,8 @@ export default function FormPrestamo() {
                     </Card>
 
                     <Card
-                        size="small"
                         className="mb-4"
-                        title={<TitlePanel title="Datos del Prestamo" color={Colors.Primary} />}
+                        title={<Typography.Title level={4} style={{ margin: 0, color: Colors.Primary }}>Datos del Prestamo</Typography.Title>}
                         extra={
                             <Flex align="center" gap={10}>
                                 <TitlePanel title="C&oacute;digo" />
@@ -345,6 +353,7 @@ export default function FormPrestamo() {
                                         name="deudaInicial"
                                         value={entidad?.deudaInicial}
                                         style={{ width: '100%' }}
+                                        disabled={isBlocked}
                                         onChange={(value) => {
                                             if (entidad && value) {
                                                 editar({ ...entidad, deudaInicial: value })
@@ -358,6 +367,7 @@ export default function FormPrestamo() {
                                         name="interes"
                                         value={entidad?.interes}
                                         style={{ width: '100%' }}
+                                        disabled={isBlocked}
                                         onChange={(value) => {
                                             if (entidad && value) {
                                                 editar({ ...entidad, interes: value })
@@ -371,6 +381,7 @@ export default function FormPrestamo() {
                                         name="cantidadCuotas"
                                         value={entidad?.cantidadCuotas}
                                         style={{ width: '100%' }}
+                                        disabled={isBlocked}
                                         onChange={(value) => {
                                             if (entidad && value) {
                                                 editar({ ...entidad, cantidadCuotas: value })
@@ -384,6 +395,7 @@ export default function FormPrestamo() {
                                         allowClear
                                         value={entidad?.formaPago?.id}
                                         options={formasPago.map(item => ({ key: item.id, value: item.id, label: item.nombre }))}
+                                        disabled={isBlocked}
                                         onChange={(value) => {
                                             if (entidad) {
                                                 const forma = formasPago.filter(opt => opt.id === value).shift()
@@ -402,6 +414,7 @@ export default function FormPrestamo() {
                                         allowClear
                                         value={entidad?.metodoPago?.id}
                                         options={metodosPago.map(item => ({ key: item.id, value: item.id, label: item.nombre }))}
+                                        disabled={isBlocked}
                                         onChange={(value) => {
                                             if (entidad) {
                                                 editar({ ...entidad, metodoPago: metodosPago.filter(opt => opt.id === value).shift() });
@@ -415,6 +428,7 @@ export default function FormPrestamo() {
                                         allowClear
                                         value={entidad?.moneda?.id}
                                         options={monedas.map(item => ({ key: item.id, value: item.id, label: item.nombre }))}
+                                        disabled={isBlocked}
                                         onChange={(value) => {
                                             if (entidad) {
                                                 editar({ ...entidad, moneda: monedas.filter(opt => opt.id === value).shift() });
@@ -428,6 +442,7 @@ export default function FormPrestamo() {
                                         allowClear
                                         value={entidad?.acesor?.id}
                                         options={acesores.map(item => ({ key: item.id, value: item.id, label: item.nombre }))}
+                                        disabled={isBlocked}
                                         notFoundContent={''}
                                         onChange={(value) => {
                                             if (entidad) {
@@ -443,6 +458,7 @@ export default function FormPrestamo() {
                                         placeholder=""
                                         minDate={minDate}
                                         defaultValue={new Date()}
+                                        disabled={isBlocked}
                                         value={entidad?.fechaCredito || ''}
                                         onChange={(date) => {
                                             if (entidad) {
@@ -459,6 +475,7 @@ export default function FormPrestamo() {
                                             return { key: index, value: fecha, label: fecha }
                                         })}
                                         notFoundContent={''}
+                                        disabled={isBlocked}
                                         onChange={setPrimeraFechaPago} />
                                 </FormItem>
                             </Col>
@@ -481,10 +498,9 @@ export default function FormPrestamo() {
                     </Card>
 
                     <Card
-                        size="small"
                         className="mb-4"
-                        title={<TitlePanel title="Informaci&oacute;n de Cr&eacute;dito" color={Colors.Primary} />}
-                        extra={<Button size="middle" type="link" icon={<IconCalculator />} onClick={calcularCuotas}>Calcular</Button>}>
+                        title={<Typography.Title level={4} style={{ margin: 0, color: Colors.Primary }}>Informaci&oacute;n de Cr&eacute;dito</Typography.Title>}
+                        extra={<Button type="link" icon={<IconCalculator />} onClick={calcularCuotas} disabled={isBlocked}>Calcular</Button>}>
                         <PrestamoCuotas cuotas={entidad?.cuotas ?? []} />
                     </Card>
 

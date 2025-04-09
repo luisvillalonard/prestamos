@@ -1,17 +1,18 @@
 import { ButtonDefault } from "@components/buttons/default"
 import { ButtonPrimary } from "@components/buttons/primary"
+import Container from "@components/containers/container"
 import FormItem from "@components/forms/item"
 import InputText from "@components/inputs/text"
 import TitlePage from "@components/titles/titlePage"
-import TitleSesion from "@components/titles/titleSesion"
 import { Colors, Urls } from "@hooks/useConstants"
 import { useData } from "@hooks/useData"
 import { useForm } from "@hooks/useForm"
+import { IconCheckCircleColor } from "@hooks/useIconos"
 import { Alerta, Exito } from "@hooks/useMensaje"
 import { Cliente } from "@interfaces/clientes"
-import { Col, DatePicker, Divider, Flex, Form, Input, Radio, RadioChangeEvent, Row, Select, Space, Switch, Tag, Typography } from "antd"
+import { Col, DatePicker, Flex, Form, Input, Radio, RadioChangeEvent, Row, Select, Space, Switch, Tag, Typography } from "antd"
 import { useEffect } from "react"
-import { useNavigate, useParams } from "react-router-dom"
+import { useLocation, useNavigate } from "react-router-dom"
 
 export default function FormCliente() {
 
@@ -24,8 +25,7 @@ export default function FormCliente() {
     } = useData()
     const { entidad, editar, handleChangeInput } = useForm<Cliente | undefined>(modelo)
     const nav = useNavigate()
-    const { Title } = Typography
-    useParams();
+    const url = useLocation()
 
     const cargarAuxiliares = async () => await Promise.all([cargarDocumentosTipos(), cargarSexos(), cargarCiudades(), cargarOcupaciones()])
 
@@ -60,13 +60,16 @@ export default function FormCliente() {
         nav(`/${Urls.Clientes.Base}/${Urls.Clientes.Historico}`, { replace: true });
     }
 
-    useEffect(() => { cargarAuxiliares() }, [])
+    useEffect(() => {
+        editar(modelo);
+        cargarAuxiliares();
+    }, [modelo, url.pathname])
 
     return (
         <>
             <Col span={18} offset={3}>
 
-                <Flex align="center" justify="space-between">
+                <Flex align="center" justify="space-between" className="mb-3">
                     <TitlePage title="Formulario de Cliente" />
                     <Space>
                         <ButtonDefault key="1" size="large" htmlType="button" onClick={onClose}>Ir a Clientes</ButtonDefault>
@@ -75,7 +78,6 @@ export default function FormCliente() {
                         </ButtonPrimary>
                     </Space>
                 </Flex>
-                <Divider className='my-3' />
 
                 <Form
                     name="FormCliente"
@@ -90,208 +92,215 @@ export default function FormCliente() {
                         ocupacionId: modelo?.ocupacion?.id,
                     }}
                     onFinish={guardar}>
-                    <Row gutter={[15, 14]}>
-                        <Col xs={24}>
-                            <Flex align="center" justify="space-between">
-                                <TitleSesion title="Generales" color={Colors.Primary} />
-                                <Space>
-                                    <Title level={4} style={{ fontWeight: 'bolder', margin: 0 }}>C&oacute;digo</Title>
-                                    {
-                                        !entidad?.codigo
-                                            ? <Tag style={{ fontSize: 16, borderRadius: 10 }}>C-00000</Tag>
-                                            : <Tag color='blue' style={{ fontSize: 16, borderRadius: 10 }}>{entidad.codigo}</Tag>
-                                    }
-                                </Space>
+
+                    <Container className="mb-4"
+                        title={<Typography.Title level={4} style={{ margin: 0, color: Colors.Primary }}>Generales</Typography.Title>}
+                        extra={
+                            <Flex align="center" gap={10}>
+                                <Typography.Title level={4} style={{ fontWeight: 'bolder', margin: 0 }}>C&oacute;digo</Typography.Title>
+                                {
+                                    !entidad?.codigo
+                                        ? <Tag style={{ fontSize: 16, borderRadius: 10 }}>C-00000</Tag>
+                                        : <Tag color='blue' style={{ fontSize: 16, borderRadius: 10 }}>{entidad.codigo}</Tag>
+                                }
                             </Flex>
-                            <Divider className="my-1 mb-2" />
-                        </Col>
-                        <Col lg={12} md={24} xs={24}>
-                            <FormItem name="nombres" label="Nombres"
-                                rules={[{ required: true, message: 'Obligatorio' }]}>
-                                <Input
-                                    maxLength={150}
-                                    value={entidad?.nombres || ''}
-                                    disabled={entidad && entidad.id > 0}
-                                    onChange={handleChangeInput} />
-                            </FormItem>
-                        </Col>
-                        <Col lg={12} md={24} xs={24}>
-                            <FormItem name="apellidos" label="Apellidos"
-                                rules={[{ required: true, message: 'Obligatorio' }]}>
-                                <Input
-                                    maxLength={150}
-                                    value={entidad?.apellidos || ''}
-                                    disabled={entidad && entidad.id > 0}
-                                    onChange={handleChangeInput} />
-                            </FormItem>
-                        </Col>
-                        <Col lg={12} md={12} sm={24} xs={24}>
-                            <FormItem name="empleadoId" label="Empleado Id"
-                                rules={[{ required: true, message: 'Obligatorio' }]}>
-                                <Input
-                                    maxLength={50}
-                                    disabled={entidad && entidad.id > 0}
-                                    value={entidad?.empleadoId || ''}
-                                    onChange={handleChangeInput} />
-                            </FormItem>
-                        </Col>
-                        <Col lg={12} md={12} sm={24} xs={24}>
-                            <FormItem name="documentoTipoId" label="Tipo de Documento"
-                                rules={[{ required: true, message: 'Obligatorio' }]}>
-                                <Space.Compact style={{ width: '100%' }}>
-                                    <Select
-                                        allowClear
-                                        defaultValue={entidad?.documentoTipo?.id}
-                                        disabled={entidad && entidad.id > 0}
-                                        options={documentosTipos.map(item => ({ key: item.id, value: item.id, label: item.nombre }))}
-                                        style={{ width: 90 }}
-                                        onChange={(value: number) => {
-                                            if (entidad) {
-                                                editar({ ...entidad, documentoTipo: documentosTipos.filter(opt => opt.id === value).shift() });
-                                            }
-                                        }} />
+                        }>
+                        <Row gutter={[16, 16]}>
+                            <Col lg={12} md={24} xs={24}>
+                                <FormItem name="nombres" label="Nombres"
+                                    rules={[{ required: true, message: 'Obligatorio' }]}>
                                     <Input
-                                        width='100%'
-                                        maxLength={50}
-                                        value={entidad?.documento || ''}
+                                        maxLength={150}
+                                        value={entidad?.nombres || ''}
                                         disabled={entidad && entidad.id > 0}
                                         onChange={handleChangeInput} />
-                                </Space.Compact>
-                            </FormItem>
-                        </Col>
-                        <Col lg={12} md={12} xs={24} sm={24}>
-                            <FormItem name="fechaNacimiento" label="Fecha Nacimiento">
-                                {
-                                    entidad?.id === 0
-                                        ?
-                                        <DatePicker
-                                            style={{ width: '100%' }}
-                                            placeholder=""
-                                            onChange={(date) => {
-                                                if (entidad) {
-                                                    editar({ ...entidad, fechaNacimiento: !date ? undefined : date.toISOString().substring(0, 10) })
-                                                }
-                                            }} />
-                                        : <InputText value={entidad?.fechaNacimiento} disabled />
-                                }
-                            </FormItem>
-                        </Col>
-                        <Col lg={12} md={12} sm={24} xs={24}>
-                            <FormItem name="sexoId" label="Sexo"
-                                rules={[{ required: true, message: 'Obligatorio' }]}>
-                                <Radio.Group
-                                    block
-                                    value={entidad?.sexo?.id}
-                                    disabled={entidad && entidad.id > 0}
-                                    onChange={(evt: RadioChangeEvent) => {
-                                        const value: number = evt.target.value;
-                                        if (entidad) {
-                                            editar({ ...entidad, sexo: sexos.filter(opt => opt.id === value).shift() })
-                                        }
-                                    }}>
-                                    {sexos.map(tipo => <Radio.Button type="primary" key={tipo.id} value={tipo.id}>{tipo.nombre}</Radio.Button>)}
-                                </Radio.Group>
-                            </FormItem>
-                        </Col>
-                        <Col xs={24} style={{ paddingTop: 20 }}>
-                            <TitleSesion title="Contacto" color={Colors.Primary} />
-                            <Divider className="my-1 mb-2" />
-                        </Col>
-                        <Col lg={12} md={12} sm={24} xs={24}>
-                            <FormItem name="ciudadId" label="Ciudad"
-                                rules={[{ required: true, message: 'Obligatorio' }]}>
-                                <Select
-                                    allowClear
-                                    value={entidad?.ciudad?.id}
-                                    labelRender={(item) => !item ? <></> : <span>{item.label}</span>}
-                                    options={ciudades.map(item => ({ key: item.id, value: item.id, label: item.nombre }))}
-                                    onChange={(value) => {
-                                        if (entidad) {
-                                            editar({ ...entidad, ciudad: ciudades.filter(opt => opt.id === value).shift() });
-                                        }
-                                    }} />
-                            </FormItem>
-                        </Col>
-                        <Col lg={12} md={12} sm={24} xs={24}>
-                            <FormItem name="ocupacionId" label="Ocupaci&oacute;n"
-                                rules={[{ required: true, message: 'Obligatorio' }]}>
-                                <Select
-                                    allowClear
-                                    value={entidad?.ocupacion?.id}
-                                    disabled={entidad && entidad.id > 0}
-                                    labelRender={(item) => !item ? <></> : <span>{item.label}</span>}
-                                    options={ocupaciones.map(item => ({ key: item.id, value: item.id, label: item.nombre }))}
-                                    onChange={(value) => {
-                                        if (entidad) {
-                                            editar({ ...entidad, ocupacion: ocupaciones.filter(opt => opt.id === value).shift() });
-                                        }
-                                    }} />
-                            </FormItem>
-                        </Col>
-                        <Col xs={24}>
-                            <FormItem name="direccion" label="Direcci&oacute;n">
-                                <Input
-                                    maxLength={250}
-                                    value={entidad?.direccion || ''}
-                                    onChange={handleChangeInput} />
-                            </FormItem>
-                        </Col>
-                        <Col lg={8} md={8} sm={24}>
-                            <FormItem name="telefonoCelular" label="Telefono Celular"
-                                rules={[{ required: true, message: 'Obligatorio' }]}>
-                                <Input
-                                    maxLength={15}
-                                    value={entidad?.telefonoCelular || ''}
-                                    onChange={handleChangeInput} />
-                            </FormItem>
-                        </Col>
-                        <Col lg={8} md={8} sm={24}>
-                            <FormItem name="telefonoFijo" label="Telefono Fijo"
-                                rules={[{ required: true, message: 'Obligatorio' }]}>
-                                <Input
-                                    maxLength={15}
-                                    value={entidad?.telefonoFijo || ''}
-                                    onChange={handleChangeInput} />
-                            </FormItem>
-                        </Col>
-                        <Col lg={8} md={8} sm={24}>
-                            <FormItem name="fechaAntiguedad" label="Fecha Antiguedad">
-                                {
-                                    entidad?.id === 0
-                                        ?
-                                        <DatePicker
-                                            placeholder=""
+                                </FormItem>
+                            </Col>
+                            <Col lg={12} md={24} xs={24}>
+                                <FormItem name="apellidos" label="Apellidos"
+                                    rules={[{ required: true, message: 'Obligatorio' }]}>
+                                    <Input
+                                        maxLength={150}
+                                        value={entidad?.apellidos || ''}
+                                        disabled={entidad && entidad.id > 0}
+                                        onChange={handleChangeInput} />
+                                </FormItem>
+                            </Col>
+                            <Col lg={12} md={12} sm={24} xs={24}>
+                                <FormItem name="empleadoId" label="Empleado Id"
+                                    rules={[{ required: true, message: 'Obligatorio' }]}>
+                                    <Input
+                                        maxLength={50}
+                                        disabled={entidad && entidad.id > 0}
+                                        value={entidad?.empleadoId || ''}
+                                        onChange={handleChangeInput} />
+                                </FormItem>
+                            </Col>
+                            <Col lg={12} md={12} sm={24} xs={24}>
+                                <FormItem name="documentoTipoId" label="Tipo de Documento"
+                                    rules={[{ required: true, message: 'Obligatorio' }]}>
+                                    <Space.Compact style={{ width: '100%' }}>
+                                        <Select
+                                            allowClear
+                                            defaultValue={entidad?.documentoTipo?.id}
                                             disabled={entidad && entidad.id > 0}
-                                            style={{ width: '100%' }}
-                                            onChange={(date) => {
+                                            options={documentosTipos.map(item => ({ key: item.id, value: item.id, label: item.nombre }))}
+                                            style={{ width: 90 }}
+                                            onChange={(value: number) => {
                                                 if (entidad) {
-                                                    editar({ ...entidad, fechaAntiguedad: !date ? undefined : date.toISOString().substring(0, 10) })
+                                                    editar({ ...entidad, documentoTipo: documentosTipos.filter(opt => opt.id === value).shift() });
                                                 }
                                             }} />
-                                        :
-                                        <InputText
-                                            value={entidad?.fechaNacimiento}
-                                            style={{ width: '100%' }}
-                                            disabled
+                                        <Input
+                                            width='100%'
+                                            maxLength={50}
+                                            value={entidad?.documento || ''}
+                                            disabled={entidad && entidad.id > 0}
                                             onChange={handleChangeInput} />
-                                }
-                            </FormItem>
-                        </Col>
-                        <Col sm={24} xs={24}>
-                            <FormItem>
-                                <Space>
-                                    <Switch
-                                        checked={entidad?.activo}
+                                    </Space.Compact>
+                                </FormItem>
+                            </Col>
+                            <Col lg={12} md={12} xs={24} sm={24}>
+                                <FormItem name="fechaNacimiento" label="Fecha Nacimiento">
+                                    {
+                                        entidad?.id === 0
+                                            ?
+                                            <DatePicker
+                                                style={{ width: '100%' }}
+                                                placeholder=""
+                                                onChange={(date) => {
+                                                    if (entidad) {
+                                                        editar({ ...entidad, fechaNacimiento: !date ? undefined : date.toISOString().substring(0, 10) })
+                                                    }
+                                                }} />
+                                            : <InputText value={entidad?.fechaNacimiento} disabled />
+                                    }
+                                </FormItem>
+                            </Col>
+                            <Col lg={12} md={12} sm={24} xs={24}>
+                                <FormItem name="sexoId" label="Sexo"
+                                    rules={[{ required: true, message: 'Obligatorio' }]}>
+                                    <Radio.Group
+                                        block
+                                        buttonStyle="solid"
+                                        value={entidad?.sexo?.id}
+                                        disabled={entidad && entidad.id > 0}
+                                        onChange={(evt: RadioChangeEvent) => {
+                                            const value: number = evt.target.value;
+                                            if (entidad) {
+                                                editar({ ...entidad, sexo: sexos.filter(opt => opt.id === value).shift() })
+                                            }
+                                        }}>
+                                        {
+                                            sexos.map(tipo => <Radio.Button key={tipo.id} value={tipo.id}>
+                                                <Flex align="center" gap={10}>
+                                                    {entidad && entidad.id > 0 && entidad.sexo?.id === tipo.id ? <IconCheckCircleColor style={{ fontSize: 20, color: Colors.Success }} /> : <></>}
+                                                    <span>{tipo.nombre}</span>
+                                                </Flex>
+                                            </Radio.Button>)
+                                        }
+                                    </Radio.Group>
+                                </FormItem>
+                            </Col>
+                        </Row>
+                    </Container>
+
+                    <Container
+                        title={<Typography.Title level={4} style={{ margin: 0, color: Colors.Primary }}>Contacto</Typography.Title>}
+                        extra={
+                            <Space>
+                                <span>{entidad?.activo ? 'Activo' : 'Inactivo'}</span>
+                                <Switch
+                                    checked={entidad?.activo}
+                                    onChange={(value) => {
+                                        if (entidad) {
+                                            editar({ ...entidad, activo: value })
+                                        }
+                                    }} />
+                            </Space>
+                        }>
+                        <Row gutter={[16, 16]}>
+                            <Col lg={12} md={12} sm={24} xs={24}>
+                                <FormItem name="ciudadId" label="Ciudad"
+                                    rules={[{ required: true, message: 'Obligatorio' }]}>
+                                    <Select
+                                        allowClear
+                                        value={entidad?.ciudad?.id}
+                                        labelRender={(item) => !item ? <></> : <span>{item.label}</span>}
+                                        options={ciudades.map(item => ({ key: item.id, value: item.id, label: item.nombre }))}
                                         onChange={(value) => {
                                             if (entidad) {
-                                                editar({ ...entidad, activo: value })
+                                                editar({ ...entidad, ciudad: ciudades.filter(opt => opt.id === value).shift() });
                                             }
                                         }} />
-                                    <span>{entidad?.activo ? 'Activo' : 'Inactivo'}</span>
-                                </Space>
-                            </FormItem>
-                        </Col>
-                    </Row>
+                                </FormItem>
+                            </Col>
+                            <Col lg={12} md={12} sm={24} xs={24}>
+                                <FormItem name="ocupacionId" label="Ocupaci&oacute;n"
+                                    rules={[{ required: true, message: 'Obligatorio' }]}>
+                                    <Select
+                                        allowClear
+                                        value={entidad?.ocupacion?.id}
+                                        disabled={entidad && entidad.id > 0}
+                                        labelRender={(item) => !item ? <></> : <span>{item.label}</span>}
+                                        options={ocupaciones.map(item => ({ key: item.id, value: item.id, label: item.nombre }))}
+                                        onChange={(value) => {
+                                            if (entidad) {
+                                                editar({ ...entidad, ocupacion: ocupaciones.filter(opt => opt.id === value).shift() });
+                                            }
+                                        }} />
+                                </FormItem>
+                            </Col>
+                            <Col xs={24}>
+                                <FormItem name="direccion" label="Direcci&oacute;n">
+                                    <Input
+                                        maxLength={250}
+                                        value={entidad?.direccion || ''}
+                                        onChange={handleChangeInput} />
+                                </FormItem>
+                            </Col>
+                            <Col lg={8} md={8} sm={24}>
+                                <FormItem name="telefonoCelular" label="Telefono Celular"
+                                    rules={[{ required: true, message: 'Obligatorio' }]}>
+                                    <Input
+                                        maxLength={15}
+                                        value={entidad?.telefonoCelular || ''}
+                                        onChange={handleChangeInput} />
+                                </FormItem>
+                            </Col>
+                            <Col lg={8} md={8} sm={24}>
+                                <FormItem name="telefonoFijo" label="Telefono Fijo"
+                                    rules={[{ required: true, message: 'Obligatorio' }]}>
+                                    <Input
+                                        maxLength={15}
+                                        value={entidad?.telefonoFijo || ''}
+                                        onChange={handleChangeInput} />
+                                </FormItem>
+                            </Col>
+                            <Col lg={8} md={8} sm={24}>
+                                <FormItem name="fechaAntiguedad" label="Fecha Antiguedad">
+                                    {
+                                        entidad?.id === 0
+                                            ?
+                                            <DatePicker
+                                                placeholder=""
+                                                style={{ width: '100%' }}
+                                                onChange={(date) => {
+                                                    if (entidad) {
+                                                        editar({ ...entidad, fechaAntiguedad: !date ? undefined : date.toISOString().substring(0, 10) })
+                                                    }
+                                                }} />
+                                            :
+                                            <InputText
+                                                value={entidad?.fechaNacimiento}
+                                                style={{ width: '100%' }}
+                                                disabled
+                                                onChange={handleChangeInput} />
+                                    }
+                                </FormItem>
+                            </Col>
+                        </Row>
+                    </Container>
                 </Form>
             </Col >
         </>

@@ -7,12 +7,12 @@ export default function FormItem(props: FormItemProps & {
 }) {
 
     const { name, label, rules, style, children } = props
-
+    const labelIsText = typeof label === 'string'
 
     return (
         <Form.Item
             name={name}
-            label={label}
+            label={labelIsText ? <strong>{label}</strong> : <>{label}</>}
             rules={rules}
             style={style}>
             {children}

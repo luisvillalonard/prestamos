@@ -41,6 +41,7 @@ const FormModal = (props: FormProps & Omit<ModalProps, "onFinish"> & {
                 header: {
                     paddingLeft: 10,
                     paddingRight: 10,
+                    borderBottom: '1px solid #dddddd',
                 }
             }}>
             <Form

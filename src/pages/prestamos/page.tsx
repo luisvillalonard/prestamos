@@ -11,6 +11,7 @@ import { Col, Divider, Flex, Space, theme } from "antd"
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import Listado from "./listado"
+import Container from "@components/containers/container"
 
 export default function PagePrestamos() {
 
@@ -24,18 +25,17 @@ export default function PagePrestamos() {
     return (
         <>
             <Col span={24}>
-                <TitlePage title="Prestamos Registrados" />
-                <Divider style={{ borderColor: Colors.Gris51 }} className='my-3' />
                 <Flex align="center" justify="space-between" className="mb-3">
+                    <TitlePage title="Prestamos Registrados" />
                     <Space>
-                        <Searcher size="large" onChange={setFilter} style={{ borderColor: token.colorBorderSecondary }} />
-                    </Space>
-                    <Space>
-                        <ButtonSuccess onClick={() => exportarPrestamosExcel(datos)} icon={<IconExcel style={{ display: 'flex', fontSize: 20 }} />}>Exportar Excel</ButtonSuccess>
-                        <ButtonPrimary onClick={onNew}>Nuevo Prestamo</ButtonPrimary>
+                        <Searcher key="1" size="large" onChange={setFilter} style={{ borderColor: token.colorBorderSecondary }} />
+                        <ButtonSuccess key="2" size="large" onClick={() => exportarPrestamosExcel(datos)} icon={<IconExcel style={{ display: 'flex', fontSize: 20 }} />}>Exportar Excel</ButtonSuccess>
+                        <ButtonPrimary key="3" size="large" onClick={onNew}>Nuevo Prestamo</ButtonPrimary>
                     </Space>
                 </Flex>
-                <Listado filter={filter} />
+                <Container>
+                    <Listado filter={filter} />
+                </Container>
             </Col>
             <Loading fullscreen active={procesando} message="Procesando, espere..." />
         </>

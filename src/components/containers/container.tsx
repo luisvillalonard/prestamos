@@ -8,16 +8,20 @@ const Container = (props: CardProps) => {
         <Card
             {...props}
             style={{
+                ...props.style,
                 position: 'relative',
+                backgroundColor: 'white',
                 boxShadow: token.boxShadow,
-                ...props.style
             }}
             styles={{
                 header: {
-                    padding: 10
+                    height: 'auto',
+                    padding: 10,
+                    ...props.styles?.header,
                 },
                 body: {
-                    padding: 10  
+                    padding: 10,
+                    ...props.styles?.body,
                 }
             }}>
             {props.children}

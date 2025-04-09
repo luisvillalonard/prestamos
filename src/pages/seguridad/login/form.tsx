@@ -51,22 +51,28 @@ export default function LoginForm(props: Pick<ControlProps, "onChange">) {
                 onFinish={onFinish}
                 style={{ width: '100%' }}
             >
-                <FormItem name="acceso" rules={[{ required: true, message: 'Obligatorio', }]}
+                <FormItem
+                    name="acceso"
+                    label={<Typography.Title level={5} style={{ margin: 0, fontWeight: 'lighter' }}>Usuario</Typography.Title>} 
+                    rules={[{ required: true, message: 'Obligatorio' }]}
                     style={{ marginBottom: 30 }}>
                     <Input
                         name="acceso"
                         value={user.acceso}
                         readOnly={procesando}
-                        prefix={<IconUser style={{ fontSize: 30 }} />}
+                        prefix={<IconUser style={{ fontSize: 30, marginRight: 20 }} />}
                         placeholder="escriba aqui el usuario" />
                 </FormItem>
-                <FormItem name="clave" rules={[{ required: true, message: 'Obligatorio' }]}
+                <FormItem
+                    name="clave"
+                    label={<Typography.Title level={5} style={{ margin: 0, fontWeight: 'lighter' }}>Clave</Typography.Title>}
+                    rules={[{ required: true, message: 'Obligatorio' }]}
                     style={{ marginBottom: 30 }}>
                     <Input.Password
                         name="clave"
                         value={user.clave}
                         readOnly={procesando}
-                        prefix={<IconPassword style={{ fontSize: 30 }} />}
+                        prefix={<IconPassword style={{ fontSize: 30, marginRight: 20 }} />}
                         placeholder="escriba aqui la clave" />
                 </FormItem>
                 <Form.Item>

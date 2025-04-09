@@ -17,6 +17,7 @@ import { Card, Col, Divider, Flex, Form, Input, InputNumber, Row, Space, Table, 
 import { CSSProperties, useEffect, useState } from "react"
 import { useLocation, useNavigate, useParams } from "react-router-dom"
 import PrestamoCuotas from "../cuotas"
+import Container from "@components/containers/container"
 
 const styleInput: CSSProperties = {
     width: '100%',
@@ -163,229 +164,231 @@ export default function PagePrestamoCobro() {
 
                 <AlertStatic errors={errores} isAlert={false} />
 
-                <Tabs
-                    defaultActiveKey={activeKey}
-                    activeKey={activeKey}
-                    onChange={setActiveKey}
-                    items={[
-                        {
-                            key: '1',
-                            label: 'Buscar Préstamo',
-                            icon: <IconSearch />,
-                            children: <>
-                                <Flex vertical>
-                                    <Space style={{ width: '100%', marginBottom: 8 }}>
-                                        <Searcher
-                                            size="large"
-                                            value={filtroPrestamo}
-                                            onChange={setFiltroPrestamo}
-                                            placeholder="buscar prestamo por c&oacute;digo, &oacute; empleado "
-                                            style={{ width: '100%' }} />
-                                    </Space>
-                                    <Table<Prestamo>
-                                        size="middle"
-                                        bordered={false}
-                                        locale={{ emptyText: <Flex style={{ textWrap: 'nowrap' }}>0 prestamos</Flex> }}
-                                        dataSource={procesando ? [] : prestamos.map((item, index) => { return { ...item, key: index + 1 } })}>
-                                        <Table.Column title="#" align="center" fixed='left' width={120} render={(record: Prestamo) => (
-                                            <ButtonDefault
-                                                size="small"
-                                                shape="round"
-                                                onClick={() => {
-                                                    if (entidad) {
-                                                        setPrestamo(record)
-                                                        editar({
-                                                            ...entidad,
-                                                            prestamoId: record.id,
-                                                            metodoPago: record.metodoPago,
-                                                        })
-                                                        setActiveKey('2')
-                                                    }
-                                                }}>Seleccionar</ButtonDefault>
-                                        )} />
-                                        <Table.Column title="Código" dataIndex="codigo" key="codigo" ellipsis />
-                                        <Table.Column title="Fecha Cr&eacute;dito" render={(record: Prestamo) => (<span style={{ textWrap: 'nowrap' }}>{record.fechaCredito}</span>)} />
-                                        <Table.Column title="Cliente" render={(record: Prestamo) => (`${record.cliente?.nombres} ${record.cliente?.apellidos}`.trim())} />
-                                        <Table.Column title="Monto" render={(record: Prestamo) => (FormatNumber(record.deudaInicial, 2))} />
-                                        <Table.Column title="Capital" render={(record: Prestamo) => (FormatNumber(record.capital, 2))} />
-                                        <Table.Column title="Inter&eacute;s" render={(record: Prestamo) => (FormatNumber(Math.round(record.cuotas.reduce((acc, item) => { return acc + item.interes }, 0)), 2))} />
-                                        <Table.Column title="Pendiente" render={(record: Prestamo) => (
-                                            FormatNumber(record.deudaInicial - montoPendiente(record.cuotas), 2)
-                                        )} />
-                                        <Table.Column title="M&eacute;todo de Pago" render={(record: Prestamo) => (record.metodoPago?.nombre)} />
-                                    </Table>
-                                </Flex>
-                            </>
-                        },
-                        {
-                            key: '2',
-                            label: 'Formulario de Pago',
-                            icon: <IconListPoint />,
-                            disabled: !prestamo,
-                            children: <Flex vertical>
-                                <Card
-                                    size="small"
-                                    title={<TitlePanel title="Datos del Pago" color={Colors.Primary} />}
-                                    className="mb-4">
+                <Container>
+                    <Tabs
+                        defaultActiveKey={activeKey}
+                        activeKey={activeKey}
+                        onChange={setActiveKey}
+                        items={[
+                            {
+                                key: '1',
+                                label: 'Buscar Préstamo',
+                                icon: <IconSearch />,
+                                children: <>
+                                    <Flex vertical>
+                                        <Space style={{ width: '100%', marginBottom: 8 }}>
+                                            <Searcher
+                                                size="large"
+                                                value={filtroPrestamo}
+                                                onChange={setFiltroPrestamo}
+                                                placeholder="buscar prestamo por c&oacute;digo, &oacute; empleado "
+                                                style={{ width: '100%' }} />
+                                        </Space>
+                                        <Table<Prestamo>
+                                            size="middle"
+                                            bordered={false}
+                                            locale={{ emptyText: <Flex style={{ textWrap: 'nowrap' }}>0 prestamos</Flex> }}
+                                            dataSource={procesando ? [] : prestamos.map((item, index) => { return { ...item, key: index + 1 } })}>
+                                            <Table.Column title="#" align="center" fixed='left' width={120} render={(record: Prestamo) => (
+                                                <ButtonDefault
+                                                    size="small"
+                                                    shape="round"
+                                                    onClick={() => {
+                                                        if (entidad) {
+                                                            setPrestamo(record)
+                                                            editar({
+                                                                ...entidad,
+                                                                prestamoId: record.id,
+                                                                metodoPago: record.metodoPago,
+                                                            })
+                                                            setActiveKey('2')
+                                                        }
+                                                    }}>Seleccionar</ButtonDefault>
+                                            )} />
+                                            <Table.Column title="Código" dataIndex="codigo" key="codigo" ellipsis />
+                                            <Table.Column title="Fecha Cr&eacute;dito" render={(record: Prestamo) => (<span style={{ textWrap: 'nowrap' }}>{record.fechaCredito}</span>)} />
+                                            <Table.Column title="Cliente" render={(record: Prestamo) => (`${record.cliente?.nombres} ${record.cliente?.apellidos}`.trim())} />
+                                            <Table.Column title="Monto" render={(record: Prestamo) => (FormatNumber(record.deudaInicial, 2))} />
+                                            <Table.Column title="Capital" render={(record: Prestamo) => (FormatNumber(record.capital, 2))} />
+                                            <Table.Column title="Inter&eacute;s" render={(record: Prestamo) => (FormatNumber(Math.round(record.cuotas.reduce((acc, item) => { return acc + item.interes }, 0)), 2))} />
+                                            <Table.Column title="Pendiente" render={(record: Prestamo) => (
+                                                FormatNumber(record.deudaInicial - montoPendiente(record.cuotas), 2)
+                                            )} />
+                                            <Table.Column title="M&eacute;todo de Pago" render={(record: Prestamo) => (record.metodoPago?.nombre)} />
+                                        </Table>
+                                    </Flex>
+                                </>
+                            },
+                            {
+                                key: '2',
+                                label: 'Formulario de Pago',
+                                icon: <IconListPoint />,
+                                disabled: !prestamo,
+                                children: <Flex vertical>
+                                    <Card
+                                        size="small"
+                                        title={<TitlePanel title="Datos del Pago" color={Colors.Primary} />}
+                                        className="mb-4">
 
-                                    <Form
-                                        name="FormPrestamo"
-                                        layout="vertical"
-                                        autoComplete="off"
-                                        size="large"
-                                        disabled={false}
-                                        initialValues={entidad}
-                                        onFinish={guardar}>
+                                        <Form
+                                            name="FormPrestamo"
+                                            layout="vertical"
+                                            autoComplete="off"
+                                            size="large"
+                                            disabled={false}
+                                            initialValues={entidad}
+                                            onFinish={guardar}>
+                                            <Row gutter={[10, 10]}>
+                                                <Col xl={6} lg={6} md={8} sm={24} xs={24} style={{ alignSelf: 'end' }}>
+                                                    <FormItem name="monto" label="Pago de Cuota" rules={[{ required: true, message: 'Obligatorio' }]}>
+                                                        <InputNumber
+                                                            size="large"
+                                                            name="monto"
+                                                            value={entidad?.monto}
+                                                            style={{ width: '100%' }}
+                                                            onFocus={(evt) => evt.currentTarget.select()}
+                                                            onChange={(value) => {
+                                                                if (entidad) {
+                                                                    editar({ ...entidad, monto: value ?? 0 })
+                                                                }
+                                                            }} />
+                                                    </FormItem>
+                                                </Col>
+                                                <Col xl={6} lg={6} md={8} sm={24} xs={24} style={{ alignSelf: 'end' }}>
+                                                    <FormItem name="multaMora" label="Multa por Mora" rules={[{ required: true, message: 'Obligatorio' }]}>
+                                                        <InputNumber
+                                                            size="large"
+                                                            name="multaMora"
+                                                            value={entidad?.multaMora}
+                                                            style={{ width: '100%' }}
+                                                            onChange={(value) => {
+                                                                if (entidad) {
+                                                                    editar({ ...entidad, multaMora: value ?? 0 })
+                                                                }
+                                                            }} />
+                                                    </FormItem>
+                                                </Col>
+                                                <Col xl={6} lg={6} md={8} sm={24} xs={24} style={{ alignSelf: 'end' }}>
+                                                    <ButtonPrimary htmlType="submit">Pagar</ButtonPrimary>
+                                                </Col>
+                                            </Row>
+                                        </Form>
+
+                                    </Card>
+
+                                    <Card
+                                        size="small"
+                                        title={<TitlePanel title="Datos del Cliente" color={Colors.Primary} />}
+                                        className="mb-4">
+                                        <Space split={<Divider type="vertical" className="h-100 d-inline" style={{ borderColor: Colors.Secondary }} />}>
+                                            <Flex vertical>
+                                                <strong color={Colors.Secondary}>C&oacute;digo Empleado</strong>
+                                                <span>{prestamo?.cliente?.empleadoId || 'Desconocido'}</span>
+                                            </Flex>
+                                            <Flex vertical>
+                                                <strong color={Colors.Secondary}>Nombres y Apellidos</strong>
+                                                <span>{`${prestamo?.cliente?.nombres || ''} ${prestamo?.cliente?.apellidos || ''}`.trim() || 'Desconocido'}</span>
+                                            </Flex>
+                                            <Flex vertical>
+                                                <strong color={Colors.Secondary}>Tel&eacute;fono Celular</strong>
+                                                <span>{prestamo?.cliente?.telefonoCelular || 'Desconocido'}</span>
+                                            </Flex>
+                                            <Flex vertical>
+                                                <strong color={Colors.Secondary}>Ocupaci&oacute;n</strong>
+                                                <span>{prestamo?.cliente?.ocupacion?.nombre || 'Desconocido'}</span>
+                                            </Flex>
+                                        </Space>
+                                    </Card>
+
+                                    <Card
+                                        size="small"
+                                        className="mb-4"
+                                        title={
+                                            <Flex align="center" gap={10}>
+                                                <TitlePanel title="Datos del Prestamo" color={Colors.Primary} />
+                                                <Tag color='blue' style={{ fontSize: 16, borderRadius: 10 }}>{prestamo?.codigo || 'P-000000'}</Tag>
+                                            </Flex>
+                                        }>
                                         <Row gutter={[10, 10]}>
-                                            <Col xl={6} lg={6} md={8} sm={24} xs={24} style={{ alignSelf: 'end' }}>
-                                                <FormItem name="monto" label="Pago de Cuota" rules={[{ required: true, message: 'Obligatorio' }]}>
-                                                    <InputNumber
-                                                        size="large"
-                                                        name="monto"
-                                                        value={entidad?.monto}
-                                                        style={{ width: '100%' }}
-                                                        onFocus={(evt) => evt.currentTarget.select()}
-                                                        onChange={(value) => {
-                                                            if (entidad) {
-                                                                editar({ ...entidad, monto: value ?? 0 })
-                                                            }
-                                                        }} />
-                                                </FormItem>
+                                            <Col xl={4} lg={4} md={8} sm={24} xs={24}>
+                                                <Flex vertical>
+                                                    <label>Monto</label>
+                                                    <Input size="large" variant="borderless" readOnly value={FormatNumber(prestamo?.deudaInicial, 2)} style={styleInput} />
+                                                </Flex>
                                             </Col>
-                                            <Col xl={6} lg={6} md={8} sm={24} xs={24} style={{ alignSelf: 'end' }}>
-                                                <FormItem name="multaMora" label="Multa por Mora" rules={[{ required: true, message: 'Obligatorio' }]}>
-                                                    <InputNumber
-                                                        size="large"
-                                                        name="multaMora"
-                                                        value={entidad?.multaMora}
-                                                        style={{ width: '100%' }}
-                                                        onChange={(value) => {
-                                                            if (entidad) {
-                                                                editar({ ...entidad, multaMora: value ?? 0 })
-                                                            }
-                                                        }} />
-                                                </FormItem>
+                                            <Col xl={4} lg={4} md={8} sm={24} xs={24}>
+                                                <Flex vertical>
+                                                    <label>Interes (%)</label>
+                                                    <Input size="large" variant="borderless" readOnly value={FormatNumber(prestamo?.interes, 2)} style={styleInput} />
+                                                </Flex>
                                             </Col>
-                                            <Col xl={6} lg={6} md={8} sm={24} xs={24} style={{ alignSelf: 'end' }}>
-                                                <ButtonPrimary htmlType="submit">Pagar</ButtonPrimary>
+                                            <Col xl={4} lg={4} md={8} sm={24} xs={24}>
+                                                <Flex vertical>
+                                                    <label>N&uacute;mero Cuotas</label>
+                                                    <Input size="large" variant="borderless" readOnly value={FormatNumber(prestamo?.cantidadCuotas, 0)} style={styleInput} />
+                                                </Flex>
+                                            </Col>
+                                            <Col xl={4} lg={4} md={8} sm={24} xs={24}>
+                                                <Flex vertical>
+                                                    <label>Forma de Pago</label>
+                                                    <Input size="large" variant="borderless" readOnly value={prestamo?.formaPago?.nombre} style={styleInput} />
+                                                </Flex>
+                                            </Col>
+                                            <Col xl={4} lg={4} md={8} sm={24} xs={24}>
+                                                <Flex vertical>
+                                                    <label>M&eacute;todo Pago</label>
+                                                    <Input size="large" variant="borderless" readOnly value={prestamo?.metodoPago?.nombre} style={styleInput} />
+                                                </Flex>
+                                            </Col>
+                                            <Col xl={4} lg={4} md={8} sm={24} xs={24}>
+                                                <Flex vertical>
+                                                    <label>Tipo Moneda</label>
+                                                    <Input size="large" variant="borderless" readOnly value={prestamo?.moneda?.nombre} style={styleInput} />
+                                                </Flex>
+                                            </Col>
+                                            <Col xl={4} lg={4} md={8} sm={24} xs={24}>
+                                                <Flex vertical>
+                                                    <label>Fecha emisi&oacute;n</label>
+                                                    <Input size="large" variant="borderless" readOnly value={prestamo?.fechaCredito} style={styleInput} />
+                                                </Flex>
+                                            </Col>
+                                            <Col xl={4} lg={4} md={8} sm={24} xs={24}>
+                                                <Flex vertical>
+                                                    <label>Acesor</label>
+                                                    <Input size="large" variant="borderless" readOnly value={prestamo?.acesor?.nombre} style={styleInput} />
+                                                </Flex>
+                                            </Col>
+                                            <Col xl={4} lg={4} md={8} sm={24} xs={24}>
+                                                <Flex vertical>
+                                                    <label>Monto Cuota</label>
+                                                    <Input size="large" variant="borderless" readOnly value={FormatNumber(montoCapitalCuota, 2)} style={{ ...styleInput, width: '100%' }} />
+                                                </Flex>
+                                            </Col>
+                                            <Col xl={4} lg={4} md={8} sm={24} xs={24}>
+                                                <Flex vertical>
+                                                    <label>Total Interes</label>
+                                                    <Input size="large" variant="borderless" readOnly value={FormatNumber(montoTotalInteres, 2)} style={{ ...styleInput, width: '100%' }} />
+                                                </Flex>
+                                            </Col>
+                                            <Col xl={4} lg={4} md={8} sm={24} xs={24}>
+                                                <Flex vertical>
+                                                    <label>Monto a Pagar</label>
+                                                    <Input size="large" variant="borderless" readOnly value={FormatNumber(montoAmortizacion, 2)} style={{ ...styleInput, width: '100%' }} />
+                                                </Flex>
                                             </Col>
                                         </Row>
-                                    </Form>
+                                    </Card>
 
-                                </Card>
-
-                                <Card
-                                    size="small"
-                                    title={<TitlePanel title="Datos del Cliente" color={Colors.Primary} />}
-                                    className="mb-4">
-                                    <Space split={<Divider type="vertical" className="h-100 d-inline" style={{ borderColor: Colors.Secondary }} />}>
-                                        <Flex vertical>
-                                            <strong color={Colors.Secondary}>C&oacute;digo Empleado</strong>
-                                            <span>{prestamo?.cliente?.empleadoId || 'Desconocido'}</span>
-                                        </Flex>
-                                        <Flex vertical>
-                                            <strong color={Colors.Secondary}>Nombres y Apellidos</strong>
-                                            <span>{`${prestamo?.cliente?.nombres || ''} ${prestamo?.cliente?.apellidos || ''}`.trim() || 'Desconocido'}</span>
-                                        </Flex>
-                                        <Flex vertical>
-                                            <strong color={Colors.Secondary}>Tel&eacute;fono Celular</strong>
-                                            <span>{prestamo?.cliente?.telefonoCelular || 'Desconocido'}</span>
-                                        </Flex>
-                                        <Flex vertical>
-                                            <strong color={Colors.Secondary}>Ocupaci&oacute;n</strong>
-                                            <span>{prestamo?.cliente?.ocupacion?.nombre || 'Desconocido'}</span>
-                                        </Flex>
-                                    </Space>
-                                </Card>
-
-                                <Card
-                                    size="small"
-                                    className="mb-4"
-                                    title={
-                                        <Flex align="center" gap={10}>
-                                            <TitlePanel title="Datos del Prestamo" color={Colors.Primary} />
-                                            <Tag color='blue' style={{ fontSize: 16, borderRadius: 10 }}>{prestamo?.codigo || 'P-000000'}</Tag>
-                                        </Flex>
-                                    }>
-                                    <Row gutter={[10, 10]}>
-                                        <Col xl={4} lg={4} md={8} sm={24} xs={24}>
-                                            <Flex vertical>
-                                                <label>Monto</label>
-                                                <Input size="large" variant="borderless" readOnly value={FormatNumber(prestamo?.deudaInicial, 2)} style={styleInput} />
-                                            </Flex>
-                                        </Col>
-                                        <Col xl={4} lg={4} md={8} sm={24} xs={24}>
-                                            <Flex vertical>
-                                                <label>Interes (%)</label>
-                                                <Input size="large" variant="borderless" readOnly value={FormatNumber(prestamo?.interes, 2)} style={styleInput} />
-                                            </Flex>
-                                        </Col>
-                                        <Col xl={4} lg={4} md={8} sm={24} xs={24}>
-                                            <Flex vertical>
-                                                <label>N&uacute;mero Cuotas</label>
-                                                <Input size="large" variant="borderless" readOnly value={FormatNumber(prestamo?.cantidadCuotas, 0)} style={styleInput} />
-                                            </Flex>
-                                        </Col>
-                                        <Col xl={4} lg={4} md={8} sm={24} xs={24}>
-                                            <Flex vertical>
-                                                <label>Forma de Pago</label>
-                                                <Input size="large" variant="borderless" readOnly value={prestamo?.formaPago?.nombre} style={styleInput} />
-                                            </Flex>
-                                        </Col>
-                                        <Col xl={4} lg={4} md={8} sm={24} xs={24}>
-                                            <Flex vertical>
-                                                <label>M&eacute;todo Pago</label>
-                                                <Input size="large" variant="borderless" readOnly value={prestamo?.metodoPago?.nombre} style={styleInput} />
-                                            </Flex>
-                                        </Col>
-                                        <Col xl={4} lg={4} md={8} sm={24} xs={24}>
-                                            <Flex vertical>
-                                                <label>Tipo Moneda</label>
-                                                <Input size="large" variant="borderless" readOnly value={prestamo?.moneda?.nombre} style={styleInput} />
-                                            </Flex>
-                                        </Col>
-                                        <Col xl={4} lg={4} md={8} sm={24} xs={24}>
-                                            <Flex vertical>
-                                                <label>Fecha emisi&oacute;n</label>
-                                                <Input size="large" variant="borderless" readOnly value={prestamo?.fechaCredito} style={styleInput} />
-                                            </Flex>
-                                        </Col>
-                                        <Col xl={4} lg={4} md={8} sm={24} xs={24}>
-                                            <Flex vertical>
-                                                <label>Acesor</label>
-                                                <Input size="large" variant="borderless" readOnly value={prestamo?.acesor?.nombre} style={styleInput} />
-                                            </Flex>
-                                        </Col>
-                                        <Col xl={4} lg={4} md={8} sm={24} xs={24}>
-                                            <Flex vertical>
-                                                <label>Monto Cuota</label>
-                                                <Input size="large" variant="borderless" readOnly value={FormatNumber(montoCapitalCuota, 2)} style={{ ...styleInput, width: '100%' }} />
-                                            </Flex>
-                                        </Col>
-                                        <Col xl={4} lg={4} md={8} sm={24} xs={24}>
-                                            <Flex vertical>
-                                                <label>Total Interes</label>
-                                                <Input size="large" variant="borderless" readOnly value={FormatNumber(montoTotalInteres, 2)} style={{ ...styleInput, width: '100%' }} />
-                                            </Flex>
-                                        </Col>
-                                        <Col xl={4} lg={4} md={8} sm={24} xs={24}>
-                                            <Flex vertical>
-                                                <label>Monto a Pagar</label>
-                                                <Input size="large" variant="borderless" readOnly value={FormatNumber(montoAmortizacion, 2)} style={{ ...styleInput, width: '100%' }} />
-                                            </Flex>
-                                        </Col>
-                                    </Row>
-                                </Card>
-
-                                <Card
-                                    size="small"
-                                    className="mb-4"
-                                    title={<TitlePanel title="Informaci&oacute;n de Cr&eacute;dito" color={Colors.Primary} />}>
-                                    <PrestamoCuotas cuotas={prestamo?.cuotas ?? []} />
-                                </Card>
-                            </Flex>
-                        }
-                    ]} />
+                                    <Card
+                                        size="small"
+                                        className="mb-4"
+                                        title={<TitlePanel title="Informaci&oacute;n de Cr&eacute;dito" color={Colors.Primary} />}>
+                                        <PrestamoCuotas cuotas={prestamo?.cuotas ?? []} />
+                                    </Card>
+                                </Flex>
+                            }
+                        ]} />
+                </Container>
             </Col>
             <Loading
                 fullscreen

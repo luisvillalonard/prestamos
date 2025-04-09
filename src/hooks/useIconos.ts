@@ -6,20 +6,22 @@ import {
 } from "@ant-design/icons"
 import { IconType } from "react-icons"
 import { AiOutlineUser } from "react-icons/ai"
-import { BsPersonVcard, BsSearch } from "react-icons/bs"
+import { BsPersonVcard, BsPlusLg, BsSearch } from "react-icons/bs"
 import { CiViewList } from "react-icons/ci"
 import { FaRegAddressCard, FaRegMoneyBill1, FaUserShield } from "react-icons/fa6"
 import { GiPayMoney, GiReceiveMoney, GiTakeMyMoney } from "react-icons/gi"
 import { GoCheck, GoChecklist } from "react-icons/go"
 import { HiOutlineCog6Tooth, HiOutlineUsers } from "react-icons/hi2"
 import { IoIosList } from "react-icons/io"
-import { IoShieldCheckmarkOutline } from "react-icons/io5"
+import { IoCheckmarkCircle, IoCheckmarkCircleSharp, IoShieldCheckmarkOutline } from "react-icons/io5"
 import { LuCalculator } from "react-icons/lu"
 import { MdOutlineFormatListNumbered, MdOutlinePassword } from "react-icons/md"
 import { PiMicrosoftExcelLogoFill } from "react-icons/pi"
 
 export const IconCalculator = LuCalculator;
 export const IconCheck = GoCheck;
+export const IconCheckCircle = IoCheckmarkCircle;
+export const IconCheckCircleColor = IoCheckmarkCircleSharp;
 export const IconChecklist = GoChecklist;
 export const IconClient = FaRegAddressCard;
 export const IconConfig = HiOutlineCog6Tooth;
@@ -33,6 +35,7 @@ export const IconLock = LockOutlined;
 export const IconLoans = GiTakeMyMoney;
 export const IconLogout = PoweroffOutlined;
 export const IconPassword = MdOutlinePassword;
+export const IconPlus = BsPlusLg;
 export const IconMenu = MenuOutlined;
 export const IconMoney = FaRegMoneyBill1;
 export const IconPayMoney = GiPayMoney;
@@ -58,6 +61,7 @@ export function useIconos() {
     const IconMenu = MenuOutlined;
     const IconLogout = PoweroffOutlined;
     const IconPassword = MdOutlinePassword;
+
     const IconReceiveMoney = GiReceiveMoney;
     const IconSearch = BsSearch;
     const IconUserProfile = BsPersonVcard;
