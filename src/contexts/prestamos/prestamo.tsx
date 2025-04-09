@@ -1,14 +1,16 @@
 import { Urls } from "@hooks/useConstants"
 import { useFetch } from "@hooks/useFetch"
 import { useReducerHook } from "@hooks/useReducer"
-import { FormatDate_DDMMYYYY, FormatDate_YYYYMMDD } from "@hooks/useUtils"
-import { ControlProps, ResponseResult } from "@interfaces/globales"
+import { FormatDate_DDMMYYYY, FormatDate_YYYYMMDD, getParamsUrlToString } from "@hooks/useUtils"
+import { ControlProps, RequestFilter, ResponseResult } from "@interfaces/globales"
 import { Prestamo } from "@interfaces/prestamos"
 import { ACTIONS, GlobalContextState } from "@reducers/global"
 import { createContext } from "react"
 
 export interface PrestamoContextState<T> extends GlobalContextState<T> {
+    activos: (filtro: RequestFilter) => Promise<ResponseResult<Prestamo[]>>,
     actual: (id: number) => Promise<ResponseResult<T>>,
+    porId: (id: number) => Promise<ResponseResult<T>>,
 }
 
 export const PrestamosContext = createContext<PrestamoContextState<Prestamo>>({} as PrestamoContextState<Prestamo>)
@@ -46,6 +48,22 @@ export default function PrestamosProvider(props: Pick<ControlProps, "children">)
         });
     }
 
+    const activos = async (filtro: RequestFilter): Promise<ResponseResult<Prestamo[]>> => {
+
+        dispatch({ type: ACTIONS.FETCHING });
+        let resp: ResponseResult<Prestamo[]>;
+
+        try {
+            resp = await api.Get<Prestamo[]>(`${Urls.Prestamos.Base}/activos${getParamsUrlToString(filtro)}`);
+        } catch (error: any) {
+            resp = errorResult<Prestamo[]>(error);
+        }
+
+        dispatch({ type: ACTIONS.FETCH_COMPLETE, recargar: false });
+        return resp;
+
+    }
+
     const actual = async (id: number): Promise<ResponseResult<Prestamo>> => {
 
         dispatch({ type: ACTIONS.FETCHING });
@@ -53,6 +71,22 @@ export default function PrestamosProvider(props: Pick<ControlProps, "children">)
 
         try {
             resp = await api.Get<Prestamo>(`${Urls.Prestamos.Base}/actual?id=${id}`);
+        } catch (error: any) {
+            resp = errorResult<Prestamo>(error);
+        }
+
+        dispatch({ type: ACTIONS.FETCH_COMPLETE, recargar: false });
+        return resp;
+
+    }
+
+    const porId = async (id: number): Promise<ResponseResult<Prestamo>> => {
+
+        dispatch({ type: ACTIONS.FETCHING });
+        let resp: ResponseResult<Prestamo>;
+
+        try {
+            resp = await api.Get<Prestamo>(`${Urls.Prestamos.Base}/porId?id=${id}`);
         } catch (error: any) {
             resp = errorResult<Prestamo>(error);
         }
@@ -71,7 +105,9 @@ export default function PrestamosProvider(props: Pick<ControlProps, "children">)
             agregar,
             actualizar,
             todos,
+            activos,
             actual,
+            porId,
         }}>
             {children}
         </PrestamosContext.Provider>

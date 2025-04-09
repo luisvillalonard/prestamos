@@ -35,7 +35,7 @@ export const menuItems: MenuItem[] = [
         children: [
             { menuid: 21, key: `${Urls.Prestamos.Base}/${Urls.Prestamos.Formulario}`, label: 'Formulario de Prestamos', icon: <IconForm /> },
             { menuid: 22, key: `${Urls.Prestamos.Base}/${Urls.Prestamos.Registrados}`, label: 'Prestamos Registrados', icon: <IconListNumbered /> },
-            { menuid: 23, key: `${Urls.Prestamos.Base}/${Urls.Prestamos.Cobro}`, label: 'Cobro de Prestamo', icon: <IconReceiveMoney /> },
+            { menuid: 23, key: `${Urls.Prestamos.Base}/${Urls.Prestamos.Cobro.replace(':id?', '')}`, label: 'Cobro de Prestamo', icon: <IconReceiveMoney /> },
         ],
     },
     {

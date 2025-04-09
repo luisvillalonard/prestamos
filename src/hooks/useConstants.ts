@@ -13,7 +13,7 @@ export const Urls = {
         Base: 'prestamos',
         Formulario: 'formulario',
         Registrados: 'registrados',
-        Cobro: 'cobro',
+        Cobro: 'cobro/:id?',
     },
     Seguridad: {
         Base: 'seguridad',

@@ -60,8 +60,8 @@ const StyleProvider = (props: Pick<ControlProps, "children">) => {
                         verticalLabelPadding: 0,
                     },
                     Table: {
-                        headerBg: 'rgba(0,0,0,0.85)',
-                        headerColor: Colors.White,
+                        headerBg: '#EEEEEE',
+                        headerColor: Colors.Gris51,
                     }
                 }
             }}

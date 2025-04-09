@@ -16,11 +16,12 @@ export default function PrestamosPagosProvider(props: Pick<ControlProps, "childr
         editar({
             id: 0,
             prestamoId: 0,
-            formaPago: undefined,
+            prestamoCuotaId: 0,
+            metodoPago: undefined,
             monto: 0,
-            deuda: 0,
             multaMora: 0,
             usuario: undefined,
+            anulado: false,
         });
     }
 

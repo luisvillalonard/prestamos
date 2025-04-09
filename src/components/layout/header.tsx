@@ -29,7 +29,7 @@ const HeaderApp = () => {
             <Link to={Urls.Home}>
               <Flex align="center" gap={10}>
                 <Title level={2} style={{ margin: 0, color: 'rgba(255,255,255,0.8)' }}>SISTEMA</Title>
-                <Title level={2} style={{ margin: 0, color: Colors.Primary }}>PRUEBA</Title>
+                <Title level={2} style={{ margin: 0, color: Colors.Primary }}>PRESTAMOS</Title>
               </Flex>
             </Link>
           </Tooltip>

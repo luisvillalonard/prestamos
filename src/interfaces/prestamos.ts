@@ -37,14 +37,20 @@ export interface PrestamoCuota {
     interes: number,
     amortizacion: number,
     saldoFinal: number,
+    vencido: boolean,
+    pagado: boolean,
+    pagos: PrestamoPago[]
 }
 
 export interface PrestamoPago {
     id: number,
     prestamoId: number,
-    formaPago: FormaPago | undefined,
+    prestamoCuotaId: number,
+    metodoPago: MetodoPago | undefined,
     monto: number,
-    deuda: number,
     multaMora: number,
     usuario: Usuario | undefined,
+    anulado: boolean,
+    usuarioIdAnulado?: Usuario,
+    anuladoFecha?: string
 }

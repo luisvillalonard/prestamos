@@ -37,7 +37,7 @@ export default function PagePrestamos() {
                 </Flex>
                 <Listado filter={filter} />
             </Col>
-            <Loading active={procesando} message="Procesando, espere..." />
+            <Loading fullscreen active={procesando} message="Procesando, espere..." />
         </>
     )
 }

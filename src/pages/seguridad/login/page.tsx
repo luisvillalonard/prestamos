@@ -36,7 +36,7 @@ export default function PageLogin() {
                     <Flex vertical align="center" justify="center" className="h-100 p-5">
                         <Space>
                             <h1 className='display-5' style={{ fontWeight: 'bolder', color: token.colorText }}>Sistema</h1>
-                            <h1 className='display-5' style={{ fontWeight: 'bolder', color: token.colorPrimary }}>Prueba</h1>
+                            <h1 className='display-5' style={{ fontWeight: 'bolder', color: token.colorPrimary }}>Prestamos</h1>
                         </Space>
                         {
                             !user

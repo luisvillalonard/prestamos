@@ -42,8 +42,8 @@ export default function FormAcesor() {
 
     return (
         <FormModal
-            name="formCiudades"
-            title="Ciudad"
+            name="formAcesor"
+            title="ACesor"
             open={entidad !== null}
             autoComplete="off"
             initialValues={modelo}

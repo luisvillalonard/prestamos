@@ -6,10 +6,9 @@ import { useEffect, useState } from "react"
 
 const Searcher = (props: Omit<InputProps, "onChange"> & Pick<ControlProps, "onChange">) => {
 
-    const { onChange } = props
+    const { onChange, style } = props
     const [query, setQuery] = useState('');  // The search query typed by user
     const [debouncedQuery, setDebouncedQuery] = useState(query);  // Debounced value
-
 
     useEffect(() => {
         // Set a timeout to update debounced value after 500ms
@@ -36,11 +35,20 @@ const Searcher = (props: Omit<InputProps, "onChange"> & Pick<ControlProps, "onCh
                     allowClear
                     placeholder={props.placeholder || "escriba aqui para buscar"}
                     value={query}
-                    style={{ width: '100%', ...props.style }}
+                    style={{ width: '100%', ...style }}
                     onClear={() => setQuery('')}
                     onChange={(e) => setQuery(e.target.value)}
                     onKeyUp={(evt) => { if (evt.code.toLowerCase() === 'escape') setQuery('') }} />
-                <Button size={props.size} type="text" variant="outlined" icon={<IconSearch />} onClick={() => onChange && onChange(query)}></Button>
+                <Button
+                    size={props.size}
+                    style={{
+                        borderStyle: style?.borderStyle,
+                        borderWidth: style?.borderWidth,
+                        borderColor: style?.borderColor,
+                    }}
+                    icon={<IconSearch />}
+                    onClick={() => onChange && onChange(query)}>
+                </Button>
             </Space.Compact>
         </Tooltip>
     )
