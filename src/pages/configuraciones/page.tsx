@@ -6,7 +6,7 @@ import { useData } from "@hooks/useData"
 import { useForm } from "@hooks/useForm"
 import { Alerta, Exito } from "@hooks/useMensaje"
 import { Configuracion } from "@interfaces/configuraciones"
-import { Col, Divider, Flex, Form, Row, Space, Switch, Typography } from "antd"
+import { Col, Flex, Form, Row, Space, Switch, Typography } from "antd"
 import { useEffect } from "react"
 import { useParams } from "react-router-dom"
 

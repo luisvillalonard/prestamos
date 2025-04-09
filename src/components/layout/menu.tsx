@@ -98,7 +98,6 @@ export default function MenuApp() {
     const url = useLocation()
     const {
         contextAuth: { state: { user, viewMenu } },
-        contextPermisos: { state: { procesando } },
     } = useData()
     const [items, setItems] = useState<MenuItem[] | undefined>(undefined)
     const [stateOpenKeys, setStateOpenKeys] = useState([''])
