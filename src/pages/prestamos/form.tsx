@@ -5,7 +5,6 @@ import Loading from "@components/containers/loading"
 import { InputDatePicker } from "@components/inputs/date"
 import Searcher from "@components/inputs/searcher"
 import TitlePage from "@components/titles/titlePage"
-import TitlePanel from "@components/titles/titlePanel"
 import { Colors, Urls } from "@hooks/useConstants"
 import { useData } from "@hooks/useData"
 import { dateFormat, DateList, String_To_Date } from "@hooks/useDate"
@@ -23,7 +22,6 @@ import { CSSProperties, useEffect, useState } from "react"
 import { useLocation, useNavigate } from "react-router-dom"
 import PrestamoCuotas from "./cuotas"
 import { ButtonSuccess } from "@components/buttons/success"
-import { TagSuccess } from "@components/tags/tags"
 
 const styleInputTotal: CSSProperties = {
     borderRadius: 0,
