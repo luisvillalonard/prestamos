@@ -1,5 +1,6 @@
 import { ButtonPrimary } from "@components/buttons/primary"
 import Container from "@components/containers/container"
+import Loading from "@components/containers/loading"
 import TitlePage from "@components/titles/titlePage"
 import { Colors } from "@hooks/useConstants"
 import { useData } from "@hooks/useData"
@@ -13,7 +14,7 @@ import { useParams } from "react-router-dom"
 export default function PageConfiguraiones() {
 
     const {
-        contextConfiguracionesGenerales: { state: { modelo }, nuevo, agregar, actualizar, ultima },
+        contextConfiguracionesGenerales: { state: { modelo, procesando }, nuevo, agregar, actualizar, ultima },
     } = useData()
     const { entidad, editar } = useForm<Configuracion | undefined>(modelo)
     useParams();
@@ -74,7 +75,8 @@ export default function PageConfiguraiones() {
                 </Space>
             </Flex>
 
-            <Container title={<Typography.Title level={4} style={{ margin: 0, color: Colors.Primary }}>Generales</Typography.Title>}>
+            <Container 
+                title={<Typography.Title level={4} style={{ margin: 0, color: Colors.Primary }}>Generales</Typography.Title>}>
                 <Form
                     name="FormConfiguraciones"
                     layout="vertical"
@@ -98,6 +100,7 @@ export default function PageConfiguraiones() {
                     </Row>
                 </Form>
             </Container>
+            <Loading fullscreen active={procesando} message="Procesando, espere..." />
         </Col>
     )
 }
