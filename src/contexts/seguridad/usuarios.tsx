@@ -41,7 +41,7 @@ export default function UsuariosProvider(props: Pick<ControlProps, "children">) 
             resp = errorResult<Usuario>(error);
         }
 
-        dispatch({ type: ACTIONS.FETCH_COMPLETE, recargar: false });
+        dispatch({ type: ACTIONS.FETCH_COMPLETE });
         return resp;
     }
 
@@ -55,7 +55,7 @@ export default function UsuariosProvider(props: Pick<ControlProps, "children">) 
             resp = errorResult<UserApp>(error);
         }
 
-        dispatch({ type: ACTIONS.FETCH_COMPLETE, recargar: true });
+        dispatch({ type: ACTIONS.FETCH_COMPLETE });
         return resp;
     }
 
@@ -69,7 +69,7 @@ export default function UsuariosProvider(props: Pick<ControlProps, "children">) 
             resp = errorResult<UserApp>(error);
         }
 
-        dispatch({ type: ACTIONS.FETCH_COMPLETE, recargar: false });
+        dispatch({ type: ACTIONS.FETCH_COMPLETE });
         return resp;
     }
 

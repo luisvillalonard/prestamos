@@ -4,31 +4,26 @@ import dayjs from 'dayjs';
 dayjs.locale('es-DO');
 
 export const dateFormat = 'DD-MM-YYYY';
-export const dayjsConst = dayjs.Dayjs
 
 export function DD_MM_YYYY(date: Date): string {
     return dayjs(date).format(dateFormat)
 }
 
-export function Date_To_Dayjs(date?: Date): dayjs.Dayjs {
+export function Date_To_Dayjs(date?: Date): (dayjs.Dayjs | undefined) {
+    if (!date) return undefined
     return dayjs(date)
 }
 
-export function String_To_Dayjs(value: string): (dayjs.Dayjs | undefined) {
-
-    if (!value) return undefined;
+export function String_To_Dayjs(value?: string): (dayjs.Dayjs | undefined) {
+    if (!value) return undefined
     return dayjs(value, dateFormat)
-
 }
 
-export function String_To_Date(value: string): (Date | undefined) {
-
-    if (!value) return undefined;
-    return dayjs(value, dateFormat).toDate()
-
+export function String_To_Date(value?: string): (Date | undefined) {
+    return String_To_Dayjs(value)?.toDate()
 }
 
-export function List_Date(date: Date, dias: number[], cantidad: number): DateArray[] {
+export function DateList(date: Date, dias: number[], cantidad: number): DateArray[] {
 
     const result: DateArray[] = [];
     const fechaInicio: Date = date;

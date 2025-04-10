@@ -60,7 +60,7 @@ export default function PrestamosProvider(props: Pick<ControlProps, "children">)
             resp = errorResult<Prestamo[]>(error);
         }
 
-        dispatch({ type: ACTIONS.FETCH_COMPLETE, recargar: false });
+        dispatch({ type: ACTIONS.FETCH_COMPLETE });
         return resp;
 
     }

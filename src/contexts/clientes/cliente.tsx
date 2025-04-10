@@ -43,7 +43,7 @@ export default function ClientesProvider(props: Pick<ControlProps, "children">) 
             resp = errorResult<Cliente>(error);
         }
 
-        dispatch({ type: ACTIONS.FETCH_COMPLETE, recargar: false });
+        dispatch({ type: ACTIONS.FETCH_COMPLETE });
         return resp;
     }
 

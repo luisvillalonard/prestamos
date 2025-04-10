@@ -8,11 +8,11 @@ import TitlePage from "@components/titles/titlePage"
 import TitlePanel from "@components/titles/titlePanel"
 import { Colors, Urls } from "@hooks/useConstants"
 import { useData } from "@hooks/useData"
-import { dateFormat, List_Date, String_To_Date } from "@hooks/useDate"
+import { dateFormat, DateList, String_To_Date } from "@hooks/useDate"
 import { useForm } from "@hooks/useForm"
 import { IconCalculator } from "@hooks/useIconos"
 import { Alerta, Exito } from "@hooks/useMensaje"
-import { FormatDate_DDMMYYYY, FormatNumber } from "@hooks/useUtils"
+import { FormatNumber } from "@hooks/useUtils"
 import { Cliente } from "@interfaces/clientes"
 import { Configuracion } from "@interfaces/configuraciones"
 import { DateArray } from "@interfaces/globales"
@@ -31,7 +31,7 @@ export default function FormPrestamo() {
 
     const {
         contextConfiguracionesGenerales: { ultima },
-        contextClientes: { state: { datos: clientes, procesando }, todos },
+        contextClientes: { state: { datos: clientes, procesando: cargandoClientes }, todos },
         contextPrestamos: { state: { modelo, procesando: cargandoPrestamo }, nuevo, agregar, actual },
         contextPrestamosEstados: { todos: cargarEstados },
         contextFormasPago: { state: { datos: formasPago }, todos: cargarFormasPago },
@@ -42,14 +42,13 @@ export default function FormPrestamo() {
     const { entidad, editar } = useForm<Prestamo | undefined>(undefined)
     const [errores, setErrores] = useState<string[]>([])
     const [fechasPago, setFechasPago] = useState<DateArray[]>([])
-    const [primeraFechaPago, setPrimeraFechaPago] = useState<string>('')
+    const [primeraFechaPago, setPrimeraFechaPago] = useState<string | undefined>(undefined)
 
     const [montoCapitalCuota, setMontoCapitalCuota] = useState<number>(0)
     const [montoTotalInteres, setMontoTotalInteres] = useState<number>(0)
     const [montoAmortizacion, setMontoAmortizacion] = useState<number>(0)
-    const [activeKey, setActiveKey] = useState<string>('1')
+    const [activeKey, setActiveKey] = useState<string>('')
     const [configuracion, setConfiguracion] = useState<Configuracion | undefined>(undefined)
-    const [isAlert, setIsAlert] = useState<boolean>(false)
     const [isBlocked, setIsBlocked] = useState<boolean>(false)
     const nav = useNavigate()
     const url = useLocation()
@@ -57,7 +56,6 @@ export default function FormPrestamo() {
     const nuevoPrestamo = () => {
         nuevo();
         setErrores([]);
-        setIsAlert(false);
         setIsBlocked(false);
     }
 
@@ -87,19 +85,19 @@ export default function FormPrestamo() {
 
     const calcularFechaPago = () => {
 
-        if (!entidad || !entidad.fechaCredito || !entidad.formaPago) {
+        if (!(entidad && entidad.fechaCredito && entidad.formaPago)) {
             setFechasPago([]);
             return;
         }
 
-        const [strDia, strMes, strAnio] = entidad?.fechaCredito?.split('-');
-        const fechaInicio = new Date(Number(strAnio), Number(strMes) - 1, Number(strDia));
-        const dias = entidad.formaPago?.dias.map(item => item.dia) ?? [];
-        const fechas = List_Date(fechaInicio, dias, dias.length);
-        console.log(fechas);
+        const fechaInicio = String_To_Date(entidad.fechaCredito);
+        if (!fechaInicio) return;
 
-        setFechasPago(fechas.sort((a, b) => b.fecha.localeCompare(a.fecha)));
-        setPrimeraFechaPago('');
+        const dias = entidad.formaPago.dias.map(item => item.dia);
+        const fechas = DateList(fechaInicio, dias, dias.length);
+
+        setFechasPago(fechas);
+        setPrimeraFechaPago(undefined);
 
     }
 
@@ -111,7 +109,6 @@ export default function FormPrestamo() {
 
             if (!primeraFechaPago) {
                 setErrores(['Debe seleccionar la fecha de inicio de pago.']);
-                setIsAlert(true);
                 return;
             }
             setErrores([]);
@@ -126,36 +123,21 @@ export default function FormPrestamo() {
             const interesCuota = Number(Number(totalIntereses / entidad.cantidadCuotas).toFixed(2))
             setMontoAmortizacion(capitalCuota + interesCuota);
 
-            const [dia, mes, anio] = primeraFechaPago.split('-');
-            const date = new Date(Number(anio), Number(mes) - 1, Number(dia));
             const dias = entidad.formaPago?.dias.map(item => item.dia) ?? [];
-            let fechas: string[] = [];
-            let vencidas: boolean[] = [];
-
-            fechas.push(`${dia}-${mes}-${anio}`);
-            while (fechas.length < entidad?.cantidadCuotas) {
-                date.setDate(date.getDate() + 1);
-                if (dias.filter(num => num === date.getDate()).length > 0) {
-                    const nuevaFecha = FormatDate_DDMMYYYY(date.toISOString().substring(0, 10))
-                    if (nuevaFecha) {
-                        fechas.push(nuevaFecha);
-                        vencidas.push(date < new Date() ? true : false);
-                    }
-                }
-            }
-
+            const fechaInicio = String_To_Date(primeraFechaPago)!;
+            const fechas = DateList(fechaInicio, dias, entidad.cantidadCuotas);
             const cuotas = Array.from(Array(entidad.cantidadCuotas).keys()).map((_num, index) => {
 
                 saldoFinal = Number((saldoFinal - capitalCuota).toFixed(2));
 
                 return {
-                    fechaPago: fechas[index],
+                    fechaPago: fechas[index].fecha,
                     deudaInicial: entidad.deudaInicial,
                     capital: capitalCuota,
                     interes: interesCuota,
                     amortizacion: Number((interesCuota + capitalCuota).toFixed(2)),
                     saldoFinal: saldoFinal < 0 ? 0 : saldoFinal,
-                    vencido: vencidas[index],
+                    vencido: fechas[index].anterior,
                 } as PrestamoCuota
 
             });
@@ -181,7 +163,6 @@ export default function FormPrestamo() {
         if (entidad.cuotas.length === 0)
             alertas.push('Debe calcular las cuotas del prestamo.');
 
-        setIsAlert(false);
         setErrores(alertas);
         return alertas.length === 0;
     }
@@ -226,6 +207,8 @@ export default function FormPrestamo() {
     if (!entidad) {
         return <Loading fullscreen active message="Cargando parametros, espere" />
     }
+
+    console.log('entidad', entidad)
     return (
         <>
             <Col xl={{ span: 20, offset: 2 }} lg={{ span: 24 }} md={{ span: 24 }} xs={{ span: 24 }}>
@@ -240,7 +223,7 @@ export default function FormPrestamo() {
                     </Space>
                 </Flex>
 
-                <AlertStatic errors={errores} isAlert={isAlert} />
+                <AlertStatic errors={errores} />
 
                 <Form
                     name="FormPrestamo"
@@ -260,11 +243,13 @@ export default function FormPrestamo() {
                     <Card
                         title={<Typography.Title level={4} style={{ margin: 0, color: Colors.Primary }}>Datos del Cliente</Typography.Title>}
                         extra={<Searcher onChange={buscarCliente} />}
-                        className="mb-4 position-relative">
+                        className="mb-4"
+                        styles={{ body: { position: 'relative' }}}>
                         <ClienteInfo cliente={entidad.cliente} />
                         <Collapse
-                            bordered={false} ghost size="small" destroyInactivePanel
-                            defaultActiveKey={['1']}
+                            bordered={false} ghost size="small" 
+                            destroyInactivePanel
+                            defaultActiveKey={[activeKey]}
                             activeKey={[activeKey]}
                             items={[
                                 {
@@ -279,17 +264,19 @@ export default function FormPrestamo() {
                                         <Table<Cliente>
                                             size="middle"
                                             bordered={false}
-                                            loading={procesando}
                                             locale={{ emptyText: <Flex style={{ textWrap: 'nowrap' }}>0 clientes</Flex> }}
-                                            dataSource={procesando ? [] : clientes.map((item, index) => { return { ...item, key: index + 1 } })}>
+                                            dataSource={cargandoClientes ? [] : clientes.map((item, index) => { return { ...item, key: index + 1 } })}>
                                             <Table.Column title="Acci&oacute;n" align="center" fixed='left' width={60} render={(record: Cliente) => (
                                                 <ButtonDefault size="small" shape="round" onClick={async () => {
+
+                                                    setErrores([]);
+                                                    setIsBlocked(false);
+
                                                     const result = await actual(record.id);
-                                                    if (result && result.ok) {
+                                                    if (result && result.ok && result.datos) {
                                                         const prest = result.datos;
                                                         if (!prest?.estado?.final) {
                                                             setErrores(['Este cliente ya tiene un prestamo en curso. Si lo desea haga un reenganche.']);
-                                                            setIsAlert(true);
                                                             setIsBlocked(true);
                                                             return;
                                                         }
@@ -298,6 +285,7 @@ export default function FormPrestamo() {
                                                     if (entidad) {
                                                         editar({ ...entidad, cliente: record });
                                                         setIsBlocked(false);
+                                                        setActiveKey('');
                                                     }
                                                 }}>Seleccionar</ButtonDefault>
                                             )} />
@@ -321,6 +309,7 @@ export default function FormPrestamo() {
                             ]}
                         >
                         </Collapse>
+                        <Loading active={cargandoClientes} message="buscando, espere" />
                     </Card>
 
                     <Card
@@ -442,11 +431,9 @@ export default function FormPrestamo() {
                                     <InputDatePicker
                                         name="fechaCredito"
                                         placeholder=""
-                                        minDate={!configuracion || configuracion.permiteFechaAnteriorHoy ? undefined : new Date()}
-                                        defaultValue={String_To_Date(entidad.fechaCredito)}
-                                        value={entidad?.fechaCredito}
+                                        minDate={configuracion && configuracion.permiteFechaAnteriorHoy ? undefined : new Date()}
+                                        value={entidad.fechaCredito}
                                         onChange={(date) => {
-                                            console.log(date)
                                             if (entidad) {
                                                 editar({ ...entidad, fechaCredito: !date ? '' : date.format(dateFormat) })
                                             }
@@ -457,7 +444,6 @@ export default function FormPrestamo() {
                             <Col xl={4} lg={4} md={8} sm={24} xs={24} style={{ alignSelf: 'end' }}>
                                 <Form.Item name="fechaInicioPago" label="Inicio de Pago" rules={[{ required: true, message: 'Obligatorio' }]}>
                                     <Select
-                                        defaultActiveFirstOption={true}
                                         value={primeraFechaPago}
                                         options={fechasPago.map((item, index) => {
                                             return { key: index, value: item.fecha, label: item.fecha }
@@ -494,7 +480,7 @@ export default function FormPrestamo() {
 
                 </Form>
             </Col>
-            <Loading active={cargandoPrestamo} message="Cargando Prestamo, espere..." />
+            <Loading active={cargandoPrestamo} message="Procesando, espere..." />
         </>
     )
 }

@@ -40,7 +40,7 @@ export default function ConfiguracionesGeneralesProvider(props: Pick<ControlProp
             resp = errorResult<Configuracion>(error);
         }
 
-        dispatch({ type: ACTIONS.FETCH_COMPLETE, recargar: false });
+        dispatch({ type: ACTIONS.FETCH_COMPLETE });
         return resp;
 
     }

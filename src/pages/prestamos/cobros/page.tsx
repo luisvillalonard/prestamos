@@ -162,7 +162,7 @@ export default function PagePrestamoCobro() {
                 <TitlePage title="M&oacute;lculo de Cobros de Prestamo" />
                 <Divider className='my-3' />
 
-                <AlertStatic errors={errores} isAlert={false} />
+                <AlertStatic errors={errores} />
 
                 <Container>
                     <Tabs

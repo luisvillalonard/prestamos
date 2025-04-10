@@ -39,26 +39,9 @@ export default function PermisosProvider(props: Pick<ControlProps, "children">) 
             resp = errorResult<Rol>(error);
         }
 
-        dispatch({ type: ACTIONS.FETCH_COMPLETE, recargar: false });
+        dispatch({ type: ACTIONS.FETCH_COMPLETE });
         return resp;
     }
-
-    /* const permitionList = (): MenuItem[] => {
-
-        return menuItems.reduce((acc: MenuItem[], item: MenuItem) => {
-            if (item.children && item.children.length > 0) {
-                item.children?.forEach((child: MenuItem) => {
-                    acc.push({
-                        id: 0,
-                        rolId: 0,
-                        menuId: child.menuid,
-                    })
-                })
-            }
-            return acc;
-        }, []);
-
-    } */
 
     return (
         <PermisosContext.Provider value={{
