@@ -22,12 +22,14 @@ import { Button, Card, Col, Collapse, Flex, Form, Input, InputNumber, Row, Selec
 import { CSSProperties, useEffect, useState } from "react"
 import { useLocation, useNavigate } from "react-router-dom"
 import PrestamoCuotas from "./cuotas"
+import { ButtonSuccess } from "@components/buttons/success"
+import { TagSuccess } from "@components/tags/tags"
 
 const styleInputTotal: CSSProperties = {
-    borderRadius: 0, 
-    fontWeight: 'bold', 
-    borderBottomWidth: 1, 
-    borderBottomStyle: 'solid', 
+    borderRadius: 0,
+    fontWeight: 'bold',
+    borderBottomWidth: 1,
+    borderBottomStyle: 'solid',
     borderBottomColor: Colors.Secondary
 }
 
@@ -240,10 +242,10 @@ export default function FormPrestamo() {
                         title={<Typography.Title level={4} style={{ margin: 0, color: Colors.Primary }}>Datos del Cliente</Typography.Title>}
                         extra={<Searcher onChange={buscarCliente} />}
                         className="mb-4"
-                        styles={{ body: { position: 'relative' }}}>
+                        styles={{ body: { position: 'relative' } }}>
                         <ClienteInfo cliente={entidad.cliente} />
                         <Collapse
-                            bordered={false} ghost size="small" 
+                            bordered={false} ghost size="small"
                             destroyInactivePanel
                             defaultActiveKey={[activeKey]}
                             activeKey={[activeKey]}
@@ -273,6 +275,7 @@ export default function FormPrestamo() {
                                                         const prest = result.datos;
                                                         if (!prest?.estado?.final) {
                                                             setErrores(['Este cliente ya tiene un prestamo en curso. Si lo desea haga un reenganche.']);
+                                                            editar(prest);
                                                             setIsBlocked(true);
                                                             return;
                                                         }
@@ -310,12 +313,24 @@ export default function FormPrestamo() {
 
                     <Card
                         className="mb-4"
-                        title={<Typography.Title level={4} style={{ margin: 0, color: Colors.Primary }}>Datos del Prestamo</Typography.Title>}
-                        extra={
+                        title={
                             <Flex align="center" gap={10}>
-                                <TitlePanel title="C&oacute;digo" />
-                                <Tag color='blue' style={{ fontWeight: 'bolder', fontSize: 16, borderRadius: 10 }}>{entidad?.codigo || 'P-000000'}</Tag>
+                                <Typography.Title level={4} style={{ margin: 0, color: Colors.Primary }}>Datos del Prestamo</Typography.Title>
+                                <Tag color='default' style={{ fontWeight: 500, fontSize: 16, borderRadius: 10, margin: 0 }}>{entidad?.codigo || 'P-000000'}</Tag>
+                                {
+                                    entidad?.reenganche === true
+                                        ? <Tag color={Colors.Success} style={{ fontWeight: 400, fontSize: 16, borderRadius: 10, margin: 0 }}>Reenganche</Tag>
+                                        : <></>
+                                }
                             </Flex>
+                        }
+                        extra={
+                            isBlocked
+                                ? <ButtonSuccess onClick={() => {
+                                    editar({ ...entidad, reenganche: true, deudaNueva: 0 })
+                                    setIsBlocked(false)
+                                }}>Reenganchar</ButtonSuccess>
+                                : <></>
                         }>
                         <Row gutter={[10, 10]}>
                             <Col xl={4} lg={4} md={8} sm={24} xs={24} style={{ alignSelf: 'end' }}>
