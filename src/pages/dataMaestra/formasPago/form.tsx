@@ -1,10 +1,9 @@
 import FormModal from "@components/containers/form"
-import FormItem from "@components/forms/item"
 import { useData } from "@hooks/useData"
 import { useForm } from "@hooks/useForm"
 import { Alerta, Exito } from "@hooks/useMensaje"
 import { FormaPago, FormaPagoFecha } from "@interfaces/dataMaestra"
-import { Input, Select } from "antd"
+import { Form, Input, Select } from "antd"
 import { useEffect } from "react"
 
 export default function FormFormaPago() {
@@ -49,10 +48,10 @@ export default function FormFormaPago() {
             initialValues={modelo}
             onFinish={guardar}
             onClose={cancelar}>
-            <FormItem name="nombre" label="Nombre" rules={[{ required: true, message: 'Obligatorio' }]}>
+            <Form.Item name="nombre" label="Nombre" rules={[{ required: true, message: 'Obligatorio' }]}>
                 <Input name="nombre" maxLength={150} value={entidad?.nombre || ''} onChange={handleChangeInput} />
-            </FormItem>
-            <FormItem label="D&iacute;as" rules={[{ required: true, message: 'Obligatorio' }]}>
+            </Form.Item>
+            <Form.Item label="D&iacute;as" rules={[{ required: true, message: 'Obligatorio' }]}>
                 <Select
                     mode="multiple"
                     allowClear
@@ -70,7 +69,7 @@ export default function FormFormaPago() {
                     }}
                     options={Array.from(Array(31).keys()).map((dia) => ({ key: dia, value: dia + 1, label: dia + 1 }))}
                 />
-            </FormItem>
+            </Form.Item>
         </FormModal>
     )
 }

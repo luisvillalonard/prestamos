@@ -1,4 +1,3 @@
-import FormItem from "@components/forms/item";
 import { useData } from "@hooks/useData";
 import { useForm } from "@hooks/useForm";
 import { useIconos } from "@hooks/useIconos";
@@ -51,7 +50,7 @@ export default function LoginForm(props: Pick<ControlProps, "onChange">) {
                 onFinish={onFinish}
                 style={{ width: '100%' }}
             >
-                <FormItem
+                <Form.Item
                     name="acceso"
                     label={<Typography.Title level={5} style={{ margin: 0, fontWeight: 'lighter' }}>Usuario</Typography.Title>} 
                     rules={[{ required: true, message: 'Obligatorio' }]}
@@ -62,8 +61,8 @@ export default function LoginForm(props: Pick<ControlProps, "onChange">) {
                         readOnly={procesando}
                         prefix={<IconUser style={{ fontSize: 30, marginRight: 20 }} />}
                         placeholder="escriba aqui el usuario" />
-                </FormItem>
-                <FormItem
+                </Form.Item>
+                <Form.Item
                     name="clave"
                     label={<Typography.Title level={5} style={{ margin: 0, fontWeight: 'lighter' }}>Clave</Typography.Title>}
                     rules={[{ required: true, message: 'Obligatorio' }]}
@@ -74,7 +73,7 @@ export default function LoginForm(props: Pick<ControlProps, "onChange">) {
                         readOnly={procesando}
                         prefix={<IconPassword style={{ fontSize: 30, marginRight: 20 }} />}
                         placeholder="escriba aqui la clave" />
-                </FormItem>
+                </Form.Item>
                 <Form.Item>
                     <Button block type="primary" shape="round" htmlType="submit" disabled={procesando}>
                         {
@@ -88,13 +87,13 @@ export default function LoginForm(props: Pick<ControlProps, "onChange">) {
                         }
                     </Button>
                 </Form.Item>
-                <FormItem>
+                <Form.Item>
                     <Flex justify="space-between" align="center">
                         <Form.Item name="recuerdame" valuePropName="checked" noStyle>
                             <Checkbox value={user.recuerdame} disabled={procesando}>Recuerdame</Checkbox>
                         </Form.Item>
                     </Flex>
-                </FormItem>
+                </Form.Item>
             </Form>
         </Flex>
     )

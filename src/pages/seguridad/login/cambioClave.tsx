@@ -1,4 +1,3 @@
-import FormItem from "@components/forms/item";
 import { useData } from "@hooks/useData";
 import { useForm } from "@hooks/useForm";
 import { useIconos } from "@hooks/useIconos";
@@ -60,7 +59,7 @@ export default function FormCambioClave(props: Pick<ControlProps, "onChange"> & 
                 onFinish={onFinish}
                 style={{ width: '100%' }}
             >
-                <FormItem name="passwordNew" rules={[{ required: true, message: 'Obligatorio', }]}>
+                <Form.Item name="passwordNew" rules={[{ required: true, message: 'Obligatorio', }]}>
                     <Input.Password
                         name="passwordNew"
                         placeholder="escriva la nueva clave"
@@ -69,8 +68,8 @@ export default function FormCambioClave(props: Pick<ControlProps, "onChange"> & 
                         prefix={<IconPassword style={{ fontSize: 20 }} />}
                         style={{ marginBottom: 18 }}
                         onChange={handleChangeInput} />
-                </FormItem>
-                <FormItem name="passwordConfirm" rules={[{ required: true, message: 'Obligatorio' }]}>
+                </Form.Item>
+                <Form.Item name="passwordConfirm" rules={[{ required: true, message: 'Obligatorio' }]}>
                     <Input.Password
                         name="passwordConfirm"
                         placeholder="repita la nueva clave"
@@ -79,7 +78,7 @@ export default function FormCambioClave(props: Pick<ControlProps, "onChange"> & 
                         prefix={<IconPassword style={{ fontSize: 20 }} />}
                         style={{ marginBottom: 18 }}
                         onChange={handleChangeInput} />
-                </FormItem>
+                </Form.Item>
                 <Form.Item>
                     <Button block type="primary" shape="round" htmlType="submit" disabled={procesando}>
                         {

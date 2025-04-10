@@ -44,10 +44,10 @@ export default function Listado(props: Pick<ControlProps, "filter">) {
             <Column title="Perf&iacute;l" render={(record: Usuario) => (record.rol?.nombre)} />
             <Column title="C&oacute;digo Empleado" render={(record: Usuario) => (record.empleadoId)} />
             <Column title="Correo" dataIndex="correo" key="correo" />
-            <Column title="Cambio Clave" render={(record: Usuario) => (
+            <Column title="Cambio Clave" align="center" render={(record: Usuario) => (
                 record.cambio ? <TagSuccess text="Si" /> : <TagDanger text="No" />
             )} />
-            <Column title="Estado" render={(record: Usuario) => (
+            <Column title="Estado" align="center" render={(record: Usuario) => (
                 record.activo ? <TagSuccess text="Activo" /> : <TagDanger text="Inactivo" />
             )} />
             <Column title="Acci&oacute;n" align="center" width={80} render={(record: Usuario) => (

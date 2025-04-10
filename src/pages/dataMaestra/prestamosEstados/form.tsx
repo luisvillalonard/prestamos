@@ -1,10 +1,9 @@
 import FormModal from "@components/containers/form"
-import FormItem from "@components/forms/item"
 import { useData } from "@hooks/useData"
 import { useForm } from "@hooks/useForm"
 import { Alerta, Exito } from "@hooks/useMensaje"
 import { PrestamoEstado } from "@interfaces/dataMaestra"
-import { Input, Space, Switch } from "antd"
+import { Form, Input, Space, Switch } from "antd"
 import { useEffect } from "react"
 
 export default function FormPrestamoEstado() {
@@ -49,10 +48,10 @@ export default function FormPrestamoEstado() {
             initialValues={modelo}
             onFinish={guardar}
             onClose={cancelar}>
-            <FormItem name="nombre" label="Nombre" rules={[{ required: true, message: 'Obligatorio' }]}>
+            <Form.Item name="nombre" label="Nombre" rules={[{ required: true, message: 'Obligatorio' }]}>
                 <Input name="nombre" maxLength={150} value={entidad?.nombre || ''} onChange={handleChangeInput} />
-            </FormItem>
-            <FormItem>
+            </Form.Item>
+            <Form.Item>
                 <Space>
                     <Switch
                         checked={entidad?.inicial}
@@ -63,8 +62,8 @@ export default function FormPrestamoEstado() {
                         }} />
                     <span>Este estado ser&aacute; con el que se cree el prestamo.</span>
                 </Space>
-            </FormItem>
-            <FormItem>
+            </Form.Item>
+            <Form.Item>
                 <Space>
                     <Switch
                         checked={entidad?.final}
@@ -75,7 +74,7 @@ export default function FormPrestamoEstado() {
                         }} />
                     <span>Este ser&aacute; el estado con el que se cierre el prestamo, luego de este no existir&aacute; otro estado</span>
                 </Space>
-            </FormItem>
+            </Form.Item>
         </FormModal>
     )
 }

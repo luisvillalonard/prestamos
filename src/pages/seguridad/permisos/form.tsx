@@ -1,7 +1,6 @@
 import { ButtonDefault } from "@components/buttons/default"
 import { ButtonPrimary } from "@components/buttons/primary"
 import Loading from "@components/containers/loading"
-import FormItem from "@components/forms/item"
 import { menuItems } from "@components/layout/menu"
 import TitlePage from "@components/titles/titlePage"
 import TitleSesion from "@components/titles/titleSesion"
@@ -124,16 +123,16 @@ export default function FormPermisos() {
 
                             <Row gutter={[10, 10]}>
                                 <Col xs={24}>
-                                    <FormItem name="nombre" label="Nombre" rules={[{ required: true, message: 'Obligatorio' }]}>
+                                    <Form.Item name="nombre" label="Nombre" rules={[{ required: true, message: 'Obligatorio' }]}>
                                         <Input
                                             name="nombre"
                                             maxLength={50}
                                             value={entidad?.nombre || ''}
                                             onChange={handleChangeInput} />
-                                    </FormItem>
+                                    </Form.Item>
                                 </Col>
                                 <Col xs={24}>
-                                    <FormItem name="descripcion" label="Descripci&oacute;n">
+                                    <Form.Item name="descripcion" label="Descripci&oacute;n">
                                         <Input.TextArea
                                             name="descripcion"
                                             maxLength={250}
@@ -141,27 +140,27 @@ export default function FormPermisos() {
                                             style={{ resize: 'none' }}
                                             value={entidad?.descripcion || ''}
                                             onChange={handleChangeInput} />
-                                    </FormItem>
+                                    </Form.Item>
                                 </Col>
                                 <Col xs={24}>
-                                    <FormItem name="esAdmin" valuePropName="checked">
+                                    <Form.Item name="esAdmin" valuePropName="checked">
                                         <Space>
                                             <Switch
                                                 checked={entidad.esAdmin}
                                                 onChange={(checked) => editar({ ...entidad, esAdmin: checked })} />
                                             <span>Este rol define al usuario como un Administrador del sistema</span>
                                         </Space>
-                                    </FormItem>
+                                    </Form.Item>
                                 </Col>
                                 <Col xs={24}>
-                                    <FormItem name="activo" valuePropName="checked">
+                                    <Form.Item name="activo" valuePropName="checked">
                                         <Space>
                                             <Switch
                                                 checked={entidad.activo}
                                                 onChange={(checked) => editar({ ...entidad, activo: checked })} />
                                             <span>{entidad.activo ? 'Activo' : 'Inactivo'}</span>
                                         </Space>
-                                    </FormItem>
+                                    </Form.Item>
                                 </Col>
                             </Row>
                         </Col>

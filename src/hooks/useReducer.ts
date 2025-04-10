@@ -24,6 +24,7 @@ export function useReducerHook<T extends unknown>(urlBase: string) {
         }
 
         dispatch({ type: ACTIONS.FETCH_COMPLETE });
+        dispatch({ type: ACTIONS.EDITING, model: undefined });
         dispatch({ type: ACTIONS.RELOAD, recargar: true });
         return resp;
 
@@ -40,6 +41,7 @@ export function useReducerHook<T extends unknown>(urlBase: string) {
         }
 
         dispatch({ type: ACTIONS.FETCH_COMPLETE });
+        dispatch({ type: ACTIONS.EDITING, model: undefined });
         dispatch({ type: ACTIONS.RELOAD, recargar: true });
         return resp;
     }

@@ -1,10 +1,9 @@
 import FormModal from "@components/containers/form"
-import FormItem from "@components/forms/item"
 import { useData } from "@hooks/useData"
 import { useForm } from "@hooks/useForm"
 import { Alerta, Exito } from "@hooks/useMensaje"
 import { Acesor } from "@interfaces/dataMaestra"
-import { Input } from "antd"
+import { Form, Input } from "antd"
 import { useEffect } from "react"
 
 export default function FormAcesor() {
@@ -49,9 +48,9 @@ export default function FormAcesor() {
             initialValues={modelo}
             onFinish={guardar}
             onClose={cancelar}>
-            <FormItem name="nombre" label="Nombre" rules={[{ required: true, message: 'Obligatorio' }]}>
+            <Form.Item name="nombre" label="Nombre" rules={[{ required: true, message: 'Obligatorio' }]}>
                 <Input name="nombre" maxLength={150} value={entidad?.nombre || ''} onChange={handleChangeInput} />
-            </FormItem>
+            </Form.Item>
         </FormModal>
     )
 }

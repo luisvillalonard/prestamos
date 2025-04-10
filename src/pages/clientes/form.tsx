@@ -1,7 +1,6 @@
 import { ButtonDefault } from "@components/buttons/default"
 import { ButtonPrimary } from "@components/buttons/primary"
 import Container from "@components/containers/container"
-import FormItem from "@components/forms/item"
 import InputText from "@components/inputs/text"
 import TitlePage from "@components/titles/titlePage"
 import { Colors, Urls } from "@hooks/useConstants"
@@ -107,37 +106,37 @@ export default function FormCliente() {
                         }>
                         <Row gutter={[16, 16]}>
                             <Col lg={12} md={24} xs={24}>
-                                <FormItem name="nombres" label="Nombres"
+                                <Form.Item name="nombres" label="Nombres"
                                     rules={[{ required: true, message: 'Obligatorio' }]}>
                                     <Input
                                         maxLength={150}
                                         value={entidad?.nombres || ''}
                                         disabled={entidad && entidad.id > 0}
                                         onChange={handleChangeInput} />
-                                </FormItem>
+                                </Form.Item>
                             </Col>
                             <Col lg={12} md={24} xs={24}>
-                                <FormItem name="apellidos" label="Apellidos"
+                                <Form.Item name="apellidos" label="Apellidos"
                                     rules={[{ required: true, message: 'Obligatorio' }]}>
                                     <Input
                                         maxLength={150}
                                         value={entidad?.apellidos || ''}
                                         disabled={entidad && entidad.id > 0}
                                         onChange={handleChangeInput} />
-                                </FormItem>
+                                </Form.Item>
                             </Col>
                             <Col lg={12} md={12} sm={24} xs={24}>
-                                <FormItem name="empleadoId" label="Empleado Id"
+                                <Form.Item name="empleadoId" label="Empleado Id"
                                     rules={[{ required: true, message: 'Obligatorio' }]}>
                                     <Input
                                         maxLength={50}
                                         disabled={entidad && entidad.id > 0}
                                         value={entidad?.empleadoId || ''}
                                         onChange={handleChangeInput} />
-                                </FormItem>
+                                </Form.Item>
                             </Col>
                             <Col lg={12} md={12} sm={24} xs={24}>
-                                <FormItem name="documentoTipoId" label="Tipo de Documento"
+                                <Form.Item name="documentoTipoId" label="Tipo de Documento"
                                     rules={[{ required: true, message: 'Obligatorio' }]}>
                                     <Space.Compact style={{ width: '100%' }}>
                                         <Select
@@ -158,10 +157,10 @@ export default function FormCliente() {
                                             disabled={entidad && entidad.id > 0}
                                             onChange={handleChangeInput} />
                                     </Space.Compact>
-                                </FormItem>
+                                </Form.Item>
                             </Col>
                             <Col lg={12} md={12} xs={24} sm={24}>
-                                <FormItem name="fechaNacimiento" label="Fecha Nacimiento">
+                                <Form.Item name="fechaNacimiento" label="Fecha Nacimiento">
                                     {
                                         entidad?.id === 0
                                             ?
@@ -175,10 +174,10 @@ export default function FormCliente() {
                                                 }} />
                                             : <InputText value={entidad?.fechaNacimiento} disabled />
                                     }
-                                </FormItem>
+                                </Form.Item>
                             </Col>
                             <Col lg={12} md={12} sm={24} xs={24}>
-                                <FormItem name="sexoId" label="Sexo"
+                                <Form.Item name="sexoId" label="Sexo"
                                     rules={[{ required: true, message: 'Obligatorio' }]}>
                                     <Radio.Group
                                         block
@@ -200,7 +199,7 @@ export default function FormCliente() {
                                             </Radio.Button>)
                                         }
                                     </Radio.Group>
-                                </FormItem>
+                                </Form.Item>
                             </Col>
                         </Row>
                     </Container>
@@ -221,7 +220,7 @@ export default function FormCliente() {
                         }>
                         <Row gutter={[16, 16]}>
                             <Col lg={12} md={12} sm={24} xs={24}>
-                                <FormItem name="ciudadId" label="Ciudad"
+                                <Form.Item name="ciudadId" label="Ciudad"
                                     rules={[{ required: true, message: 'Obligatorio' }]}>
                                     <Select
                                         allowClear
@@ -233,10 +232,10 @@ export default function FormCliente() {
                                                 editar({ ...entidad, ciudad: ciudades.filter(opt => opt.id === value).shift() });
                                             }
                                         }} />
-                                </FormItem>
+                                </Form.Item>
                             </Col>
                             <Col lg={12} md={12} sm={24} xs={24}>
-                                <FormItem name="ocupacionId" label="Ocupaci&oacute;n"
+                                <Form.Item name="ocupacionId" label="Ocupaci&oacute;n"
                                     rules={[{ required: true, message: 'Obligatorio' }]}>
                                     <Select
                                         allowClear
@@ -249,36 +248,36 @@ export default function FormCliente() {
                                                 editar({ ...entidad, ocupacion: ocupaciones.filter(opt => opt.id === value).shift() });
                                             }
                                         }} />
-                                </FormItem>
+                                </Form.Item>
                             </Col>
                             <Col xs={24}>
-                                <FormItem name="direccion" label="Direcci&oacute;n">
+                                <Form.Item name="direccion" label="Direcci&oacute;n">
                                     <Input
                                         maxLength={250}
                                         value={entidad?.direccion || ''}
                                         onChange={handleChangeInput} />
-                                </FormItem>
+                                </Form.Item>
                             </Col>
                             <Col lg={8} md={8} sm={24}>
-                                <FormItem name="telefonoCelular" label="Telefono Celular"
+                                <Form.Item name="telefonoCelular" label="Telefono Celular"
                                     rules={[{ required: true, message: 'Obligatorio' }]}>
                                     <Input
                                         maxLength={15}
                                         value={entidad?.telefonoCelular || ''}
                                         onChange={handleChangeInput} />
-                                </FormItem>
+                                </Form.Item>
                             </Col>
                             <Col lg={8} md={8} sm={24}>
-                                <FormItem name="telefonoFijo" label="Telefono Fijo"
+                                <Form.Item name="telefonoFijo" label="Telefono Fijo"
                                     rules={[{ required: true, message: 'Obligatorio' }]}>
                                     <Input
                                         maxLength={15}
                                         value={entidad?.telefonoFijo || ''}
                                         onChange={handleChangeInput} />
-                                </FormItem>
+                                </Form.Item>
                             </Col>
                             <Col lg={8} md={8} sm={24}>
-                                <FormItem name="fechaAntiguedad" label="Fecha Antiguedad">
+                                <Form.Item name="fechaAntiguedad" label="Fecha Antiguedad">
                                     {
                                         entidad?.id === 0
                                             ?
@@ -297,7 +296,7 @@ export default function FormCliente() {
                                                 disabled
                                                 onChange={handleChangeInput} />
                                     }
-                                </FormItem>
+                                </Form.Item>
                             </Col>
                         </Row>
                     </Container>
