@@ -73,3 +73,8 @@ export interface Anexo {
     imagen: string,
     extension: string
 }
+
+export interface DateArray {
+    fecha: string,
+    anterior: boolean,
+}

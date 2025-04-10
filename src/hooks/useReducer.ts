@@ -8,15 +8,12 @@ export function useReducerHook<T extends unknown>(urlBase: string) {
     const [state, dispatch] = useReducer<Reducer<State<T>, ACTIONTYPES<T>>>(reducer, initState<T>());
     const api = useFetch();
 
-    const editar = async (item: T): Promise<void> => {
-        dispatch({ type: ACTIONS.EDITING, model: item });
-    }
+    const editar = (item: T): void => dispatch({ type: ACTIONS.EDITING, model: item });
 
-    const cancelar = async () => {
-        dispatch({ type: ACTIONS.CANCEL });
-    }
+    const cancelar = (): void => dispatch({ type: ACTIONS.CANCEL });
 
     const agregar = async (item: T): Promise<ResponseResult<T>> => {
+
         dispatch({ type: ACTIONS.FETCHING });
         let resp: ResponseResult<T>;
 
@@ -26,8 +23,10 @@ export function useReducerHook<T extends unknown>(urlBase: string) {
             resp = errorResult<T>(error);
         }
 
-        dispatch({ type: ACTIONS.FETCH_COMPLETE, recargar: true });
+        dispatch({ type: ACTIONS.FETCH_COMPLETE });
+        dispatch({ type: ACTIONS.RELOAD, recargar: true });
         return resp;
+
     }
 
     const actualizar = async (item: T): Promise<ResponseResult<T>> => {
@@ -40,7 +39,8 @@ export function useReducerHook<T extends unknown>(urlBase: string) {
             resp = errorResult<T>(error);
         }
 
-        dispatch({ type: ACTIONS.FETCH_COMPLETE, recargar: true });
+        dispatch({ type: ACTIONS.FETCH_COMPLETE });
+        dispatch({ type: ACTIONS.RELOAD, recargar: true });
         return resp;
     }
 
@@ -53,16 +53,13 @@ export function useReducerHook<T extends unknown>(urlBase: string) {
             const params = getParamsUrlToString(req);
             resp = await api.Get<T[]>(`${urlBase}${params}`.trim());
             dispatch({
-                type: ACTIONS.FETCH_COMPLETE,
-                data: resp.datos,
-                paginacion: resp.paginacion,
-                recargar: false
+                type: ACTIONS.SET_DATA,
+                data: resp.datos ?? [],
+                paginacion: resp.paginacion
             });
+            dispatch({ type: ACTIONS.FETCH_COMPLETE });
         } catch {
-            dispatch({
-                type: ACTIONS.FETCH_COMPLETE,
-                recargar: false
-            });
+            dispatch({ type: ACTIONS.FETCH_COMPLETE });
         }
 
     }

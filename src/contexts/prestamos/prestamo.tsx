@@ -1,7 +1,8 @@
 import { Urls } from "@hooks/useConstants"
+import { DD_MM_YYYY } from "@hooks/useDate"
 import { useFetch } from "@hooks/useFetch"
 import { useReducerHook } from "@hooks/useReducer"
-import { FormatDate_DDMMYYYY, FormatDate_YYYYMMDD, getParamsUrlToString } from "@hooks/useUtils"
+import { getParamsUrlToString } from "@hooks/useUtils"
 import { ControlProps, RequestFilter, ResponseResult } from "@interfaces/globales"
 import { Prestamo } from "@interfaces/prestamos"
 import { ACTIONS, GlobalContextState } from "@reducers/global"
@@ -9,7 +10,7 @@ import { createContext } from "react"
 
 export interface PrestamoContextState<T> extends GlobalContextState<T> {
     activos: (filtro: RequestFilter) => Promise<ResponseResult<Prestamo[]>>,
-    actual: (id: number) => Promise<ResponseResult<T>>,
+    actual: (clienteId: number) => Promise<ResponseResult<T>>,
     porId: (id: number) => Promise<ResponseResult<T>>,
 }
 
@@ -21,8 +22,8 @@ export default function PrestamosProvider(props: Pick<ControlProps, "children">)
     const { state, dispatch, editar, cancelar, agregar, actualizar, todos, errorResult } = useReducerHook<Prestamo>(Urls.Prestamos.Base);
     const api = useFetch();
 
-    const nuevo = async (): Promise<void> => {
-        const diaActual: string = FormatDate_DDMMYYYY(FormatDate_YYYYMMDD(new Date().toLocaleDateString('es-DO').substring(0, 10)))!;
+    const nuevo = (): void => {
+        const diaActual: string = DD_MM_YYYY(new Date());
 
         editar({
             id: 0,
@@ -64,18 +65,18 @@ export default function PrestamosProvider(props: Pick<ControlProps, "children">)
 
     }
 
-    const actual = async (id: number): Promise<ResponseResult<Prestamo>> => {
+    const actual = async (clienteId: number): Promise<ResponseResult<Prestamo>> => {
 
         dispatch({ type: ACTIONS.FETCHING });
         let resp: ResponseResult<Prestamo>;
 
         try {
-            resp = await api.Get<Prestamo>(`${Urls.Prestamos.Base}/actual?id=${id}`);
+            resp = await api.Get<Prestamo>(`${Urls.Prestamos.Base}/actual?id=${clienteId}`);
         } catch (error: any) {
             resp = errorResult<Prestamo>(error);
         }
 
-        dispatch({ type: ACTIONS.FETCH_COMPLETE, recargar: false });
+        dispatch({ type: ACTIONS.FETCH_COMPLETE });
         return resp;
 
     }
@@ -91,7 +92,7 @@ export default function PrestamosProvider(props: Pick<ControlProps, "children">)
             resp = errorResult<Prestamo>(error);
         }
 
-        dispatch({ type: ACTIONS.FETCH_COMPLETE, recargar: false });
+        dispatch({ type: ACTIONS.FETCH_COMPLETE });
         return resp;
 
     }

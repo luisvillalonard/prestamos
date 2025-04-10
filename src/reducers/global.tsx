@@ -1,17 +1,21 @@
 import { PagingResult, RequestFilter, ResponseResult } from "@interfaces/globales";
 
 export enum ACTIONS {
-    EDITING = 'EDITING',
     FETCHING = 'FETCHING',
     FETCH_COMPLETE = 'FETCH_COMPLETE',
+    EDITING = 'EDITING',
     CANCEL = 'CANCEL',
+    SET_DATA = 'SET_DATA',
+    RELOAD = 'RELOAD',
 }
 
 export type ACTIONTYPES<DataType> =
-    | { type: ACTIONS.EDITING; model: DataType | undefined }
-    | { type: ACTIONS.CANCEL }
     | { type: ACTIONS.FETCHING }
-    | { type: ACTIONS.FETCH_COMPLETE; data?: DataType[]; model?: DataType; paginacion?: PagingResult; recargar?: boolean }
+    | { type: ACTIONS.FETCH_COMPLETE }
+    | { type: ACTIONS.EDITING; model?: DataType }
+    | { type: ACTIONS.CANCEL }
+    | { type: ACTIONS.SET_DATA; data: DataType[]; paginacion?: PagingResult; }
+    | { type: ACTIONS.RELOAD; recargar: boolean }
 
 export interface State<DataType> {
     modelo?: DataType,
@@ -26,7 +30,7 @@ export interface State<DataType> {
 export interface GlobalContextState<T> {
     state: State<T>,
     nuevo: () => void,
-    editar: (item: T) => Promise<void>,
+    editar: (item: T) => void,
     agregar: (item: T) => Promise<ResponseResult<T>>,
     actualizar: (item: T) => Promise<ResponseResult<T>>,
     todos: (filter?: RequestFilter) => void,
@@ -48,40 +52,28 @@ const reducer = <DataType extends unknown>(state: State<DataType>, action: ACTIO
 
     switch (action.type) {
 
-        case ACTIONS.EDITING: {
-            return {
-                ...state,
-                modelo: action.model,
-                editando: true
-            };
-        }
-
-        case ACTIONS.CANCEL: {
-            return {
-                ...state,
-                modelo: undefined,
-                editando: false
-            };
-        }
-
         case ACTIONS.FETCHING: {
-            return {
-                ...state,
-                procesando: true,
-            };
+            return { ...state, procesando: true };
         }
 
         case ACTIONS.FETCH_COMPLETE: {
-            return {
-                ...state,
-                modelo: action.model,
-                datos: action.data ?? [],
-                editando: false,
-                procesando: false,
-                recargar: action.recargar ?? false,
-                paginacion: action.paginacion,
-                cargado: true,
-            };
+            return { ...state, procesando: false };
+        }
+
+        case ACTIONS.EDITING: {
+            return { ...state, modelo: action.model };
+        }
+
+        case ACTIONS.CANCEL: {
+            return { ...state, modelo: undefined, editando: false };
+        }
+
+        case ACTIONS.SET_DATA: {
+            return { ...state, datos: action.data, paginacion: action.paginacion, cargado: true };
+        }
+
+        case ACTIONS.RELOAD: {
+            return { ...state, recargar: action.recargar };
         }
 
         default: {

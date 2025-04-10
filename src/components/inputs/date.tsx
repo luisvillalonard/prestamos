@@ -1,4 +1,5 @@
 //DatePicker
+import { Date_To_Dayjs, String_To_Dayjs } from "@hooks/useDate";
 import { FormatDate_DDMMYYYY } from "@hooks/useUtils";
 import { DatePicker, DatePickerProps, Form } from "antd";
 import { Rule } from "antd/es/form";
@@ -9,6 +10,7 @@ dayjs.locale('es-DO');
 dayjs.extend(customParseFormat);
 
 const dateFormat = 'DD-MM-YYYY';
+
 
 export default function InputDate(props: Pick<DatePickerProps, Required<"name"> | "onChange" | "readOnly" | "disabled" | "placeholder" | "width" | "style"> &
     Omit<DatePickerProps, "value" | "minDate" | "defaultValue"> & {
@@ -47,5 +49,29 @@ export default function InputDate(props: Pick<DatePickerProps, Required<"name"> 
                     ...style,
                 }} />
         </Form.Item>
+    )
+}
+
+interface InputDatePickerProps extends Omit<DatePickerProps, "value" | "minDate" | "defaultValue"> {
+
+}
+
+export function InputDatePicker(props: InputDatePickerProps & {
+    minDate: Date | undefined,
+    defaultValue: Date | undefined,
+    value: string | undefined,
+}) {
+
+    const { minDate, defaultValue, value } = props
+    const customMinDate = !minDate ? undefined : Date_To_Dayjs(minDate)
+    const customDefaultValue = !defaultValue ? undefined : Date_To_Dayjs(defaultValue)
+    const customValue = !value ? undefined : String_To_Dayjs(value)
+
+    return (
+        <DatePicker
+            minDate={customMinDate}
+            defaultValue={customDefaultValue}
+            value={customValue}
+            format={dateFormat} />
     )
 }
