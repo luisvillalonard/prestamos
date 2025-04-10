@@ -13,6 +13,7 @@ export interface Prestamo {
     moneda: Moneda | undefined,
     cantidadCuotas: number,
     deudaInicial: number,
+    deudaNueva: number,
     interes: number,
     capital: number,
     amortizacion: number,
@@ -26,6 +27,7 @@ export interface Prestamo {
     cancelado: boolean,
     fechaCancelado?: string,
     cuotas: PrestamoCuota[],
+    reenganche: boolean,
 }
 
 export interface PrestamoCuota {

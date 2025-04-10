@@ -24,7 +24,11 @@ import { useLocation, useNavigate } from "react-router-dom"
 import PrestamoCuotas from "./cuotas"
 
 const styleInputTotal: CSSProperties = {
-    borderRadius: 0, fontWeight: 'bold', borderBottomWidth: 1, borderBottomStyle: 'solid', borderBottomColor: Colors.Secondary
+    borderRadius: 0, 
+    fontWeight: 'bold', 
+    borderBottomWidth: 1, 
+    borderBottomStyle: 'solid', 
+    borderBottomColor: Colors.Secondary
 }
 
 export default function FormPrestamo() {
@@ -39,7 +43,7 @@ export default function FormPrestamo() {
         contextMonedas: { state: { datos: monedas }, todos: cargarMonedas },
         contextAcesores: { state: { datos: acesores }, todos: cargarAcesores },
     } = useData()
-    const { entidad, editar } = useForm<Prestamo | undefined>(undefined)
+    const { entidad, editar } = useForm<Prestamo | undefined>(modelo)
     const [errores, setErrores] = useState<string[]>([])
     const [fechasPago, setFechasPago] = useState<DateArray[]>([])
     const [primeraFechaPago, setPrimeraFechaPago] = useState<string | undefined>(undefined)
@@ -52,12 +56,6 @@ export default function FormPrestamo() {
     const [isBlocked, setIsBlocked] = useState<boolean>(false)
     const nav = useNavigate()
     const url = useLocation()
-
-    const nuevoPrestamo = () => {
-        nuevo();
-        setErrores([]);
-        setIsBlocked(false);
-    }
 
     const cargarAuxiliares = async () => await Promise.all([
         ultima(),
@@ -208,7 +206,6 @@ export default function FormPrestamo() {
         return <Loading fullscreen active message="Cargando parametros, espere" />
     }
 
-    console.log('entidad', entidad)
     return (
         <>
             <Col xl={{ span: 20, offset: 2 }} lg={{ span: 24 }} md={{ span: 24 }} xs={{ span: 24 }}>
@@ -216,7 +213,7 @@ export default function FormPrestamo() {
                 <Flex align="center" justify="space-between" className="mb-3">
                     <TitlePage title="Formulario de C&aacute;lculo y Registro de Prestamo" />
                     <Space>
-                        <ButtonDefault key="1" size="large" onClick={nuevoPrestamo}>Nuevo</ButtonDefault>
+                        <ButtonDefault key="1" size="large" onClick={() => window.location.reload()}>Nuevo</ButtonDefault>
                         <ButtonPrimary key="2" size="large" htmlType="submit" form="FormPrestamo" disabled={isBlocked}>
                             {entidad && entidad.id > 0 ? 'Actualizar' : 'Guardar'}
                         </ButtonPrimary>
@@ -230,7 +227,6 @@ export default function FormPrestamo() {
                     layout="vertical"
                     autoComplete="off"
                     size="large"
-                    disabled={false}
                     initialValues={{
                         ...entidad,
                         formaPagoId: entidad?.formaPago?.id,
@@ -436,6 +432,7 @@ export default function FormPrestamo() {
                                         onChange={(date) => {
                                             if (entidad) {
                                                 editar({ ...entidad, fechaCredito: !date ? '' : date.format(dateFormat) })
+                                                setPrimeraFechaPago(undefined)
                                             }
                                         }}
                                         disabled={isBlocked} />

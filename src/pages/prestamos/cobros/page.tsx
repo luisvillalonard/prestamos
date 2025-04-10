@@ -2,7 +2,6 @@ import AlertStatic from "@components/alerts/alert"
 import { ButtonDefault } from "@components/buttons/default"
 import { ButtonPrimary } from "@components/buttons/primary"
 import Loading from "@components/containers/loading"
-import FormItem from "@components/forms/item"
 import Searcher from "@components/inputs/searcher"
 import TitlePage from "@components/titles/titlePage"
 import TitlePanel from "@components/titles/titlePanel"
@@ -18,6 +17,7 @@ import { CSSProperties, useEffect, useState } from "react"
 import { useLocation, useNavigate, useParams } from "react-router-dom"
 import PrestamoCuotas from "../cuotas"
 import Container from "@components/containers/container"
+import ClienteInfo from "@pages/clientes/info"
 
 const styleInput: CSSProperties = {
     width: '100%',
@@ -229,7 +229,6 @@ export default function PagePrestamoCobro() {
                                         size="small"
                                         title={<TitlePanel title="Datos del Pago" color={Colors.Primary} />}
                                         className="mb-4">
-
                                         <Form
                                             name="FormPrestamo"
                                             layout="vertical"
@@ -240,7 +239,7 @@ export default function PagePrestamoCobro() {
                                             onFinish={guardar}>
                                             <Row gutter={[10, 10]}>
                                                 <Col xl={6} lg={6} md={8} sm={24} xs={24} style={{ alignSelf: 'end' }}>
-                                                    <FormItem name="monto" label="Pago de Cuota" rules={[{ required: true, message: 'Obligatorio' }]}>
+                                                    <Form.Item name="monto" label="Pago de Cuota" rules={[{ required: true, message: 'Obligatorio' }]}>
                                                         <InputNumber
                                                             size="large"
                                                             name="monto"
@@ -252,10 +251,10 @@ export default function PagePrestamoCobro() {
                                                                     editar({ ...entidad, monto: value ?? 0 })
                                                                 }
                                                             }} />
-                                                    </FormItem>
+                                                    </Form.Item>
                                                 </Col>
                                                 <Col xl={6} lg={6} md={8} sm={24} xs={24} style={{ alignSelf: 'end' }}>
-                                                    <FormItem name="multaMora" label="Multa por Mora" rules={[{ required: true, message: 'Obligatorio' }]}>
+                                                    <Form.Item name="multaMora" label="Multa por Mora" rules={[{ required: true, message: 'Obligatorio' }]}>
                                                         <InputNumber
                                                             size="large"
                                                             name="multaMora"
@@ -266,38 +265,20 @@ export default function PagePrestamoCobro() {
                                                                     editar({ ...entidad, multaMora: value ?? 0 })
                                                                 }
                                                             }} />
-                                                    </FormItem>
+                                                    </Form.Item>
                                                 </Col>
                                                 <Col xl={6} lg={6} md={8} sm={24} xs={24} style={{ alignSelf: 'end' }}>
                                                     <ButtonPrimary htmlType="submit">Pagar</ButtonPrimary>
                                                 </Col>
                                             </Row>
                                         </Form>
-
                                     </Card>
 
                                     <Card
                                         size="small"
                                         title={<TitlePanel title="Datos del Cliente" color={Colors.Primary} />}
                                         className="mb-4">
-                                        <Space split={<Divider type="vertical" className="h-100 d-inline" style={{ borderColor: Colors.Secondary }} />}>
-                                            <Flex vertical>
-                                                <strong color={Colors.Secondary}>C&oacute;digo Empleado</strong>
-                                                <span>{prestamo?.cliente?.empleadoId || 'Desconocido'}</span>
-                                            </Flex>
-                                            <Flex vertical>
-                                                <strong color={Colors.Secondary}>Nombres y Apellidos</strong>
-                                                <span>{`${prestamo?.cliente?.nombres || ''} ${prestamo?.cliente?.apellidos || ''}`.trim() || 'Desconocido'}</span>
-                                            </Flex>
-                                            <Flex vertical>
-                                                <strong color={Colors.Secondary}>Tel&eacute;fono Celular</strong>
-                                                <span>{prestamo?.cliente?.telefonoCelular || 'Desconocido'}</span>
-                                            </Flex>
-                                            <Flex vertical>
-                                                <strong color={Colors.Secondary}>Ocupaci&oacute;n</strong>
-                                                <span>{prestamo?.cliente?.ocupacion?.nombre || 'Desconocido'}</span>
-                                            </Flex>
-                                        </Space>
+                                        <ClienteInfo cliente={prestamo?.cliente} />
                                     </Card>
 
                                     <Card
@@ -312,67 +293,67 @@ export default function PagePrestamoCobro() {
                                         <Row gutter={[10, 10]}>
                                             <Col xl={4} lg={4} md={8} sm={24} xs={24}>
                                                 <Flex vertical>
-                                                    <label>Monto</label>
+                                                    <strong>Monto</strong>
                                                     <Input size="large" variant="borderless" readOnly value={FormatNumber(prestamo?.deudaInicial, 2)} style={styleInput} />
                                                 </Flex>
                                             </Col>
                                             <Col xl={4} lg={4} md={8} sm={24} xs={24}>
                                                 <Flex vertical>
-                                                    <label>Interes (%)</label>
+                                                    <strong>Interes (%)</strong>
                                                     <Input size="large" variant="borderless" readOnly value={FormatNumber(prestamo?.interes, 2)} style={styleInput} />
                                                 </Flex>
                                             </Col>
                                             <Col xl={4} lg={4} md={8} sm={24} xs={24}>
                                                 <Flex vertical>
-                                                    <label>N&uacute;mero Cuotas</label>
+                                                    <strong>N&uacute;mero Cuotas</strong>
                                                     <Input size="large" variant="borderless" readOnly value={FormatNumber(prestamo?.cantidadCuotas, 0)} style={styleInput} />
                                                 </Flex>
                                             </Col>
                                             <Col xl={4} lg={4} md={8} sm={24} xs={24}>
                                                 <Flex vertical>
-                                                    <label>Forma de Pago</label>
+                                                    <strong>Forma de Pago</strong>
                                                     <Input size="large" variant="borderless" readOnly value={prestamo?.formaPago?.nombre} style={styleInput} />
                                                 </Flex>
                                             </Col>
                                             <Col xl={4} lg={4} md={8} sm={24} xs={24}>
                                                 <Flex vertical>
-                                                    <label>M&eacute;todo Pago</label>
+                                                    <strong>M&eacute;todo Pago</strong>
                                                     <Input size="large" variant="borderless" readOnly value={prestamo?.metodoPago?.nombre} style={styleInput} />
                                                 </Flex>
                                             </Col>
                                             <Col xl={4} lg={4} md={8} sm={24} xs={24}>
                                                 <Flex vertical>
-                                                    <label>Tipo Moneda</label>
+                                                    <strong>Tipo Moneda</strong>
                                                     <Input size="large" variant="borderless" readOnly value={prestamo?.moneda?.nombre} style={styleInput} />
                                                 </Flex>
                                             </Col>
                                             <Col xl={4} lg={4} md={8} sm={24} xs={24}>
                                                 <Flex vertical>
-                                                    <label>Fecha emisi&oacute;n</label>
+                                                    <strong>Fecha emisi&oacute;n</strong>
                                                     <Input size="large" variant="borderless" readOnly value={prestamo?.fechaCredito} style={styleInput} />
                                                 </Flex>
                                             </Col>
                                             <Col xl={4} lg={4} md={8} sm={24} xs={24}>
                                                 <Flex vertical>
-                                                    <label>Acesor</label>
+                                                    <strong>Acesor</strong>
                                                     <Input size="large" variant="borderless" readOnly value={prestamo?.acesor?.nombre} style={styleInput} />
                                                 </Flex>
                                             </Col>
                                             <Col xl={4} lg={4} md={8} sm={24} xs={24}>
                                                 <Flex vertical>
-                                                    <label>Monto Cuota</label>
+                                                    <strong>Monto Cuota</strong>
                                                     <Input size="large" variant="borderless" readOnly value={FormatNumber(montoCapitalCuota, 2)} style={{ ...styleInput, width: '100%' }} />
                                                 </Flex>
                                             </Col>
                                             <Col xl={4} lg={4} md={8} sm={24} xs={24}>
                                                 <Flex vertical>
-                                                    <label>Total Interes</label>
+                                                    <strong>Total Interes</strong>
                                                     <Input size="large" variant="borderless" readOnly value={FormatNumber(montoTotalInteres, 2)} style={{ ...styleInput, width: '100%' }} />
                                                 </Flex>
                                             </Col>
                                             <Col xl={4} lg={4} md={8} sm={24} xs={24}>
                                                 <Flex vertical>
-                                                    <label>Monto a Pagar</label>
+                                                    <strong>Monto a Pagar</strong>
                                                     <Input size="large" variant="borderless" readOnly value={FormatNumber(montoAmortizacion, 2)} style={{ ...styleInput, width: '100%' }} />
                                                 </Flex>
                                             </Col>

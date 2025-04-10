@@ -46,6 +46,8 @@ export default function PrestamosProvider(props: Pick<ControlProps, "children">)
             usuario: undefined,
             cancelado: false,
             cuotas: [],
+            reenganche: false,
+            deudaNueva: 0,
         });
     }
 

@@ -19,9 +19,9 @@ export default function AlertStatic(props: AlertStaticProps) {
                         closable={false}
                         showIcon
                         description={errors.length === 0 ? <></> : <ul className="m-0 ps-3">{errors.map((err, indexKey) => <li key={indexKey}>{err}</li>)}</ul>}
-                        message={<h1 className="fs-5" style={{ color: Colors.Danger }}>Alerta</h1>}
+                        message={<h1 className="fs-5" style={{ color: Colors.Gris51 }}>Alerta</h1>}
                         className="mb-3"
-                        style={{ borderLeftWidth: 6, borderLeftColor: Colors.Danger }}
+                        style={{ borderLeftWidth: 6, borderLeftColor: Colors.Warning }}
                     />
             }
         </>
