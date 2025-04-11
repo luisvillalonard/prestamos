@@ -323,12 +323,17 @@ export default function FormPrestamo() {
                             </Flex>
                         }
                         extra={
-                            isBlocked
-                                ? <ButtonSuccess onClick={() => {
-                                    editar({ ...entidad, reenganche: true, deudaNueva: 0 })
-                                    setIsBlocked(false)
-                                }}>Reenganchar</ButtonSuccess>
-                                : <></>
+                            <Flex gap={10}>
+                                {
+                                    isBlocked
+                                        ? <ButtonSuccess onClick={() => {
+                                            editar({ ...entidad, reenganche: true, deudaNueva: 0 })
+                                            setIsBlocked(false)
+                                        }}>Reenganchar</ButtonSuccess>
+                                        : <></>
+                                }
+                                <ButtonPrimary icon={<IconCalculator />} onClick={calcularCuotas} disabled={isBlocked}>Calcular</ButtonPrimary>
+                            </Flex>
                         }>
                         <Row gutter={[10, 10]}>
                             <Col xl={4} lg={4} md={8} sm={24} xs={24} style={{ alignSelf: 'end' }}>
@@ -483,8 +488,7 @@ export default function FormPrestamo() {
 
                     <Card
                         className="mb-4"
-                        title={<Typography.Title level={4} style={{ margin: 0, color: Colors.Primary }}>Informaci&oacute;n de Cr&eacute;dito</Typography.Title>}
-                        extra={<Button type="link" icon={<IconCalculator />} onClick={calcularCuotas} disabled={isBlocked}>Calcular</Button>}>
+                        title={<Typography.Title level={4} style={{ margin: 0, color: Colors.Primary }}>Informaci&oacute;n de Cr&eacute;dito</Typography.Title>}>
                         <PrestamoCuotas cuotas={entidad?.cuotas ?? []} />
                     </Card>
 

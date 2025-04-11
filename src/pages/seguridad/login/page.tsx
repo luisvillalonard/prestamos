@@ -34,10 +34,7 @@ export default function PageLogin() {
                 </Col>
                 <Col xl={{ span: 9, order: 2 }} lg={{ span: 10, order: 2 }} md={{ span: 10, order: 2 }} sm={{ span: 24, order: 1 }} xs={{ span: 24, order: 1 }} style={{ backgroundColor: token.colorBgContainer }}>
                     <Flex vertical align="center" justify="center" className="h-100 p-5">
-                        <Space>
-                            <h1 className='display-5' style={{ fontWeight: 'bolder', color: token.colorText }}>Sistema</h1>
-                            <h1 className='display-5' style={{ fontWeight: 'bolder', color: token.colorPrimary }}>Prestamos</h1>
-                        </Space>
+                        <h1 className='display-5' style={{ fontWeight: 'bolder', color: token.colorPrimary }}>LoanManagement</h1>
                         {
                             !user
                                 ? <LoginForm onChange={setUser} />

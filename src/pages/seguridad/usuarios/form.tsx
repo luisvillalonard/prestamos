@@ -56,10 +56,10 @@ export default function FormUsuario() {
             initialValues={modelo}
             onFinish={guardar}
             onClose={cancelar}>
-            <Form.Item name="acceso" label="Acceso" rules={[{ required: true, message: 'Obligatorio' }]}>
+            <Form.Item name="acceso" label="Usuario" rules={[{ required: true, message: 'Obligatorio' }]}>
                 <Input name="acceso" maxLength={25} value={entidad?.acceso || ''} disabled={!esNuevo} onChange={handleChangeInput} />
             </Form.Item>
-            <Form.Item name="empleadoId" label="Empleado C&oacute;digo">
+            <Form.Item name="empleadoId" label="C&oacute;digo Empleado" rules={[{ required: true, message: 'Obligatorio' }]}>
                 <Input name="empleadoId" maxLength={50} value={entidad?.empleadoId || ''} onChange={handleChangeInput} />
             </Form.Item>
             <Form.Item name="correo" label="Correo Electr&oacute;nico" rules={[{ required: true, message: 'Obligatorio' }]}>

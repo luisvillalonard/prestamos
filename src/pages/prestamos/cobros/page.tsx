@@ -254,20 +254,6 @@ export default function PagePrestamoCobro() {
                                                     </Form.Item>
                                                 </Col>
                                                 <Col xl={6} lg={6} md={8} sm={24} xs={24} style={{ alignSelf: 'end' }}>
-                                                    <Form.Item name="multaMora" label="Multa por Mora" rules={[{ required: true, message: 'Obligatorio' }]}>
-                                                        <InputNumber
-                                                            size="large"
-                                                            name="multaMora"
-                                                            value={entidad?.multaMora}
-                                                            style={{ width: '100%' }}
-                                                            onChange={(value) => {
-                                                                if (entidad) {
-                                                                    editar({ ...entidad, multaMora: value ?? 0 })
-                                                                }
-                                                            }} />
-                                                    </Form.Item>
-                                                </Col>
-                                                <Col xl={6} lg={6} md={8} sm={24} xs={24} style={{ alignSelf: 'end' }}>
                                                     <ButtonPrimary htmlType="submit">Pagar</ButtonPrimary>
                                                 </Col>
                                             </Row>

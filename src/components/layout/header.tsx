@@ -27,10 +27,7 @@ const HeaderApp = () => {
         <Flex align="center" gap={20}>
           <Tooltip title="Ir a la p&aacute;gina de inicio">
             <Link to={Urls.Home}>
-              <Flex align="center" gap={10}>
-                <Title level={2} style={{ margin: 0, color: 'rgba(255,255,255,0.8)' }}>SISTEMA</Title>
-                <Title level={2} style={{ margin: 0, color: Colors.Primary }}>PRESTAMOS</Title>
-              </Flex>
+              <Title level={2} style={{ margin: 0, color: 'rgba(255,255,255,0.8)' }}>LoanManagement</Title>
             </Link>
           </Tooltip>
           <Button type="text" icon={<IconMenu style={{ fontSize: 24, color: Colors.White }} />} onClick={showMenu} />

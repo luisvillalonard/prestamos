@@ -52,20 +52,22 @@ export default function InputDate(props: Pick<DatePickerProps, Required<"name"> 
     )
 }
 
-interface InputDatePickerProps extends Omit<DatePickerProps, "value" | "minDate" | "defaultValue"> {}
+interface InputDatePickerProps extends Omit<DatePickerProps, "value" | "minDate" | "defaultValue"> { }
 
 export function InputDatePicker(props: InputDatePickerProps & {
     minDate?: Date,
     value?: string,
 }) {
 
-    const { minDate, value, onChange } = props
+    const { minDate, value, disabled, placeholder, onChange } = props
 
     return (
         <DatePicker
+            placeholder={placeholder}
             minDate={Date_To_Dayjs(minDate)}
             defaultValue={String_To_Dayjs(value)}
             format={dateFormat}
+            disabled={disabled}
             onChange={onChange}
             style={{ width: '100%' }} />
     )

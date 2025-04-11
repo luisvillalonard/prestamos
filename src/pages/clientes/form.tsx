@@ -1,10 +1,12 @@
 import { ButtonDefault } from "@components/buttons/default"
 import { ButtonPrimary } from "@components/buttons/primary"
 import Container from "@components/containers/container"
+import { InputDatePicker } from "@components/inputs/date"
 import InputText from "@components/inputs/text"
 import TitlePage from "@components/titles/titlePage"
 import { Colors, Urls } from "@hooks/useConstants"
 import { useData } from "@hooks/useData"
+import { dateFormat } from "@hooks/useDate"
 import { useForm } from "@hooks/useForm"
 import { IconCheckCircleColor } from "@hooks/useIconos"
 import { Alerta, Exito } from "@hooks/useMensaje"
@@ -141,16 +143,18 @@ export default function FormCliente() {
                                     <Space.Compact style={{ width: '100%' }}>
                                         <Select
                                             allowClear
+                                            placeholder="Seleccione"
                                             defaultValue={entidad?.documentoTipo?.id}
                                             disabled={entidad && entidad.id > 0}
                                             options={documentosTipos.map(item => ({ key: item.id, value: item.id, label: item.nombre }))}
-                                            style={{ width: 90 }}
+                                            style={{ width: 150 }}
                                             onChange={(value: number) => {
                                                 if (entidad) {
                                                     editar({ ...entidad, documentoTipo: documentosTipos.filter(opt => opt.id === value).shift() });
                                                 }
                                             }} />
                                         <Input
+                                            name="documento"
                                             width='100%'
                                             maxLength={50}
                                             value={entidad?.documento || ''}
@@ -161,19 +165,16 @@ export default function FormCliente() {
                             </Col>
                             <Col lg={12} md={12} xs={24} sm={24}>
                                 <Form.Item name="fechaNacimiento" label="Fecha Nacimiento">
-                                    {
-                                        entidad?.id === 0
-                                            ?
-                                            <DatePicker
-                                                style={{ width: '100%' }}
-                                                placeholder=""
-                                                onChange={(date) => {
-                                                    if (entidad) {
-                                                        editar({ ...entidad, fechaNacimiento: !date ? undefined : date.toISOString().substring(0, 10) })
-                                                    }
-                                                }} />
-                                            : <InputText value={entidad?.fechaNacimiento} disabled />
-                                    }
+                                    <InputDatePicker
+                                        name="fechaNacimiento"
+                                        placeholder=""
+                                        value={entidad?.fechaNacimiento}
+                                        disabled={entidad && entidad.id > 0}
+                                        onChange={(date) => {
+                                            if (entidad) {
+                                                editar({ ...entidad, fechaNacimiento: !date ? '' : date.format(dateFormat) })
+                                            }
+                                        }} />
                                 </Form.Item>
                             </Col>
                             <Col lg={12} md={12} sm={24} xs={24}>
@@ -278,24 +279,16 @@ export default function FormCliente() {
                             </Col>
                             <Col lg={8} md={8} sm={24}>
                                 <Form.Item name="fechaAntiguedad" label="Fecha Antiguedad">
-                                    {
-                                        entidad?.id === 0
-                                            ?
-                                            <DatePicker
-                                                placeholder=""
-                                                style={{ width: '100%' }}
-                                                onChange={(date) => {
-                                                    if (entidad) {
-                                                        editar({ ...entidad, fechaAntiguedad: !date ? undefined : date.toISOString().substring(0, 10) })
-                                                    }
-                                                }} />
-                                            :
-                                            <InputText
-                                                value={entidad?.fechaNacimiento}
-                                                style={{ width: '100%' }}
-                                                disabled
-                                                onChange={handleChangeInput} />
-                                    }
+                                    <InputDatePicker
+                                        name="fechaAntiguedad"
+                                        placeholder=""
+                                        value={entidad?.fechaAntiguedad}
+                                        disabled={entidad && entidad.id > 0}
+                                        onChange={(date) => {
+                                            if (entidad) {
+                                                editar({ ...entidad, fechaAntiguedad: !date ? '' : date.format(dateFormat) })
+                                            }
+                                        }} />
                                 </Form.Item>
                             </Col>
                         </Row>
