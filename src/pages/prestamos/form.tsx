@@ -1,8 +1,10 @@
 import AlertStatic from "@components/alerts/alert"
 import { ButtonDefault } from "@components/buttons/default"
 import { ButtonPrimary } from "@components/buttons/primary"
+import { ButtonSuccess } from "@components/buttons/success"
 import Loading from "@components/containers/loading"
 import { InputDatePicker } from "@components/inputs/date"
+import InputNumbers from "@components/inputs/numbers"
 import Searcher from "@components/inputs/searcher"
 import TitlePage from "@components/titles/titlePage"
 import { Colors, Urls } from "@hooks/useConstants"
@@ -17,11 +19,10 @@ import { Configuracion } from "@interfaces/configuraciones"
 import { DateArray } from "@interfaces/globales"
 import { Prestamo, PrestamoCuota } from "@interfaces/prestamos"
 import ClienteInfo from "@pages/clientes/info"
-import { Button, Card, Col, Collapse, Flex, Form, Input, InputNumber, Row, Select, Space, Table, Tag, Typography } from "antd"
+import { Card, Col, Collapse, Flex, Form, Input, Row, Select, Space, Switch, Table, Tag, Typography } from "antd"
 import { CSSProperties, useEffect, useState } from "react"
 import { useLocation, useNavigate } from "react-router-dom"
 import PrestamoCuotas from "./cuotas"
-import { ButtonSuccess } from "@components/buttons/success"
 
 const styleInputTotal: CSSProperties = {
     borderRadius: 0,
@@ -133,6 +134,7 @@ export default function FormPrestamo() {
                     deudaInicial: entidad.deudaInicial,
                     capital: capitalCuota,
                     interes: interesCuota,
+                    descuento: 0,
                     amortizacion: Number((interesCuota + capitalCuota).toFixed(2)),
                     saldoFinal: saldoFinal < 0 ? 0 : saldoFinal,
                     vencido: fechas[index].anterior,
@@ -337,8 +339,8 @@ export default function FormPrestamo() {
                         }>
                         <Row gutter={[10, 10]}>
                             <Col xl={4} lg={4} md={8} sm={24} xs={24} style={{ alignSelf: 'end' }}>
-                                <Form.Item name="deudaInicial" label="Monto" rules={[{ required: true, message: 'Obligatorio' }]}>
-                                    <InputNumber
+                                <Form.Item name="deudaInicial" label="Monto" rules={[{ required: true, type: 'number', min: 1, message: 'Obligatorio' }]}>
+                                    <InputNumbers
                                         name="deudaInicial"
                                         value={entidad?.deudaInicial}
                                         style={{ width: '100%' }}
@@ -346,14 +348,14 @@ export default function FormPrestamo() {
                                         onFocus={(evt) => evt && evt.currentTarget && evt.currentTarget.select()}
                                         onChange={(value) => {
                                             if (entidad && value) {
-                                                editar({ ...entidad, deudaInicial: value })
+                                                editar({ ...entidad, deudaInicial: Number(value) })
                                             }
                                         }} />
                                 </Form.Item>
                             </Col>
                             <Col xl={4} lg={4} md={8} sm={24} xs={24} style={{ alignSelf: 'end' }}>
-                                <Form.Item name="interes" label="Interes (%)" rules={[{ required: true, message: 'Obligatorio' }]}>
-                                    <InputNumber
+                                <Form.Item name="interes" label="Interes (%)" rules={[{ required: true, type: 'number', min: 1, message: 'Obligatorio' }]}>
+                                    <InputNumbers
                                         name="interes"
                                         value={entidad?.interes}
                                         style={{ width: '100%' }}
@@ -361,22 +363,7 @@ export default function FormPrestamo() {
                                         onFocus={(evt) => evt && evt.currentTarget && evt.currentTarget.select()}
                                         onChange={(value) => {
                                             if (entidad && value) {
-                                                editar({ ...entidad, interes: value })
-                                            }
-                                        }} />
-                                </Form.Item>
-                            </Col>
-                            <Col xl={4} lg={4} md={8} sm={24} xs={24} style={{ alignSelf: 'end' }}>
-                                <Form.Item name="cantidadCuotas" label="N&uacute;mero Cuotas" rules={[{ required: true, message: 'Obligatorio' }]}>
-                                    <InputNumber
-                                        name="cantidadCuotas"
-                                        value={entidad?.cantidadCuotas}
-                                        style={{ width: '100%' }}
-                                        disabled={isBlocked}
-                                        onFocus={(evt) => evt && evt.currentTarget && evt.currentTarget.select()}
-                                        onChange={(value) => {
-                                            if (entidad && value) {
-                                                editar({ ...entidad, cantidadCuotas: value })
+                                                editar({ ...entidad, interes: Number(value) })
                                             }
                                         }} />
                                 </Form.Item>
@@ -393,6 +380,21 @@ export default function FormPrestamo() {
                                             if (entidad) {
                                                 const forma = formasPago.filter(opt => opt.id === value).shift()
                                                 editar({ ...entidad, formaPago: forma })
+                                            }
+                                        }} />
+                                </Form.Item>
+                            </Col>
+                            <Col xl={4} lg={4} md={8} sm={24} xs={24} style={{ alignSelf: 'end' }}>
+                                <Form.Item name="cantidadCuotas" label="N&uacute;mero Cuotas" rules={[{ required: true, type: 'number', min: 1, message: 'Obligatorio' }]}>
+                                    <InputNumbers
+                                        name="cantidadCuotas"
+                                        value={entidad?.cantidadCuotas}
+                                        style={{ width: '100%' }}
+                                        disabled={isBlocked}
+                                        onFocus={(evt) => evt && evt.currentTarget && evt.currentTarget.select()}
+                                        onChange={(value) => {
+                                            if (entidad && value) {
+                                                editar({ ...entidad, cantidadCuotas: Number(value) })
                                             }
                                         }} />
                                 </Form.Item>
@@ -483,13 +485,32 @@ export default function FormPrestamo() {
                                     <Input disabled variant="borderless" value={FormatNumber(montoAmortizacion, 2)} style={styleInputTotal} />
                                 </Form.Item>
                             </Col>
+                            <Col xs={24} style={{ alignSelf: 'end' }}>
+                                <Form.Item>
+                                    <Space>
+                                        <Switch
+                                            id="aplicaDescuento"
+                                            checked={entidad.aplicaDescuento}
+                                            onChange={(checked) => editar({ ...entidad, aplicaDescuento: checked })} />
+                                        <span style={{ fontSize: 16 }}>Aplicar descuento extraordinario</span>
+                                    </Space>
+                                </Form.Item>
+                            </Col>
                         </Row>
                     </Card>
 
                     <Card
                         className="mb-4"
                         title={<Typography.Title level={4} style={{ margin: 0, color: Colors.Primary }}>Informaci&oacute;n de Cr&eacute;dito</Typography.Title>}>
-                        <PrestamoCuotas cuotas={entidad?.cuotas ?? []} />
+                        <PrestamoCuotas
+                            editando
+                            cuotas={entidad?.cuotas ?? []}
+                            aplicaDescuento={entidad.aplicaDescuento}
+                            onChange={(cuotas) => {
+                                if (entidad) {
+                                    editar({ ...entidad, cuotas: cuotas })
+                                }
+                            }} />
                     </Card>
 
                 </Form>

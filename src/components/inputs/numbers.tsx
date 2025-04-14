@@ -1,20 +1,23 @@
-import { Form, InputNumber, InputNumberProps } from "antd"
-import { Rule } from "antd/es/form"
+import { InputNumber, InputNumberProps } from "antd"
 
 
-export default function InputNumbers(props: InputNumberProps & { label?: React.ReactNode, rules?: Rule[] }) {
+export default function InputNumbers(props: InputNumberProps) {
 
-    const { name, label, rules } = props
+    const { name, value, min, disabled, style, onFocus, onChange } = props
 
     return (
-        <Form.Item
+        <InputNumber
             name={name}
-            label={label}
-            rules={rules}
+            value={value}
+            min={min}
+            disabled={disabled}
+            formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+            parser={(value) => value?.replace(/\$\s?|(,*)/g, '') as unknown as number}
+            onFocus={onFocus}
+            onChange={onChange}
             style={{
-                width: '100%',
-            }}>
-            <InputNumber {...props} style={{ width: '100%' }} />
-        </Form.Item>
+                ...style,
+                width: '100%'
+            }} />
     )
 }

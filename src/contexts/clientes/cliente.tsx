@@ -1,4 +1,5 @@
 import { Urls } from "@hooks/useConstants"
+import { DD_MM_YYYY } from "@hooks/useDate"
 import { useFetch } from "@hooks/useFetch"
 import { useReducerHook } from "@hooks/useReducer"
 import { Cliente } from "@interfaces/clientes"
@@ -28,7 +29,7 @@ export default function ClientesProvider(props: Pick<ControlProps, "children">) 
             documentoTipo: undefined,
             documento: '',
             sexo: undefined,
-            fechaCreacion: new Date().toISOString().substring(0, 10),
+            fechaCreacion: DD_MM_YYYY(new Date()),
             activo: true,
         });
     }

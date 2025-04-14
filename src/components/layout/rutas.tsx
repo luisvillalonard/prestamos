@@ -20,7 +20,7 @@ import PageLogin from '@pages/seguridad/login/page'
 import FormPermisos from '@pages/seguridad/permisos/form'
 import PagePermisos from '@pages/seguridad/permisos/page'
 import PageUsuarios from '@pages/seguridad/usuarios/page'
-import { Route, Routes } from 'react-router-dom'
+import { Outlet, Route, Routes } from 'react-router-dom'
 
 const RutasApp = () => {
 
@@ -48,6 +48,7 @@ const RutasApp = () => {
                 <Route path={Urls.Prestamos.Formulario} element={<FormPrestamo />} />
                 <Route path={Urls.Prestamos.Registrados} element={<PagePrestamos />} />
                 <Route path={Urls.Prestamos.Cobro} element={<PagePrestamoCobro />} />
+                <Route path={Urls.Prestamos.CobroAutomatico} element={<Outlet />} />
             </Route>
             <Route path={Urls.Seguridad.Base}>
                 <Route path={Urls.Seguridad.Permisos} element={<PagePermisos />} />

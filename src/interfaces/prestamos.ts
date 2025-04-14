@@ -28,6 +28,7 @@ export interface Prestamo {
     fechaCancelado?: string,
     cuotas: PrestamoCuota[],
     reenganche: boolean,
+    aplicaDescuento: boolean,
 }
 
 export interface PrestamoCuota {
@@ -38,6 +39,7 @@ export interface PrestamoCuota {
     capital: number,
     interes: number,
     amortizacion: number,
+    descuento: number,
     saldoFinal: number,
     vencido: boolean,
     pagado: boolean,

@@ -16,6 +16,7 @@ export default function FormasPagoProvider(props: Pick<ControlProps, "children">
         editar({
             id: 0,
             nombre: '',
+            activo: true,
             dias: [],
         });
     }

@@ -1,7 +1,7 @@
 import { Urls } from "@hooks/useConstants"
 import { useReducerHook } from "@hooks/useReducer"
-import { ControlProps } from "@interfaces/globales"
 import { DocumentoTipo } from "@interfaces/dataMaestra"
+import { ControlProps } from "@interfaces/globales"
 import { GlobalContextState } from "@reducers/global"
 import { createContext } from "react"
 
@@ -16,6 +16,7 @@ export default function DocumentosTiposProvider(props: Pick<ControlProps, "child
         editar({
             id: 0,
             nombre: '',
+            activo: true,
         });
     }
 

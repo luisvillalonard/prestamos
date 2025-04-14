@@ -1,17 +1,17 @@
 import { ButtonPrimary } from "@components/buttons/primary"
 import { ButtonSuccess } from "@components/buttons/success"
+import Container from "@components/containers/container"
 import Loading from "@components/containers/loading"
 import Searcher from "@components/inputs/searcher"
+import TitlePage from "@components/titles/titlePage"
 import { Urls } from "@hooks/useConstants"
 import { useData } from "@hooks/useData"
 import { exportarClientesExcel } from "@hooks/useFile"
+import { IconExcel, IconPlus } from "@hooks/useIconos"
 import { Col, Flex, Space, theme } from "antd"
 import { useEffect, useState } from "react"
 import { useLocation, useNavigate } from "react-router-dom"
 import Listado from "./listado"
-import TitlePage from "@components/titles/titlePage"
-import { IconExcel, IconPlus } from "@hooks/useIconos"
-import Container from "@components/containers/container"
 
 export default function PageClientes() {
 

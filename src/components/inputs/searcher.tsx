@@ -29,7 +29,7 @@ const Searcher = (props: Omit<InputProps, "onChange"> & Pick<ControlProps, "onCh
 
     return (
         <Tooltip title="Escriba aqui para buscar, presione escape para limpiar la busqueda">
-            <Space.Compact>
+            <Space.Compact style={{ width: '100%' }}>
                 <Input
                     {...props}
                     allowClear

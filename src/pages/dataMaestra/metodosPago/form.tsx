@@ -3,7 +3,7 @@ import { useData } from "@hooks/useData"
 import { useForm } from "@hooks/useForm"
 import { Alerta, Exito } from "@hooks/useMensaje"
 import { MetodoPago } from "@interfaces/dataMaestra"
-import { Form, Input } from "antd"
+import { Form, Input, Space, Switch } from "antd"
 import { useEffect } from "react"
 
 export default function FormMetodoPago() {
@@ -50,6 +50,15 @@ export default function FormMetodoPago() {
             onClose={cancelar}>
             <Form.Item name="nombre" label="Nombre" rules={[{ required: true, message: 'Obligatorio' }]}>
                 <Input name="nombre" maxLength={150} value={entidad?.nombre || ''} onChange={handleChangeInput} />
+            </Form.Item>
+            <Form.Item>
+                <Space>
+                    <Switch
+                        id="activo"
+                        checked={entidad.activo}
+                        onChange={(checked) => editar({ ...entidad, activo: checked })} />
+                    <span>Activo</span>
+                </Space>
             </Form.Item>
         </FormModal>
     )

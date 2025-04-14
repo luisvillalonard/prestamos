@@ -1,8 +1,8 @@
 import { ButtonDefault } from "@components/buttons/default"
 import { ButtonPrimary } from "@components/buttons/primary"
 import Container from "@components/containers/container"
+import Loading from "@components/containers/loading"
 import { InputDatePicker } from "@components/inputs/date"
-import InputText from "@components/inputs/text"
 import TitlePage from "@components/titles/titlePage"
 import { Colors, Urls } from "@hooks/useConstants"
 import { useData } from "@hooks/useData"
@@ -11,18 +11,19 @@ import { useForm } from "@hooks/useForm"
 import { IconCheckCircleColor } from "@hooks/useIconos"
 import { Alerta, Exito } from "@hooks/useMensaje"
 import { Cliente } from "@interfaces/clientes"
-import { Col, DatePicker, Flex, Form, Input, Radio, RadioChangeEvent, Row, Select, Space, Switch, Tag, Typography } from "antd"
+import { Col, Flex, Form, Input, Radio, RadioChangeEvent, Row, Select, Space, Switch, Tag, Typography } from "antd"
 import { useEffect } from "react"
 import { useLocation, useNavigate } from "react-router-dom"
 
 export default function FormCliente() {
 
     const {
-        contextClientes: { state: { modelo }, editar: modificar, agregar, actualizar, cancelar },
+        contextClientes: { state: { modelo, procesando }, nuevo, editar: modificar, agregar, actualizar, cancelar },
         contextDocumentosTipos: { state: { datos: documentosTipos }, todos: cargarDocumentosTipos },
         contextSexos: { state: { datos: sexos }, todos: cargarSexos },
         contextCiudades: { state: { datos: ciudades }, todos: cargarCiudades },
         contextOcupaciones: { state: { datos: ocupaciones }, todos: cargarOcupaciones },
+        contextAuth: { state: { user } },
     } = useData()
     const { entidad, editar, handleChangeInput } = useForm<Cliente | undefined>(modelo)
     const nav = useNavigate()
@@ -37,21 +38,29 @@ export default function FormCliente() {
             let resp;
             const esNuevo = entidad.id === 0;
 
-            if (esNuevo) {
-                resp = await agregar(entidad);
-            } else {
-                resp = await actualizar(entidad);
+            try {
+                if (esNuevo) {
+                    resp = await agregar(entidad);
+                } else {
+                    resp = await actualizar(entidad);
+                }
+            } catch (error: any) {
+                Alerta(error.message || 'Situación inesperada tratando de guardar los datos del cliente.');
             }
 
             if (!resp) {
-                Alerta('Situación inesperada tratando de guardar los datos del país.');
+                modificar(entidad);
+                Alerta('Situación inesperada tratando de guardar los datos del cliente.');
+
             } else if (!resp.ok) {
-                Alerta(resp.mensaje || 'Situación inesperada tratando de guardar los datos del país.');
+                modificar(entidad);
+                Alerta(resp.mensaje || 'Situación inesperada tratando de guardar los datos del cliente.');
+
             } else {
                 if (resp.datos) {
                     modificar(resp.datos)
                 }
-                Exito(`País ${esNuevo ? 'registrado' : 'actualizado'}  exitosamente!`);
+                Exito(`Cliente ${esNuevo ? 'registrado' : 'actualizado'}  exitosamente!`);
             }
         }
     }
@@ -63,7 +72,11 @@ export default function FormCliente() {
 
     useEffect(() => {
         editar(modelo);
-        cargarAuxiliares();
+        if (modelo) {
+            cargarAuxiliares()
+        } else {
+            nuevo()
+        }
     }, [modelo, url.pathname])
 
     return (
@@ -86,16 +99,27 @@ export default function FormCliente() {
                     autoComplete="off"
                     size="large"
                     initialValues={{
-                        ...modelo,
-                        documentoTipoId: modelo?.documentoTipo?.id,
-                        sexoId: modelo?.sexo?.id,
-                        ciudadId: modelo?.ciudad?.id,
-                        ocupacionId: modelo?.ocupacion?.id,
+                        ...entidad,
+                        documentoTipoId: entidad?.documentoTipo?.id,
+                        sexoId: entidad?.sexo?.id,
+                        ciudadId: entidad?.ciudad?.id,
+                        ocupacionId: entidad?.ocupacion?.id,
                     }}
                     onFinish={guardar}>
 
                     <Container className="mb-4"
-                        title={<Typography.Title level={4} style={{ margin: 0, color: Colors.Primary }}>Generales</Typography.Title>}
+                        title={
+                            <Flex align="center" gap={10}>
+                                <Typography.Title level={4} style={{ margin: 0, color: Colors.Primary }}>Generales</Typography.Title>
+                                {
+                                    user && user.rol && user.rol.esAdmin
+                                        ? <></>
+                                        : entidad?.activo === true
+                                            ? <Tag color='green' style={{ fontSize: 16, borderRadius: 10 }}>Activo</Tag>
+                                            : <Tag color='error' style={{ fontSize: 16, borderRadius: 10 }}>Inactivo</Tag>
+                                }
+                            </Flex>
+                        }
                         extra={
                             <Flex align="center" gap={10}>
                                 <Typography.Title level={4} style={{ fontWeight: 'bolder', margin: 0 }}>C&oacute;digo</Typography.Title>
@@ -111,6 +135,7 @@ export default function FormCliente() {
                                 <Form.Item name="nombres" label="Nombres"
                                     rules={[{ required: true, message: 'Obligatorio' }]}>
                                     <Input
+                                        name="nombres"
                                         maxLength={150}
                                         value={entidad?.nombres || ''}
                                         disabled={entidad && entidad.id > 0}
@@ -121,6 +146,7 @@ export default function FormCliente() {
                                 <Form.Item name="apellidos" label="Apellidos"
                                     rules={[{ required: true, message: 'Obligatorio' }]}>
                                     <Input
+                                        name="apellidos"
                                         maxLength={150}
                                         value={entidad?.apellidos || ''}
                                         disabled={entidad && entidad.id > 0}
@@ -131,6 +157,7 @@ export default function FormCliente() {
                                 <Form.Item name="empleadoId" label="Empleado Id"
                                     rules={[{ required: true, message: 'Obligatorio' }]}>
                                     <Input
+                                        name="empleadoId"
                                         maxLength={50}
                                         disabled={entidad && entidad.id > 0}
                                         value={entidad?.empleadoId || ''}
@@ -202,23 +229,28 @@ export default function FormCliente() {
                                     </Radio.Group>
                                 </Form.Item>
                             </Col>
+                            {
+                                user && user.rol && user.rol.esAdmin
+                                    ?
+                                    <Col lg={12} md={12} sm={24} xs={24}>
+                                        <Space>
+                                            <Switch
+                                                checked={entidad?.activo}
+                                                onChange={(value) => {
+                                                    if (entidad) {
+                                                        editar({ ...entidad, activo: value })
+                                                    }
+                                                }} />
+                                            <span>{entidad?.activo ? 'Activo' : 'Inactivo'}</span>
+                                        </Space>
+                                    </Col>
+                                    : <></>
+                            }
                         </Row>
                     </Container>
 
                     <Container
-                        title={<Typography.Title level={4} style={{ margin: 0, color: Colors.Primary }}>Contacto</Typography.Title>}
-                        extra={
-                            <Space>
-                                <span>{entidad?.activo ? 'Activo' : 'Inactivo'}</span>
-                                <Switch
-                                    checked={entidad?.activo}
-                                    onChange={(value) => {
-                                        if (entidad) {
-                                            editar({ ...entidad, activo: value })
-                                        }
-                                    }} />
-                            </Space>
-                        }>
+                        title={<Typography.Title level={4} style={{ margin: 0, color: Colors.Primary }}>Contacto</Typography.Title>}>
                         <Row gutter={[16, 16]}>
                             <Col lg={12} md={12} sm={24} xs={24}>
                                 <Form.Item name="ciudadId" label="Ciudad"
@@ -239,6 +271,7 @@ export default function FormCliente() {
                                 <Form.Item name="ocupacionId" label="Ocupaci&oacute;n"
                                     rules={[{ required: true, message: 'Obligatorio' }]}>
                                     <Select
+                                        id="ocupacionId"
                                         allowClear
                                         value={entidad?.ocupacion?.id}
                                         disabled={entidad && entidad.id > 0}
@@ -254,6 +287,7 @@ export default function FormCliente() {
                             <Col xs={24}>
                                 <Form.Item name="direccion" label="Direcci&oacute;n">
                                     <Input
+                                        name="direccion"
                                         maxLength={250}
                                         value={entidad?.direccion || ''}
                                         onChange={handleChangeInput} />
@@ -263,6 +297,7 @@ export default function FormCliente() {
                                 <Form.Item name="telefonoCelular" label="Telefono Celular"
                                     rules={[{ required: true, message: 'Obligatorio' }]}>
                                     <Input
+                                        name="telefonoCelular"
                                         maxLength={15}
                                         value={entidad?.telefonoCelular || ''}
                                         onChange={handleChangeInput} />
@@ -272,6 +307,7 @@ export default function FormCliente() {
                                 <Form.Item name="telefonoFijo" label="Telefono Fijo"
                                     rules={[{ required: true, message: 'Obligatorio' }]}>
                                     <Input
+                                        name="telefonoFijo"
                                         maxLength={15}
                                         value={entidad?.telefonoFijo || ''}
                                         onChange={handleChangeInput} />
@@ -295,6 +331,7 @@ export default function FormCliente() {
                     </Container>
                 </Form>
             </Col >
+            <Loading active={procesando} message="Procesando, espere..." />
         </>
     )
 }

@@ -1,4 +1,5 @@
 import { ButtonEdit } from "@components/buttons/edit"
+import { TagDanger, TagSuccess } from "@components/tags/tags"
 import { useData } from "@hooks/useData"
 import { Moneda } from "@interfaces/dataMaestra"
 import { ControlProps } from "@interfaces/globales"
@@ -33,6 +34,9 @@ export default function Listado(props: Pick<ControlProps, "filter">) {
             } locale={{ emptyText: <Flex>0 tipos de monedas</Flex> }}>
             <Column title="#" dataIndex="key" key="key" align="center" fixed='left' width={60} />
             <Column title="Nombre" dataIndex="nombre" key="nombre" />
+            <Column title="Estado" align="center" render={(record: Moneda) => (
+                record.activo ? <TagSuccess text="Activa" /> : <TagDanger text="Inactiva" />
+            )} />
             <Column title="Acci&oacute;n" align="center" width={80} render={(record: Moneda) => (
                 <Tooltip title={`Editar el tipo de moneda (${record.nombre})`}>
                     <ButtonEdit type="text" onClick={() => { editar(record) }} />

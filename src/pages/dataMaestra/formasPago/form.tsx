@@ -3,7 +3,7 @@ import { useData } from "@hooks/useData"
 import { useForm } from "@hooks/useForm"
 import { Alerta, Exito } from "@hooks/useMensaje"
 import { FormaPago, FormaPagoFecha } from "@interfaces/dataMaestra"
-import { Form, Input, Select } from "antd"
+import { Form, Input, Select, Space, Switch } from "antd"
 import { useEffect } from "react"
 
 export default function FormFormaPago() {
@@ -69,6 +69,15 @@ export default function FormFormaPago() {
                     }}
                     options={Array.from(Array(31).keys()).map((dia) => ({ key: dia, value: dia + 1, label: dia + 1 }))}
                 />
+            </Form.Item>
+            <Form.Item>
+                <Space>
+                    <Switch
+                        id="activo"
+                        checked={entidad.activo}
+                        onChange={(checked) => editar({ ...entidad, activo: checked })} />
+                    <span>Activo</span>
+                </Space>
             </Form.Item>
         </FormModal>
     )

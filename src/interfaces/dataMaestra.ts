@@ -3,11 +3,15 @@ export interface DataMaestraBase {
     nombre: string,
 }
 
-export interface Ciudad extends DataMaestraBase { }
+export interface BaseActice {
+    activo: boolean
+}
 
-export interface DocumentoTipo extends DataMaestraBase { }
+export interface Ciudad extends DataMaestraBase, BaseActice { }
 
-export interface FormaPago extends DataMaestraBase {
+export interface DocumentoTipo extends DataMaestraBase, BaseActice { }
+
+export interface FormaPago extends DataMaestraBase, BaseActice {
     dias: FormaPagoFecha[],
 }
 
@@ -17,11 +21,11 @@ export interface FormaPagoFecha {
     dia: number,
 }
 
-export interface MetodoPago extends DataMaestraBase { }
+export interface MetodoPago extends DataMaestraBase, BaseActice { }
 
-export interface Moneda extends DataMaestraBase { }
+export interface Moneda extends DataMaestraBase, BaseActice { }
 
-export interface Ocupacion extends DataMaestraBase { }
+export interface Ocupacion extends DataMaestraBase, BaseActice { }
 
 export interface PrestamoEstado extends DataMaestraBase {
     inicial: boolean,
@@ -30,4 +34,4 @@ export interface PrestamoEstado extends DataMaestraBase {
 
 export interface Sexo extends DataMaestraBase { }
 
-export interface Acesor extends DataMaestraBase { }
+export interface Acesor extends DataMaestraBase, BaseActice { }

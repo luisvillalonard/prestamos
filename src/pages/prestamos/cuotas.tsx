@@ -1,15 +1,19 @@
+import InputNumbers from "@components/inputs/numbers"
 import { TagDanger, TagSecondary, TagSuccess } from "@components/tags/tags"
 import { FormatNumber } from "@hooks/useUtils"
+import { ControlProps } from "@interfaces/globales"
 import { PrestamoCuota, PrestamoPago } from "@interfaces/prestamos"
 import { Flex, Table } from "antd"
 
 interface PrestamoCuotasProps {
-    cuotas: PrestamoCuota[]
+    cuotas: PrestamoCuota[],
+    aplicaDescuento: boolean,
+    editando?: boolean,
 }
 
-export default function PrestamoCuotas(props: PrestamoCuotasProps) {
+export default function PrestamoCuotas(props: PrestamoCuotasProps & Pick<ControlProps, "onChange">) {
 
-    const { cuotas } = props
+    const { cuotas, aplicaDescuento, editando, onChange } = props
 
     const montoPendiente = (cuota: PrestamoCuota): number => {
 
@@ -22,7 +26,7 @@ export default function PrestamoCuotas(props: PrestamoCuotasProps) {
         if (montoPagos >= cuota.amortizacion)
             return 0;
 
-        return cuota.amortizacion - montoPagos;
+        return ((cuota.capital - cuota.descuento) + cuota.interes) - montoPagos;
 
     }
 
@@ -38,6 +42,25 @@ export default function PrestamoCuotas(props: PrestamoCuotasProps) {
             <Table.Column title="Deuda Inicial" render={(record: PrestamoCuota) => (FormatNumber(record.deudaInicial, 2))} />
             <Table.Column title="Tasa Interes" render={(record: PrestamoCuota) => (FormatNumber(record.interes, 2))} />
             <Table.Column title="Capital" render={(record: PrestamoCuota) => (FormatNumber(record.capital, 2))} />
+            <Table.Column title="Descuento Extraordinario" width={135} hidden={!aplicaDescuento} render={(record: PrestamoCuota) => (
+                editando === true
+                    ?
+                    <InputNumbers
+                        value={record.descuento}
+                        style={{ width: '100%' }}
+                        onFocus={(evt) => evt && evt.currentTarget && evt.currentTarget.select()}
+                        onChange={(value) => {
+                            const nuevasCuotas = cuotas.map(cuota => {
+                                if (cuota.fechaPago === record.fechaPago) {
+                                    cuota.descuento = Number(value);
+                                }
+                                return cuota;
+                            });
+                            onChange && onChange(nuevasCuotas);
+                        }} />
+                    : FormatNumber(record.descuento, 2)
+
+            )} />
             <Table.Column title="Amortización" render={(record: PrestamoCuota) => (FormatNumber(record.amortizacion, 2))} />
             <Table.Column title="Saldo Final" render={(record: PrestamoCuota) => (FormatNumber(record.saldoFinal, 2))} />
             <Table.Column title="Pendiente" render={(record: PrestamoCuota) => (FormatNumber(montoPendiente(record), 2))} />

@@ -2,7 +2,7 @@ import bglogin from '@assets/bglogin.svg'
 import { Urls } from "@hooks/useConstants"
 import { useData } from "@hooks/useData"
 import { UserApp } from "@interfaces/seguridad"
-import { Col, Flex, Image, Layout, Row, Space, theme } from "antd"
+import { Col, Flex, Image, Layout, Row, theme } from "antd"
 import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import FormCambioClave from './cambioClave'

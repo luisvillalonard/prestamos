@@ -1,4 +1,5 @@
 import { ButtonEdit } from "@components/buttons/edit"
+import { TagDanger, TagSuccess } from "@components/tags/tags"
 import { useData } from "@hooks/useData"
 import { MetodoPago } from "@interfaces/dataMaestra"
 import { ControlProps } from "@interfaces/globales"
@@ -33,6 +34,9 @@ export default function Listado(props: Pick<ControlProps, "filter">) {
             } locale={{ emptyText: <Flex>0 m&eacute;todo de pago</Flex> }}>
             <Column title="#" dataIndex="key" key="key" align="center" fixed='left' width={60} />
             <Column title="Nombre" dataIndex="nombre" key="nombre" />
+            <Column title="Estado" align="center" render={(record: MetodoPago) => (
+                record.activo ? <TagSuccess text="Activo" /> : <TagDanger text="Inactivo" />
+            )} />
             <Column title="Acci&oacute;n" align="center" width={80} render={(record: MetodoPago) => (
                 <Tooltip title={`Editar el método de pago (${record.nombre})`}>
                     <ButtonEdit type="text" onClick={() => { editar(record) }} />

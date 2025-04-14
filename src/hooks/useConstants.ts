@@ -14,6 +14,7 @@ export const Urls = {
         Formulario: 'formulario',
         Registrados: 'registrados',
         Cobro: 'cobro/:id?',
+        CobroAutomatico: 'cobro/automatico',
     },
     Seguridad: {
         Base: 'seguridad',

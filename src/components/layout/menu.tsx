@@ -36,6 +36,7 @@ export const menuItems: MenuItem[] = [
             { menuid: 21, key: `${Urls.Prestamos.Base}/${Urls.Prestamos.Formulario}`, label: 'Formulario de Prestamos', icon: <IconForm /> },
             { menuid: 22, key: `${Urls.Prestamos.Base}/${Urls.Prestamos.Registrados}`, label: 'Prestamos Registrados', icon: <IconListNumbered /> },
             { menuid: 23, key: `${Urls.Prestamos.Base}/${Urls.Prestamos.Cobro.replace(':id?', '')}`, label: 'Cobro de Prestamo', icon: <IconReceiveMoney /> },
+            { menuid: 23, key: `${Urls.Prestamos.Base}/${Urls.Prestamos.CobroAutomatico}`, label: 'Cobro Automático', icon: <IconReceiveMoney /> },
         ],
     },
     {
@@ -156,7 +157,20 @@ export default function MenuApp() {
         const path = url.pathname.startsWith('/') ? url.pathname.slice(1, url.pathname.length) : url.pathname;
         const openKey = path.split('/')[0];
         setStateOpenKeys([openKey]);
-        setCurrent(path);
+
+        const allKeys = menuItems.reduce((acc: string[], item: MenuItem) => {
+            const keys = item.children && item.children.map(child => child.key)
+            if (keys) {
+                acc.push(...keys)
+            }
+            return acc;
+        }, []);
+        const newCurrent = allKeys.filter(old => path.includes(old)).shift()
+        if (newCurrent) {
+            setCurrent(newCurrent);
+        } else {
+            setCurrent(path);
+        }
     }, [url.pathname])
 
     if (!user || !user.rol || user.rol.permisos.length === 0) {

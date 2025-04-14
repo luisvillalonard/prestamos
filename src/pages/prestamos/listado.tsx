@@ -24,7 +24,7 @@ export default function Listado(props: Pick<ControlProps, "filter">) {
 
         const total = cuotas
             .reduce((acc, item) => {
-                return acc + item.pagos.reduce((accP, itemP) => { return accP + itemP.monto }, 0)
+                return acc + (item.pagos.reduce((accP, itemP) => { return accP + itemP.monto }, 0) - item.descuento)
             }, 0)
 
         return Math.round(total)

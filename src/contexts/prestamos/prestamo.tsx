@@ -48,6 +48,7 @@ export default function PrestamosProvider(props: Pick<ControlProps, "children">)
             cuotas: [],
             reenganche: false,
             deudaNueva: 0,
+            aplicaDescuento: false,
         });
     }
 
