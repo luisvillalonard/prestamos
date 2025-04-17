@@ -1,5 +1,6 @@
 import { ButtonPrimary } from "@components/buttons/primary"
 import { ButtonSuccess } from "@components/buttons/success"
+import Container from "@components/containers/container"
 import Loading from "@components/containers/loading"
 import Searcher from "@components/inputs/searcher"
 import TitlePage from "@components/titles/titlePage"
@@ -11,7 +12,6 @@ import { Col, Flex, Space, theme } from "antd"
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import Listado from "./listado"
-import Container from "@components/containers/container"
 
 export default function PagePrestamos() {
 
@@ -20,7 +20,7 @@ export default function PagePrestamos() {
     const { token } = theme.useToken()
     const nav = useNavigate()
 
-    const onNew = () => nav(`/${Urls.Prestamos.Base}/${Urls.Prestamos.Formulario}`)
+    const onNew = () => nav(`/${Urls.Prestamos.Base}/${Urls.Prestamos.Formulario.replace(':id?', '')}`)
 
     return (
         <>

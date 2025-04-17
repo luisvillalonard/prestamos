@@ -1,10 +1,11 @@
+import { ButtonDefault } from "@components/buttons/default"
 import { Colors, Urls } from "@hooks/useConstants"
 import { useData } from "@hooks/useData"
-import { IconPayMoney } from "@hooks/useIconos"
+import { IconEdit, IconPayMoney } from "@hooks/useIconos"
 import { FormatNumber } from "@hooks/useUtils"
 import { ControlProps } from "@interfaces/globales"
-import { Prestamo, PrestamoCuota } from "@interfaces/prestamos"
-import { Button, Flex, Table, Tag, Tooltip } from "antd"
+import { Prestamo } from "@interfaces/prestamos"
+import { Button, Flex, Space, Table, Tag, Tooltip } from "antd"
 import { useEffect } from "react"
 import { useLocation, useNavigate } from "react-router-dom"
 
@@ -18,14 +19,21 @@ export default function Listado(props: Pick<ControlProps, "filter">) {
 
     const cargar = async () => await todos();
 
-    const montoPendiente = (cuotas: PrestamoCuota[]): number => {
+    const montoPendiente = (prestamo: Prestamo): number => {
 
-        cuotas.filter(cuota => !cuota.pagado)
+        const { deudaInicial, cuotas } = prestamo
+        if (!cuotas || cuotas.length === 0) return deudaInicial;
 
-        const total = cuotas
-            .reduce((acc, item) => {
-                return acc + (item.pagos.reduce((accP, itemP) => { return accP + itemP.monto }, 0) - item.descuento)
-            }, 0)
+        const cuotasPendientes = cuotas.filter(cuota => !cuota.pagado)
+
+        const total = cuotasPendientes.reduce((acc, item) => {
+            const montoPagos: number = item.pagos.reduce((accP, itemP) => { return accP + itemP.monto }, 0);
+            let montoFinal: number = montoPagos - item.descuento;
+            if (montoFinal < 0) {
+                montoFinal = montoFinal * -1;
+            }
+            return acc - montoFinal;
+        }, deudaInicial)
 
         return Math.round(total)
     }
@@ -62,7 +70,7 @@ export default function Listado(props: Pick<ControlProps, "filter">) {
             <Table.Column title="Capital" render={(record: Prestamo) => (FormatNumber(Math.round(record.cuotas.reduce((acc, item) => { return acc + item.capital }, 0)), 2))} />
             <Table.Column title="Inter&eacute;s" render={(record: Prestamo) => (FormatNumber(Math.round(record.cuotas.reduce((acc, item) => { return acc + item.interes }, 0)), 2))} />
             <Table.Column title="Pendiente" render={(record: Prestamo) => (
-                FormatNumber(record.deudaInicial - montoPendiente(record.cuotas), 2)
+                FormatNumber(montoPendiente(record), 2)
             )} />
             <Table.Column title="Estado" align="center" render={(record: Prestamo) => (
                 <Tag
@@ -71,12 +79,21 @@ export default function Listado(props: Pick<ControlProps, "filter">) {
                     {record.estado?.nombre}
                 </Tag>
             )} />
-            <Table.Column title="Acci&oacute;n" align="center" width={80} render={(record: Prestamo) => (
-                <Tooltip title={`Editar el prestamo (${record.codigo})`}>
-                    <Button shape="round" icon={<IconPayMoney color="primary" />} onClick={() => {
-                        nav(`/${Urls.Prestamos.Base}/${Urls.Prestamos.Cobro.replace(':id?', record.id.toString())}`, { replace: true })
-                    }}>Pagar</Button>
-                </Tooltip>
+            <Table.Column title="Acci&oacute;n" align="center" render={(record: Prestamo) => (
+                <Space>
+                    <ButtonDefault shape="round" icon={<IconEdit />} onClick={() => {
+                        nav(`/${Urls.Prestamos.Base}/${Urls.Prestamos.Formulario.replace(':id?', record.id.toString())}`, { replace: true })
+                    }}>
+                        Editar
+                    </ButtonDefault>
+                    <Tooltip title={`Editar el prestamo (${record.codigo})`}>
+                        <Button shape="round" icon={<IconPayMoney color="primary" />} onClick={() => {
+                            nav(`/${Urls.Prestamos.Base}/${Urls.Prestamos.Cobro.replace(':id?', record.id.toString())}`, { replace: true })
+                        }}>
+                            Pagar
+                        </Button>
+                    </Tooltip>
+                </Space>
             )} />
         </Table>
     )

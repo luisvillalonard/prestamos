@@ -9,7 +9,7 @@ import { ACTIONS, GlobalContextState } from "@reducers/global"
 import { createContext } from "react"
 
 export interface PrestamoContextState<T> extends GlobalContextState<T> {
-    activos: (filtro: RequestFilter) => Promise<ResponseResult<Prestamo[]>>,
+    activos: (filtro?: RequestFilter) => Promise<ResponseResult<Prestamo[]>>,
     actual: (clienteId: number) => Promise<ResponseResult<T>>,
     porId: (id: number) => Promise<ResponseResult<T>>,
 }
@@ -52,7 +52,7 @@ export default function PrestamosProvider(props: Pick<ControlProps, "children">)
         });
     }
 
-    const activos = async (filtro: RequestFilter): Promise<ResponseResult<Prestamo[]>> => {
+    const activos = async (filtro?: RequestFilter): Promise<ResponseResult<Prestamo[]>> => {
 
         dispatch({ type: ACTIONS.FETCHING });
         let resp: ResponseResult<Prestamo[]>;

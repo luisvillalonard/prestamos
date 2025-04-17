@@ -6,7 +6,7 @@ import {
 } from "@ant-design/icons"
 import { IconType } from "react-icons"
 import { AiOutlineUser } from "react-icons/ai"
-import { BsPersonVcard, BsPlusLg, BsSearch } from "react-icons/bs"
+import { BsPersonVcard, BsPlusLg, BsSearch, BsTrash } from "react-icons/bs"
 import { CiViewList } from "react-icons/ci"
 import { FaRegAddressCard, FaRegMoneyBill1, FaUserShield } from "react-icons/fa6"
 import { GiPayMoney, GiReceiveMoney, GiTakeMyMoney } from "react-icons/gi"
@@ -41,6 +41,7 @@ export const IconMoney = FaRegMoneyBill1;
 export const IconPayMoney = GiPayMoney;
 export const IconReceiveMoney = GiReceiveMoney;
 export const IconSearch = BsSearch;
+export const IconTrash: IconType = BsTrash;
 export const IconUserProfile = BsPersonVcard;
 export const IconUserPermission = IoShieldCheckmarkOutline;
 export const IconUser: IconType = AiOutlineUser;

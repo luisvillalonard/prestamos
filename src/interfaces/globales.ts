@@ -29,6 +29,7 @@ export interface ControlProps {
     onChange?: (value: any) => void,
     onCancel?: (value: any) => void,
     onRemove?: (value: any) => void,
+    onError?: (value: any) => void,
     setFocus?: () => void,
 }
 

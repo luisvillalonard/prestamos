@@ -2,6 +2,7 @@ import AlertStatic from "@components/alerts/alert"
 import { ButtonDefault } from "@components/buttons/default"
 import { ButtonPrimary } from "@components/buttons/primary"
 import { ButtonSuccess } from "@components/buttons/success"
+import Container from "@components/containers/container"
 import Loading from "@components/containers/loading"
 import { InputDatePicker } from "@components/inputs/date"
 import InputNumbers from "@components/inputs/numbers"
@@ -19,9 +20,9 @@ import { Configuracion } from "@interfaces/configuraciones"
 import { DateArray } from "@interfaces/globales"
 import { Prestamo, PrestamoCuota } from "@interfaces/prestamos"
 import ClienteInfo from "@pages/clientes/info"
-import { Card, Col, Collapse, Flex, Form, Input, Row, Select, Space, Switch, Table, Tag, Typography } from "antd"
+import { Col, Collapse, Flex, Form, Input, Row, Select, Space, Switch, Table, Tag, Typography } from "antd"
 import { CSSProperties, useEffect, useState } from "react"
-import { useLocation, useNavigate } from "react-router-dom"
+import { useLocation, useNavigate, useParams } from "react-router-dom"
 import PrestamoCuotas from "./cuotas"
 
 const styleInputTotal: CSSProperties = {
@@ -37,7 +38,7 @@ export default function FormPrestamo() {
     const {
         contextConfiguracionesGenerales: { ultima },
         contextClientes: { state: { datos: clientes, procesando: cargandoClientes }, todos },
-        contextPrestamos: { state: { modelo, procesando: cargandoPrestamo }, nuevo, agregar, actual },
+        contextPrestamos: { state: { modelo, procesando: cargandoPrestamo }, nuevo, editar: modificar, agregar, actualizar, actual, porId },
         contextPrestamosEstados: { todos: cargarEstados },
         contextFormasPago: { state: { datos: formasPago }, todos: cargarFormasPago },
         contextMetodosPago: { state: { datos: metodosPago }, todos: cargarMetodosPago },
@@ -57,6 +58,7 @@ export default function FormPrestamo() {
     const [isBlocked, setIsBlocked] = useState<boolean>(false)
     const nav = useNavigate()
     const url = useLocation()
+    const { id } = useParams()
 
     const cargarAuxiliares = async () => await Promise.all([
         ultima(),
@@ -69,6 +71,50 @@ export default function FormPrestamo() {
         const config = result.shift()?.datos;
         setConfiguracion(config);
     })
+
+    const cargarPrestamo = async (id: number) => {
+
+        const result = await porId(id);
+        if (!result) {
+            setErrores(['Situación inesperada tratando de cargar el prestamo.']);
+            return;
+        }
+        if (!result.ok) {
+            setErrores([result.mensaje || 'Situación inesperada tratando de cargar el prestamo.']);
+            return;
+        }
+        if (result.ok && !result.datos) {
+            setErrores(['Código de préstamo no encontrado.']);
+            return;
+        }
+
+        if (result.ok && result.datos) {
+            const prest = result.datos;
+            if (prest) {
+                setIsBlocked(prest.estado?.final === false)
+                modificar(prest);
+                setActiveKey('');
+
+                const totalIntereses = prest.deudaInicial * (prest.interes / 100);
+                setMontoTotalInteres(totalIntereses);
+
+                const capitalCuota = Number((prest.deudaInicial / prest.cantidadCuotas).toFixed(2));
+                setMontoCapitalCuota(capitalCuota);
+
+                const interesCuota = Number(Number(totalIntereses / prest.cantidadCuotas).toFixed(2))
+                setMontoAmortizacion(capitalCuota + interesCuota);
+
+                const cuota = prest.cuotas[0];
+                if (cuota) {
+                    setFechasPago([{ fecha: cuota.fechaPago, anterior: false }]);
+                    setPrimeraFechaPago(cuota.fechaPago);
+                }
+            } else {
+                setErrores(['Código de préstamo no encontrado']);
+            }
+        }
+
+    }
 
     const buscarCliente = async (texto: string) => {
 
@@ -176,8 +222,14 @@ export default function FormPrestamo() {
         if (!validaPrestamo()) return;
 
         let resp;
+        const esNuevo = entidad.id === 0;
+
         try {
-            resp = await agregar(entidad);
+            if (esNuevo) {
+                resp = await agregar(entidad);
+            } else {
+                resp = await actualizar(entidad);
+            }
         } catch (error: any) {
             Alerta(error.message || 'Situación inesperada tratando de guardar los datos del prestamo.');
         }
@@ -197,12 +249,15 @@ export default function FormPrestamo() {
 
     }
 
-    useEffect(() => { nuevo() }, [url.pathname])
+    useEffect(() => { editar(modelo) }, [modelo])
     useEffect(() => {
-        editar(modelo);
-        if (modelo) { cargarAuxiliares() }
-    }, [modelo])
-    useEffect(() => { calcularFechaPago() }, [entidad?.fechaCredito, entidad?.formaPago])
+        cargarAuxiliares();
+        if (!id || !Number(id)) {
+            nuevo();
+        } else {
+            cargarPrestamo(Number(id));
+        }
+    }, [url.pathname, id])
 
     if (!entidad) {
         return <Loading fullscreen active message="Cargando parametros, espere" />
@@ -216,7 +271,7 @@ export default function FormPrestamo() {
                     <TitlePage title="Formulario de C&aacute;lculo y Registro de Prestamo" />
                     <Space>
                         <ButtonDefault key="1" size="large" onClick={() => window.location.reload()}>Nuevo</ButtonDefault>
-                        <ButtonPrimary key="2" size="large" htmlType="submit" form="FormPrestamo" disabled={isBlocked}>
+                        <ButtonPrimary key="2" size="large" htmlType="submit" form="FormPrestamo" disabled={isBlocked && entidad.id === 0}>
                             {entidad && entidad.id > 0 ? 'Actualizar' : 'Guardar'}
                         </ButtonPrimary>
                     </Space>
@@ -224,119 +279,122 @@ export default function FormPrestamo() {
 
                 <AlertStatic errors={errores} />
 
-                <Form
-                    name="FormPrestamo"
-                    layout="vertical"
-                    autoComplete="off"
-                    size="large"
-                    initialValues={{
-                        ...entidad,
-                        formaPagoId: entidad?.formaPago?.id,
-                        metodoPagoId: entidad?.metodoPago?.id,
-                        monedaId: entidad?.moneda?.id,
-                        acesorId: entidad?.acesor?.id,
-                    }}
-                    onFinish={guardar}>
-
-                    <Card
-                        title={<Typography.Title level={4} style={{ margin: 0, color: Colors.Primary }}>Datos del Cliente</Typography.Title>}
-                        extra={<Searcher onChange={buscarCliente} />}
-                        className="mb-4"
-                        styles={{ body: { position: 'relative' } }}>
-                        <ClienteInfo cliente={entidad.cliente} />
-                        <Collapse
-                            bordered={false} ghost size="small"
-                            destroyInactivePanel
-                            defaultActiveKey={[activeKey]}
-                            activeKey={[activeKey]}
-                            items={[
-                                {
-                                    key: '1',
-                                    label: null,
-                                    showArrow: false,
-                                    styles: {
-                                        header: { padding: 0 },
-                                        body: { paddingLeft: 0, paddingRight: 0 }
-                                    },
-                                    children: <>
-                                        <Table<Cliente>
-                                            size="middle"
-                                            bordered={false}
-                                            locale={{ emptyText: <Flex style={{ textWrap: 'nowrap' }}>0 clientes</Flex> }}
-                                            dataSource={cargandoClientes ? [] : clientes.map((item, index) => { return { ...item, key: index + 1 } })}>
-                                            <Table.Column title="Acci&oacute;n" align="center" fixed='left' width={60} render={(record: Cliente) => (
-                                                <ButtonDefault size="small" shape="round" onClick={async () => {
-
-                                                    setErrores([]);
-                                                    setIsBlocked(false);
-
-                                                    const result = await actual(record.id);
-                                                    if (result && result.ok && result.datos) {
-                                                        const prest = result.datos;
-                                                        if (!prest?.estado?.final) {
-                                                            setErrores(['Este cliente ya tiene un prestamo en curso. Si lo desea haga un reenganche.']);
-                                                            editar(prest);
-                                                            setIsBlocked(true);
-                                                            return;
-                                                        }
-                                                    }
-
-                                                    if (entidad) {
-                                                        editar({ ...entidad, cliente: record });
-                                                        setIsBlocked(false);
-                                                        setActiveKey('');
-                                                    }
-                                                }}>Seleccionar</ButtonDefault>
-                                            )} />
-                                            <Table.Column title="Código" dataIndex="codigo" key="codigo" fixed='left' width={80} />
-                                            <Table.Column title="Empleado Id" dataIndex="empleadoId" key="empleadoId" width={100} />
-                                            <Table.Column title="Nombres y Apellidos" render={(record: Cliente) => (
-                                                `${record.nombres || ''} ${record.apellidos || ''}`.trim()
-                                            )} />
-                                            <Table.Column title="Documento" render={(record: Cliente) => (
-                                                <span style={{ textWrap: 'nowrap' }}>{`(${record.documentoTipo?.nombre}) ${record.documento}`}</span>
-                                            )} />
-                                            <Table.Column title="Sexo" render={(record: Cliente) => (record.sexo?.nombre)} />
-                                            <Table.Column title="Ciudad" render={(record: Cliente) => (record.ciudad?.nombre)} />
-                                            <Table.Column title="Ocupaci&oacute;n" render={(record: Cliente) => (record.ocupacion?.nombre)} />
-                                            <Table.Column title="Celular" render={(record: Cliente) => (
-                                                <span style={{ textWrap: 'nowrap' }}>{record.telefonoCelular}</span>
-                                            )} />
-                                        </Table>
-                                    </>,
+                <Container
+                    title={<Typography.Title level={4} style={{ margin: 0, color: Colors.Primary }}>Datos del Cliente</Typography.Title>}
+                    extra={<Searcher onChange={buscarCliente} disabled={entidad.id > 0} />}
+                    className="mb-3"
+                    styles={{ body: { position: 'relative' } }}>
+                    <ClienteInfo cliente={entidad.cliente} />
+                    <Collapse
+                        bordered={false} ghost size="small"
+                        destroyInactivePanel
+                        defaultActiveKey={[activeKey]}
+                        activeKey={[activeKey]}
+                        items={[
+                            {
+                                key: '1',
+                                label: null,
+                                showArrow: false,
+                                styles: {
+                                    header: { padding: 0 },
+                                    body: { paddingLeft: 0, paddingRight: 0 }
                                 },
-                            ]}
-                        >
-                        </Collapse>
-                        <Loading active={cargandoClientes} message="buscando, espere" />
-                    </Card>
+                                children: <>
+                                    <Table<Cliente>
+                                        size="middle"
+                                        bordered={false}
+                                        locale={{ emptyText: <Flex style={{ textWrap: 'nowrap' }}>0 clientes</Flex> }}
+                                        dataSource={cargandoClientes ? [] : clientes.map((item, index) => { return { ...item, key: index + 1 } })}>
+                                        <Table.Column title="Acci&oacute;n" align="center" fixed='left' width={60} render={(record: Cliente) => (
+                                            <ButtonDefault size="small" shape="round" onClick={async () => {
 
-                    <Card
-                        className="mb-4"
-                        title={
-                            <Flex align="center" gap={10}>
-                                <Typography.Title level={4} style={{ margin: 0, color: Colors.Primary }}>Datos del Prestamo</Typography.Title>
-                                <Tag color='default' style={{ fontWeight: 500, fontSize: 16, borderRadius: 10, margin: 0 }}>{entidad?.codigo || 'P-000000'}</Tag>
-                                {
-                                    entidad?.reenganche === true
-                                        ? <Tag color={Colors.Success} style={{ fontWeight: 400, fontSize: 16, borderRadius: 10, margin: 0 }}>Reenganche</Tag>
-                                        : <></>
-                                }
-                            </Flex>
-                        }
-                        extra={
-                            <Flex gap={10}>
-                                {
-                                    isBlocked
-                                        ? <ButtonSuccess onClick={() => {
-                                            editar({ ...entidad, reenganche: true, deudaNueva: 0 })
-                                            setIsBlocked(false)
-                                        }}>Reenganchar</ButtonSuccess>
-                                        : <></>
-                                }
-                                <ButtonPrimary icon={<IconCalculator />} onClick={calcularCuotas} disabled={isBlocked}>Calcular</ButtonPrimary>
-                            </Flex>
-                        }>
+                                                setErrores([]);
+                                                setIsBlocked(false);
+
+                                                const result = await actual(record.id);
+                                                if (result && result.ok && result.datos) {
+                                                    const prest = result.datos;
+                                                    if (!prest?.estado?.final) {
+                                                        setErrores(['Este cliente ya tiene un prestamo en curso. Si lo desea haga un reenganche.']);
+                                                        editar(prest);
+                                                        setIsBlocked(true);
+                                                        return;
+                                                    }
+                                                }
+
+                                                if (entidad) {
+                                                    editar({ ...entidad, cliente: record });
+                                                    setIsBlocked(false);
+                                                    setActiveKey('');
+                                                }
+                                            }}>
+                                                Seleccionar
+                                            </ButtonDefault>
+                                        )} />
+                                        <Table.Column title="Código" dataIndex="codigo" key="codigo" fixed='left' width={80} />
+                                        <Table.Column title="Empleado Id" dataIndex="empleadoId" key="empleadoId" width={100} />
+                                        <Table.Column title="Nombres y Apellidos" render={(record: Cliente) => (
+                                            `${record.nombres || ''} ${record.apellidos || ''}`.trim()
+                                        )} />
+                                        <Table.Column title="Documento" render={(record: Cliente) => (
+                                            <span style={{ textWrap: 'nowrap' }}>{`(${record.documentoTipo?.nombre}) ${record.documento}`}</span>
+                                        )} />
+                                        <Table.Column title="Sexo" render={(record: Cliente) => (record.sexo?.nombre)} />
+                                        <Table.Column title="Ciudad" render={(record: Cliente) => (record.ciudad?.nombre)} />
+                                        <Table.Column title="Ocupaci&oacute;n" render={(record: Cliente) => (record.ocupacion?.nombre)} />
+                                        <Table.Column title="Celular" render={(record: Cliente) => (
+                                            <span style={{ textWrap: 'nowrap' }}>{record.telefonoCelular}</span>
+                                        )} />
+                                    </Table>
+                                </>,
+                            },
+                        ]}
+                    >
+                    </Collapse>
+                    <Loading active={cargandoClientes} message="buscando, espere" />
+                </Container>
+
+                <Container
+                    className="mb-3"
+                    title={
+                        <Flex align="center" gap={10}>
+                            <Typography.Title level={4} style={{ margin: 0, color: Colors.Primary }}>Datos del Prestamo</Typography.Title>
+                            <Tag color='default' style={{ fontWeight: 500, fontSize: 16, borderRadius: 10, margin: 0 }}>{entidad?.codigo || 'P-000000'}</Tag>
+                            {
+                                entidad?.reenganche === true
+                                    ? <Tag color={Colors.Success} style={{ fontWeight: 400, fontSize: 16, borderRadius: 10, margin: 0 }}>Reenganche</Tag>
+                                    : <></>
+                            }
+                        </Flex>
+                    }
+                    extra={
+                        <Flex gap={10}>
+                            {
+                                isBlocked && entidad.id === 0
+                                    ? <ButtonSuccess onClick={() => {
+                                        editar({ ...entidad, reenganche: true, deudaNueva: 0 })
+                                        setIsBlocked(false)
+                                    }}>
+                                        Reenganchar
+                                    </ButtonSuccess>
+                                    : <></>
+                            }
+                            <ButtonPrimary icon={<IconCalculator />} onClick={calcularCuotas} disabled={isBlocked}>Calcular</ButtonPrimary>
+                        </Flex>
+                    }>
+                    <Form
+                        name="FormPrestamo"
+                        layout="vertical"
+                        autoComplete="off"
+                        size="large"
+                        initialValues={{
+                            ...entidad,
+                            formaPagoId: entidad?.formaPago?.id,
+                            metodoPagoId: entidad?.metodoPago?.id,
+                            monedaId: entidad?.moneda?.id,
+                            acesorId: entidad?.acesor?.id,
+                        }}
+                        onFinish={guardar}>
                         <Row gutter={[10, 10]}>
                             <Col xl={4} lg={4} md={8} sm={24} xs={24} style={{ alignSelf: 'end' }}>
                                 <Form.Item name="deudaInicial" label="Monto" rules={[{ required: true, type: 'number', min: 1, message: 'Obligatorio' }]}>
@@ -375,11 +433,11 @@ export default function FormPrestamo() {
                                         value={entidad?.formaPago?.id}
                                         options={formasPago.map(item => ({ key: item.id, value: item.id, label: item.nombre }))}
                                         disabled={isBlocked}
-                                        onClear={() => setFechasPago([])}
                                         onChange={(value) => {
                                             if (entidad) {
                                                 const forma = formasPago.filter(opt => opt.id === value).shift()
-                                                editar({ ...entidad, formaPago: forma })
+                                                editar({ ...entidad, formaPago: forma });
+                                                calcularFechaPago();
                                             }
                                         }} />
                                 </Form.Item>
@@ -451,24 +509,37 @@ export default function FormPrestamo() {
                                         value={entidad.fechaCredito}
                                         onChange={(date) => {
                                             if (entidad) {
-                                                editar({ ...entidad, fechaCredito: !date ? '' : date.format(dateFormat) })
-                                                setPrimeraFechaPago(undefined)
+                                                editar({ ...entidad, fechaCredito: !date ? '' : date.format(dateFormat) });
+                                                setPrimeraFechaPago(undefined);
+                                                calcularFechaPago();
                                             }
                                         }}
                                         disabled={isBlocked} />
                                 </Form.Item>
                             </Col>
                             <Col xl={4} lg={4} md={8} sm={24} xs={24} style={{ alignSelf: 'end' }}>
-                                <Form.Item name="fechaInicioPago" label="Inicio de Pago" rules={[{ required: true, message: 'Obligatorio' }]}>
-                                    <Select
-                                        value={primeraFechaPago}
-                                        options={fechasPago.map((item, index) => {
-                                            return { key: index, value: item.fecha, label: item.fecha }
-                                        })}
-                                        notFoundContent={''}
-                                        disabled={isBlocked}
-                                        onChange={setPrimeraFechaPago} />
-                                </Form.Item>
+                                {
+                                    entidad.id === 0
+                                        ?
+                                        <Form.Item name="fechaInicioPago" label="Inicio de Pago" rules={[{ required: true, type: 'string', message: 'Obligatorio' }]}>
+                                            <Select
+                                                defaultValue={primeraFechaPago}
+                                                value={primeraFechaPago}
+                                                options={fechasPago.map((item, index) => {
+                                                    return { key: index, value: item.fecha, label: item.fecha }
+                                                })}
+                                                notFoundContent={''}
+                                                disabled={isBlocked}
+                                                onChange={(fecha) => {
+                                                    setPrimeraFechaPago(fecha);
+                                                    calcularFechaPago();
+                                                }} />
+                                        </Form.Item>
+                                        :
+                                        <Form.Item label="Inicio de Pago">
+                                            <Input disabled defaultValue={primeraFechaPago} value={primeraFechaPago} />
+                                        </Form.Item>
+                                }
                             </Col>
                             <Col xl={4} lg={4} md={8} sm={24} xs={24} style={{ alignSelf: 'end' }}>
                                 <Form.Item label="Monto Cuota">
@@ -485,35 +556,40 @@ export default function FormPrestamo() {
                                     <Input disabled variant="borderless" value={FormatNumber(montoAmortizacion, 2)} style={styleInputTotal} />
                                 </Form.Item>
                             </Col>
-                            <Col xs={24} style={{ alignSelf: 'end' }}>
-                                <Form.Item>
-                                    <Space>
-                                        <Switch
-                                            id="aplicaDescuento"
-                                            checked={entidad.aplicaDescuento}
-                                            onChange={(checked) => editar({ ...entidad, aplicaDescuento: checked })} />
-                                        <span style={{ fontSize: 16 }}>Aplicar descuento extraordinario</span>
-                                    </Space>
-                                </Form.Item>
-                            </Col>
+                            {
+                                entidad.id > 0
+                                    ? <></>
+                                    :
+                                    <Col xs={24} style={{ alignSelf: 'end' }}>
+                                        <Form.Item>
+                                            <Space>
+                                                <Switch
+                                                    id="aplicaDescuento"
+                                                    checked={entidad.aplicaDescuento}
+                                                    onChange={(checked) => editar({ ...entidad, aplicaDescuento: checked })} />
+                                                <span style={{ fontSize: 16 }}>Aplicar descuento extraordinario</span>
+                                            </Space>
+                                        </Form.Item>
+                                    </Col>
+                            }
                         </Row>
-                    </Card>
+                    </Form>
+                </Container>
 
-                    <Card
-                        className="mb-4"
-                        title={<Typography.Title level={4} style={{ margin: 0, color: Colors.Primary }}>Informaci&oacute;n de Cr&eacute;dito</Typography.Title>}>
-                        <PrestamoCuotas
-                            editando
-                            cuotas={entidad?.cuotas ?? []}
-                            aplicaDescuento={entidad.aplicaDescuento}
-                            onChange={(cuotas) => {
-                                if (entidad) {
-                                    editar({ ...entidad, cuotas: cuotas })
-                                }
-                            }} />
-                    </Card>
+                <Container
+                    className="mb-3"
+                    title={<Typography.Title level={4} style={{ margin: 0, color: Colors.Primary }}>Informaci&oacute;n de Cr&eacute;dito</Typography.Title>}>
+                    <PrestamoCuotas
+                        editando
+                        cuotas={entidad?.cuotas ?? []}
+                        aplicaDescuento={entidad.aplicaDescuento}
+                        onChange={(cuotas) => {
+                            if (entidad) {
+                                editar({ ...entidad, cuotas: cuotas })
+                            }
+                        }} />
+                </Container>
 
-                </Form>
             </Col>
             <Loading active={cargandoPrestamo} message="Procesando, espere..." />
         </>

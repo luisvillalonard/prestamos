@@ -20,7 +20,9 @@ export function String_To_Dayjs(value?: string): (dayjs.Dayjs | undefined) {
 }
 
 export function String_To_Date(value?: string): (Date | undefined) {
-    return String_To_Dayjs(value)?.toDate()
+    const date = String_To_Dayjs(value)
+    if (!date) return undefined
+    return date.toDate()
 }
 
 export function DateList(date: Date, dias: number[], cantidad: number): DateArray[] {

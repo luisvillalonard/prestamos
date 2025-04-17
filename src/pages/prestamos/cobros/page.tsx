@@ -64,10 +64,8 @@ export default function PagePrestamoCobro() {
                     metodoPago: prest.metodoPago,
                     anulado: false,
                     monto: 0,
-                    multaMora: 0,
                     usuario: undefined
                 });
-                setActiveKey("2");
 
             } else {
 
@@ -145,10 +143,11 @@ export default function PagePrestamoCobro() {
 
             const interesCuota = Number(Number(totalIntereses / prestamo.cantidadCuotas).toFixed(2))
             setMontoAmortizacion(capitalCuota + interesCuota);
+
+            setActiveKey("2");
         }
     }, [prestamo])
 
-    console.log('activeKey', activeKey)
     return (
         <>
             <Col xl={{ span: 20, offset: 2 }} lg={{ span: 24 }} md={{ span: 24 }} xs={{ span: 24 }}>
@@ -181,7 +180,8 @@ export default function PagePrestamoCobro() {
                                 disabled: !prestamo
                             }
                         ]}
-                        defaultActiveKey={activeKey}
+                        defaultActiveKey=""
+                        activeKey={activeKey}
                         onChange={setActiveKey} />
                 </Container>
 

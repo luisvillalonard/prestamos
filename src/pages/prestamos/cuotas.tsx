@@ -43,7 +43,7 @@ export default function PrestamoCuotas(props: PrestamoCuotasProps & Pick<Control
             <Table.Column title="Tasa Interes" render={(record: PrestamoCuota) => (FormatNumber(record.interes, 2))} />
             <Table.Column title="Capital" render={(record: PrestamoCuota) => (FormatNumber(record.capital, 2))} />
             <Table.Column title="Descuento Extraordinario" width={135} hidden={!aplicaDescuento} render={(record: PrestamoCuota) => (
-                editando === true
+                editando === true && !record.pagado
                     ?
                     <InputNumbers
                         value={record.descuento}

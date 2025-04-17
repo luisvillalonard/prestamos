@@ -1,3 +1,4 @@
+export const appUrl = process.env.VITE_APP_URL || '/';
 export const secretKey = 'D7B9F2FD64B04F18B4D1EC4869FC52BA';
 
 export const Urls = {
@@ -11,9 +12,9 @@ export const Urls = {
     },
     Prestamos: {
         Base: 'prestamos',
-        Formulario: 'formulario',
+        Formulario: 'formulario/:id?',
         Registrados: 'registrados',
-        Cobro: 'cobro/:id?',
+        Cobro: 'cobro/manual/:id?',
         CobroAutomatico: 'cobro/automatico',
     },
     Seguridad: {
