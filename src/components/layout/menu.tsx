@@ -23,8 +23,8 @@ export const menuItems: MenuItem[] = [
         label: <span style={headerStyle}>Clientes</span>,
         icon: <IconClient />,
         children: [
-            { menuid: 11, key: `${Urls.Clientes.Base}/${Urls.Clientes.Formulario}`, label: 'Formulario', icon: <IconForm /> },
-            { menuid: 12, key: `${Urls.Clientes.Base}/${Urls.Clientes.Historico}`, label: 'Clientes Registrados', icon: <IconListNumbered /> },
+            { menuid: 11, key: `${Urls.Clientes.Base}/${Urls.Clientes.Nuevo}`, label: 'Formulario', icon: <IconForm /> },
+            { menuid: 12, key: `${Urls.Clientes.Base}/${Urls.Clientes.Registrados}`, label: 'Clientes Registrados', icon: <IconListNumbered /> },
         ],
     },
     {
@@ -33,7 +33,7 @@ export const menuItems: MenuItem[] = [
         label: <span style={headerStyle}>Prestamos</span>,
         icon: <IconLoans />,
         children: [
-            { menuid: 21, key: `${Urls.Prestamos.Base}/${Urls.Prestamos.Formulario.replace(':id?', '')}`, label: 'Formulario de Prestamos', icon: <IconForm /> },
+            { menuid: 21, key: `${Urls.Prestamos.Base}/${Urls.Prestamos.Nuevo}`, label: 'Formulario de Prestamos', icon: <IconForm /> },
             { menuid: 22, key: `${Urls.Prestamos.Base}/${Urls.Prestamos.Registrados}`, label: 'Prestamos Registrados', icon: <IconListNumbered /> },
             { menuid: 23, key: `${Urls.Prestamos.Base}/${Urls.Prestamos.Cobro.replace(':id?', '')}`, label: 'Cobro de Prestamo', icon: <IconReceiveMoney /> },
             { menuid: 23, key: `${Urls.Prestamos.Base}/${Urls.Prestamos.CobroAutomatico}`, label: 'Cobro Automático', icon: <IconReceiveMoney /> },

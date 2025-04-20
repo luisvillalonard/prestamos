@@ -7,12 +7,14 @@ export const Urls = {
     Login: '/login',
     Clientes: {
         Base: 'clientes',
-        Formulario: 'formulario',
-        Historico: 'historico',
+        Nuevo: 'nuevo',
+        Editar: 'editar/:id?',
+        Registrados: 'registrados',
     },
     Prestamos: {
         Base: 'prestamos',
-        Formulario: 'formulario/:id?',
+        Nuevo: 'nuevo',
+        Editar: 'editar/:id?',
         Registrados: 'registrados',
         Cobro: 'cobro/manual/:id?',
         CobroAutomatico: 'cobro/automatico',

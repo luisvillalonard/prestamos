@@ -34,10 +34,10 @@ export default function BuscadorPrestamo(props: Pick<ControlProps, "onChange">) 
 
     const montoPendiente = (prestamo: Prestamo): number => {
 
-        const { deudaInicial, cuotas } = prestamo
-        if (!cuotas || cuotas.length === 0) return deudaInicial;
+        const { monto, prestamoCuotas } = prestamo
+        if (!prestamoCuotas || prestamoCuotas.length === 0) return monto;
 
-        const cuotasPendientes = cuotas.filter(cuota => !cuota.pagado)
+        const cuotasPendientes = prestamoCuotas.filter(cuota => !cuota.pagado)
 
         const total = cuotasPendientes.reduce((acc, item) => {
             const montoPagos: number = item.pagos.reduce((accP, itemP) => { return accP + itemP.monto }, 0);
@@ -46,7 +46,7 @@ export default function BuscadorPrestamo(props: Pick<ControlProps, "onChange">) 
                 montoFinal = montoFinal * -1;
             }
             return acc - montoFinal;
-        }, deudaInicial)
+        }, monto)
 
         return Math.round(total)
     }
@@ -81,9 +81,8 @@ export default function BuscadorPrestamo(props: Pick<ControlProps, "onChange">) 
                         <Table.Column title="Código" dataIndex="codigo" key="codigo" ellipsis />
                         <Table.Column title="Fecha Cr&eacute;dito" render={(record: Prestamo) => (<span style={{ textWrap: 'nowrap' }}>{record.fechaCredito}</span>)} />
                         <Table.Column title="Cliente" render={(record: Prestamo) => (`${record.cliente?.nombres} ${record.cliente?.apellidos}`.trim())} />
-                        <Table.Column title="Monto" render={(record: Prestamo) => (FormatNumber(record.deudaInicial, 2))} />
-                        <Table.Column title="Capital" render={(record: Prestamo) => (FormatNumber(record.capital, 2))} />
-                        <Table.Column title="Inter&eacute;s" render={(record: Prestamo) => (FormatNumber(Math.round(record.cuotas.reduce((acc, item) => { return acc + item.interes }, 0)), 2))} />
+                        <Table.Column title="Monto" render={(record: Prestamo) => (FormatNumber(record.monto, 2))} />
+                        <Table.Column title="Inter&eacute;s" render={(record: Prestamo) => (FormatNumber(Math.round(record.prestamoCuotas.reduce((acc, item) => { return acc + item.interes }, 0)), 2))} />
                         <Table.Column title="Pendiente" render={(record: Prestamo) => (
                             FormatNumber(montoPendiente(record), 2)
                         )} />

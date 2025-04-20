@@ -15,7 +15,8 @@ import PageHome from '@pages/home'
 import PageNotFound from '@pages/not-found'
 import PageCobroAutomatico from '@pages/prestamos/cobros/automatico/page'
 import PagePrestamoCobro from '@pages/prestamos/cobros/page'
-import FormPrestamo from '@pages/prestamos/form'
+import FormPrestamoEditar from '@pages/prestamos/formEdit'
+import FormPrestamoNuevo from '@pages/prestamos/formNew'
 import PagePrestamos from '@pages/prestamos/page'
 import PageLogin from '@pages/seguridad/login/page'
 import FormPermisos from '@pages/seguridad/permisos/form'
@@ -32,8 +33,9 @@ const RutasApp = () => {
             <Route path='*' element={<PageNotFound />} />
             <Route path={Urls.Login} element={<PageLogin />} />
             <Route path={Urls.Clientes.Base}>
-                <Route path={Urls.Clientes.Formulario} element={<FormCliente />} />
-                <Route path={Urls.Clientes.Historico} element={<PageClientes />} />
+                <Route path={Urls.Clientes.Nuevo} element={<FormCliente />} />
+                <Route path={Urls.Clientes.Editar} element={<FormCliente />} />
+                <Route path={Urls.Clientes.Registrados} element={<PageClientes />} />
             </Route>
             <Route path={Urls.DataMaestra.Base}>
                 <Route path={Urls.DataMaestra.Ciudades} element={<PageCiudades />} />
@@ -46,7 +48,8 @@ const RutasApp = () => {
                 <Route path={Urls.DataMaestra.Acesores} element={<PageAcesores />} />
             </Route>
             <Route path={Urls.Prestamos.Base}>
-                <Route path={Urls.Prestamos.Formulario} element={<FormPrestamo />} />
+                <Route path={Urls.Prestamos.Nuevo} element={<FormPrestamoNuevo />} />
+                <Route path={Urls.Prestamos.Editar} element={<FormPrestamoEditar />} />
                 <Route path={Urls.Prestamos.Registrados} element={<PagePrestamos />} />
                 <Route path={Urls.Prestamos.Cobro} element={<PagePrestamoCobro />} />
                 <Route path={Urls.Prestamos.CobroAutomatico} element={<PageCobroAutomatico />} />

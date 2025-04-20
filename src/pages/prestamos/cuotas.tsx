@@ -13,7 +13,7 @@ interface PrestamoCuotasProps {
 
 export default function PrestamoCuotas(props: PrestamoCuotasProps & Pick<ControlProps, "onChange">) {
 
-    const { cuotas, aplicaDescuento, editando, onChange } = props
+    const { cuotas, aplicaDescuento, editando = false, onChange } = props
 
     const montoPendiente = (cuota: PrestamoCuota): number => {
 
@@ -38,12 +38,14 @@ export default function PrestamoCuotas(props: PrestamoCuotasProps & Pick<Control
             dataSource={cuotas && cuotas.map((item, index) => { return { ...item, key: index + 1 } })}
             locale={{ emptyText: <Flex>0 cuotas</Flex> }}>
             <Table.Column title="# Cuota" dataIndex="key" key="key" align="center" fixed='left' width={80} />
-            <Table.Column title="Fecha Pago" render={(record: PrestamoCuota) => (record.fechaPago)} />
+            <Table.Column title="Fecha Pago" render={(record: PrestamoCuota) => (
+                <span style={{ textWrap: 'nowrap' }}>{record.fechaPago}</span>
+            )} />
             <Table.Column title="Deuda Inicial" render={(record: PrestamoCuota) => (FormatNumber(record.deudaInicial, 2))} />
             <Table.Column title="Tasa Interes" render={(record: PrestamoCuota) => (FormatNumber(record.interes, 2))} />
             <Table.Column title="Capital" render={(record: PrestamoCuota) => (FormatNumber(record.capital, 2))} />
             <Table.Column title="Descuento Extraordinario" width={135} hidden={!aplicaDescuento} render={(record: PrestamoCuota) => (
-                editando === true && !record.pagado
+                editando && !record.pagado
                     ?
                     <InputNumbers
                         value={record.descuento}

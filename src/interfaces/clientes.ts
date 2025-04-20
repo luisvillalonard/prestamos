@@ -1,7 +1,7 @@
 import { Ciudad, DocumentoTipo, Ocupacion, Sexo } from "./dataMaestra";
 import { Usuario } from "./seguridad";
 
-export interface Cliente {
+export interface Cliente extends ClienteHelpers {
     id: number,
     codigo: string,
     empleadoId: string,
@@ -21,5 +21,26 @@ export interface Cliente {
     usuario?: Usuario,
     fechaActualizado?: string,
     usuarioActualizado?: Usuario,
+    activo: boolean,
+}
+
+interface ClienteHelpers {
+    documentoTipoId?: number,
+    sexoId?: number,
+    ciudadId?: number,
+    ocupacionId?: number,
+}
+
+export interface VwCliente {
+    id: number,
+    codigo: string,
+    empleadoId: string,
+    nombreCompleto: string,
+    documentoTipo: string,
+    documento: string,
+    sexo: string,
+    ciudad: string,
+    ocupacion: string,
+    telefonoCelular: string,
     activo: boolean,
 }

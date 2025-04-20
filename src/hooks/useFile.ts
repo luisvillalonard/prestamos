@@ -1,7 +1,7 @@
-import { Cliente } from '@interfaces/clientes'
-import ExcelJS, { Workbook, Worksheet } from 'exceljs'
-import { Colors } from './useConstants';
+import { Cliente } from '@interfaces/clientes';
 import { Prestamo } from '@interfaces/prestamos';
+import ExcelJS, { Workbook, Worksheet } from 'exceljs';
+import { Colors } from './useConstants';
 
 const fileType: string = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8'
 type TitleLevel = 1 | 2
@@ -109,8 +109,7 @@ export const exportarPrestamosExcel = async (data: Prestamo[]) => {
             codigo: row.codigo,
             fechaCredito: row.fechaCredito,
             cliente: `${row.cliente?.nombres} ${row.cliente?.apellidos}`.trim(),
-            monto: row.deudaInicial,
-            capital: row.capital,
+            monto: row.monto,
             interes: row.interes,
             metodoPago: row.metodoPago?.nombre,
             estado: row.estado?.nombre
@@ -124,7 +123,6 @@ export const exportarPrestamosExcel = async (data: Prestamo[]) => {
         { text: "Fecha Crédito", key: "fechaCredito" },
         { text: "Cliente", key: "cliente" },
         { text: "Monto", key: "monto" },
-        { text: "Capital", key: "capital" },
         { text: "Interés", key: "interes" },
         { text: "Método de Pago", key: "metodoPago" },
         { text: "Estado", key: "estado" },

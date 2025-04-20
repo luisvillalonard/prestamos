@@ -1,14 +1,16 @@
 import { Colors } from "@hooks/useConstants";
-import { Cliente } from "@interfaces/clientes";
+import { instanceOf } from "@hooks/useUtils";
+import { Cliente, VwCliente } from "@interfaces/clientes";
 import { Divider, Flex, Space } from "antd";
 
 type ClienteProps = {
-    cliente?: Cliente
+    cliente?: Cliente | VwCliente
 }
 
 export default function ClienteInfo(props: ClienteProps) {
 
-    const { cliente } = props
+    const { cliente } = props;
+    const isView = instanceOf<VwCliente>(cliente, 'nombreCompleto')
 
     return (
         <Space split={<Divider type="vertical" className="h-100 d-inline" style={{ borderColor: Colors.Secondary }} />}>
@@ -18,7 +20,13 @@ export default function ClienteInfo(props: ClienteProps) {
             </Flex>
             <Flex vertical>
                 <strong color={Colors.Secondary}>Nombres y Apellidos</strong>
-                <span>{`${cliente?.nombres || ''} ${cliente?.apellidos || ''}`.trim() || 'Desconocido'}</span>
+                <span>
+                    {
+                        isView
+                            ? cliente?.nombreCompleto || 'Desconocido'
+                            : `${cliente?.nombres || ''} ${cliente?.apellidos || ''}`.trim() || 'Desconocido'
+                    }
+                </span>
             </Flex>
             <Flex vertical>
                 <strong color={Colors.Secondary}>Tel&eacute;fono Celular</strong>
@@ -26,7 +34,7 @@ export default function ClienteInfo(props: ClienteProps) {
             </Flex>
             <Flex vertical>
                 <strong color={Colors.Secondary}>Ocupaci&oacute;n</strong>
-                <span>{cliente?.ocupacion?.nombre || 'Desconocido'}</span>
+                <span>{isView ? cliente?.ocupacion || 'Desconocido' : cliente?.ocupacion?.nombre || 'Desconocido'}</span>
             </Flex>
         </Space>
     )

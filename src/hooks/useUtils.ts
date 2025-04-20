@@ -185,6 +185,18 @@ export const navUrl = (url: string) => {
     return result
 } */
 
+export function instanceOf<T>(object: any, property: keyof T): object is T {
+    // Check if the object has the property and it's not null or undefined
+    if (object === null || object === undefined) return false;
+    if (typeof object !== 'object') return false;
+    if (typeof property !== 'string') return false;
+    if (property in object) {
+        const value = object[property];
+        return value !== null && value !== undefined;
+    }
+    return false;
+}
+
 export function stringifyObjectKeyValues<T extends Record<string, any>>(obj: T) {
     return Object.keys(obj).reduce((acc, key) => ({
         ...acc,

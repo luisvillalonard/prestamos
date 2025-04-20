@@ -10,7 +10,7 @@ export default function LoginForm(props: Pick<ControlProps, "onChange">) {
 
     const { onChange } = props
     const { contextAuth: { state: { procesando }, validar } } = useData()
-    const { IconUser, IconPassword, IconLoading } = useIconos()
+    const { IconUser, IconPassword } = useIconos()
     const { entidad: user } = useForm<Login>({ acceso: '', clave: '', recuerdame: true })
     const [mensaje, setMensaje] = useState<string>('')
     const { Title } = Typography
@@ -52,7 +52,7 @@ export default function LoginForm(props: Pick<ControlProps, "onChange">) {
             >
                 <Form.Item
                     name="acceso"
-                    label={<Typography.Title level={5} style={{ margin: 0, fontWeight: 'lighter' }}>Usuario</Typography.Title>} 
+                    label={<Typography.Title level={5} style={{ margin: 0, fontWeight: 'lighter' }}>Usuario</Typography.Title>}
                     rules={[{ required: true, message: 'Obligatorio' }]}
                     style={{ marginBottom: 30 }}>
                     <Input
@@ -75,16 +75,8 @@ export default function LoginForm(props: Pick<ControlProps, "onChange">) {
                         placeholder="escriba aqui la clave" />
                 </Form.Item>
                 <Form.Item>
-                    <Button block type="primary" shape="round" htmlType="submit" disabled={procesando}>
-                        {
-                            procesando
-                                ?
-                                <Flex gap={10}>
-                                    <IconLoading style={{ fontSize: 22 }} />
-                                    <span>Validando, espere...</span>
-                                </Flex>
-                                : <span>Iniciar Sesi&oacute;n</span>
-                        }
+                    <Button block type="primary" shape="round" htmlType="submit" loading={procesando}>
+                        {procesando ? "Validando, espere..." : "Iniciar Sesión"}
                     </Button>
                 </Form.Item>
                 <Form.Item>

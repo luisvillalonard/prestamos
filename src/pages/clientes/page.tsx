@@ -8,40 +8,20 @@ import { Urls } from "@hooks/useConstants"
 import { useData } from "@hooks/useData"
 import { exportarClientesExcel } from "@hooks/useFile"
 import { IconExcel, IconPlus } from "@hooks/useIconos"
+import { Cliente } from "@interfaces/clientes"
 import { Col, Flex, Space, theme } from "antd"
-import { useEffect, useState } from "react"
-import { useLocation, useNavigate } from "react-router-dom"
+import { useState } from "react"
+import { useNavigate } from "react-router-dom"
 import Listado from "./listado"
 
 export default function PageClientes() {
 
-    const { contextClientes: { state: { datos, procesando, recargar, paginacion }, nuevo, todos } } = useData()
+    const { contextClientes: { state: { datos, procesando } } } = useData()
     const [filter, setFilter] = useState<string>('')
     const nav = useNavigate()
-    const url = useLocation()
     const { token } = theme.useToken()
 
-    const cargar = async () => {
-
-        if (!paginacion) {
-            await todos()
-
-        } else {
-            await todos({
-                pageSize: paginacion.pageSize,
-                currentPage: paginacion.currentPage,
-                filter,
-            })
-        }
-    };
-
-    const onNew = () => {
-        nuevo();
-        nav(`/${Urls.Clientes.Base}/${Urls.Clientes.Formulario}`, { replace: true });
-    }
-
-    useEffect(() => { cargar() }, [url.pathname, filter])
-    useEffect(() => { if (recargar) cargar() }, [recargar])
+    const onNew = () => nav(`/${Urls.Clientes.Base}/${Urls.Clientes.Nuevo}`, { replace: true });
 
     return (
         <>
@@ -55,7 +35,11 @@ export default function PageClientes() {
                     </Space>
                 </Flex>
                 <Container>
-                    <Listado />
+                    <Listado
+                        filter={filter}
+                        onClick={(cliente: Cliente) => {
+                            nav(`/${Urls.Clientes.Base}/${Urls.Clientes.Editar.replace(':id?', cliente.id.toString())}`, { replace: true })
+                        }} />
                 </Container>
             </Col>
             <Loading active={procesando} message="Procesando, espere..." />

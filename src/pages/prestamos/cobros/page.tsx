@@ -135,13 +135,13 @@ export default function PagePrestamoCobro() {
         setMontoCapitalCuota(0);
         setMontoAmortizacion(0);
         if (prestamo) {
-            const totalIntereses = prestamo.deudaInicial * (prestamo.interes / 100);
+            const totalIntereses = prestamo.monto * (prestamo.interes / 100);
             setMontoTotalInteres(totalIntereses);
 
-            const capitalCuota = Number((prestamo.deudaInicial / prestamo.cantidadCuotas).toFixed(2));
+            const capitalCuota = Number((prestamo.monto / prestamo.cuotas).toFixed(2));
             setMontoCapitalCuota(capitalCuota);
 
-            const interesCuota = Number(Number(totalIntereses / prestamo.cantidadCuotas).toFixed(2))
+            const interesCuota = Number(Number(totalIntereses / prestamo.cuotas).toFixed(2))
             setMontoAmortizacion(capitalCuota + interesCuota);
 
             setActiveKey("2");
@@ -253,7 +253,7 @@ export default function PagePrestamoCobro() {
                                     <Col xl={4} lg={4} md={8} sm={24} xs={24}>
                                         <Flex vertical>
                                             <strong>Monto</strong>
-                                            <Input size="large" variant="borderless" readOnly value={FormatNumber(prestamo?.deudaInicial, 2)} style={styleInput} />
+                                            <Input size="large" variant="borderless" readOnly value={FormatNumber(prestamo?.monto, 2)} style={styleInput} />
                                         </Flex>
                                     </Col>
                                     <Col xl={4} lg={4} md={8} sm={24} xs={24}>
@@ -265,7 +265,7 @@ export default function PagePrestamoCobro() {
                                     <Col xl={4} lg={4} md={8} sm={24} xs={24}>
                                         <Flex vertical>
                                             <strong>N&uacute;mero Cuotas</strong>
-                                            <Input size="large" variant="borderless" readOnly value={FormatNumber(prestamo?.cantidadCuotas, 0)} style={styleInput} />
+                                            <Input size="large" variant="borderless" readOnly value={FormatNumber(prestamo?.cuotas, 0)} style={styleInput} />
                                         </Flex>
                                     </Col>
                                     <Col xl={4} lg={4} md={8} sm={24} xs={24}>
@@ -323,7 +323,7 @@ export default function PagePrestamoCobro() {
                                 size="small"
                                 title={<TitlePanel title="Informaci&oacute;n de Cr&eacute;dito" color={Colors.Primary} />}>
                                 <PrestamoCuotas
-                                    cuotas={prestamo?.cuotas ?? []}
+                                    cuotas={prestamo?.prestamoCuotas ?? []}
                                     aplicaDescuento={prestamo?.aplicaDescuento ?? false} />
                             </Container>
                         </Flex>

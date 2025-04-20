@@ -65,7 +65,8 @@ export function InputDatePicker(props: InputDatePickerProps & {
         <DatePicker
             placeholder={placeholder}
             minDate={Date_To_Dayjs(minDate)}
-            defaultValue={String_To_Dayjs(value)}
+            defaultValue={value ? String_To_Dayjs(value) : undefined}
+            value={value ? String_To_Dayjs(value) : undefined}
             format={dateFormat}
             disabled={disabled}
             onChange={onChange}
