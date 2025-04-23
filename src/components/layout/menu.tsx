@@ -25,6 +25,7 @@ export const menuItems: MenuItem[] = [
         children: [
             { menuid: 11, key: `${Urls.Clientes.Base}/${Urls.Clientes.Nuevo}`, label: 'Formulario', icon: <IconForm /> },
             { menuid: 12, key: `${Urls.Clientes.Base}/${Urls.Clientes.Registrados}`, label: 'Clientes Registrados', icon: <IconListNumbered /> },
+            { menuid: 13, key: `${Urls.Clientes.Base}/${Urls.Clientes.CargaMasiva}`, label: 'Carga Masiva', icon: <IconListNumbered /> },
         ],
     },
     {

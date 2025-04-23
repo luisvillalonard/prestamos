@@ -223,7 +223,7 @@ export default function FormPrestamo() {
         const cuotasPendientes = prestamoCuotas.filter(cuota => !cuota.pagado)
 
         const total = cuotasPendientes.reduce((acc, item) => {
-            const montoPagos: number = item.pagos.reduce((accP, itemP) => { return accP + itemP.monto }, 0);
+            const montoPagos: number = item.pagos && item.pagos.reduce((accP, itemP) => { return accP + itemP.monto }, 0);
             return acc - montoPagos;
         }, monto)
 

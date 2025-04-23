@@ -10,6 +10,7 @@ export const Urls = {
         Nuevo: 'nuevo',
         Editar: 'editar/:id?',
         Registrados: 'registrados',
+        CargaMasiva: 'carga',
     },
     Prestamos: {
         Base: 'prestamos',

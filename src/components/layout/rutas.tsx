@@ -1,4 +1,5 @@
 import { Urls } from '@hooks/useConstants'
+import PageClienteCargaMasiva from '@pages/clientes/carga/page'
 import FormCliente from '@pages/clientes/form'
 import PageClientes from '@pages/clientes/page'
 import PageConfiguraiones from '@pages/configuraciones/page'
@@ -15,8 +16,8 @@ import PageHome from '@pages/home'
 import PageNotFound from '@pages/not-found'
 import PageCobroAutomatico from '@pages/prestamos/cobros/automatico/page'
 import PagePrestamoCobro from '@pages/prestamos/cobros/page'
-import FormPrestamoEditar from '@pages/prestamos/formEdit'
-import FormPrestamoNuevo from '@pages/prestamos/formNew'
+import FormPrestamoEditar from '@pages/prestamos/editar'
+import FormPrestamoNuevo from '@pages/prestamos/nuevo'
 import PagePrestamos from '@pages/prestamos/page'
 import PageLogin from '@pages/seguridad/login/page'
 import FormPermisos from '@pages/seguridad/permisos/form'
@@ -36,6 +37,7 @@ const RutasApp = () => {
                 <Route path={Urls.Clientes.Nuevo} element={<FormCliente />} />
                 <Route path={Urls.Clientes.Editar} element={<FormCliente />} />
                 <Route path={Urls.Clientes.Registrados} element={<PageClientes />} />
+                <Route path={Urls.Clientes.CargaMasiva} element={<PageClienteCargaMasiva />} />
             </Route>
             <Route path={Urls.DataMaestra.Base}>
                 <Route path={Urls.DataMaestra.Ciudades} element={<PageCiudades />} />

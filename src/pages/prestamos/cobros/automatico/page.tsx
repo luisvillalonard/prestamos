@@ -6,6 +6,8 @@ import Container from "@components/containers/container";
 import TitlePage from "@components/titles/titlePage";
 import { appUrl, Colors } from "@hooks/useConstants";
 import { useData } from "@hooks/useData";
+import { DD_MM_YYYY } from "@hooks/useDate";
+import { FileData } from "@hooks/useFile";
 import { IconExcel } from "@hooks/useIconos";
 import { Exito } from "@hooks/useMensaje";
 import { FormatNumber } from "@hooks/useUtils";
@@ -18,6 +20,51 @@ export default function PageCobroAutomatico() {
     const { contextPrestamosPagos: { automaticos } } = useData();
     const [datos, setDatos] = useState<PrestamoPago[]>([]);
     const [errores, setErrores] = useState<string[]>([]);
+
+    const preparaPagos = (result: FileData) => {
+
+        if (!result.ok) {
+            setErrores(result.errors);
+            return;
+        }
+
+        const dataResult = result.data.slice(3);
+        if (dataResult.length === 0) {
+            setErrores(['No existen datos que procesar en el archivo.']);
+            return;
+        }
+
+        const pagos: PrestamoPago[] = dataResult.map((item: any) => {
+
+            let [day, month, year] = item[2].split('-');
+            day = day.length <= 1 ? '0'.concat(day) : day;
+            month = month.length <= 1 ? '0'.concat(month) : month;
+
+            let fecha = undefined;
+            if (Number(month) <= 12) {
+                const newDate = new Date(year, Number(month) - 1, Number(day));
+                fecha = DD_MM_YYYY(newDate);
+            }
+
+            const monto = item[1] ? parseFloat(item[1].toString().replace(/,/g, '')) : 0;
+
+            return {
+                id: 0,
+                prestamoId: 0,
+                prestamoCuotaId: 0,
+                metodoPago: undefined,
+                empleadoId: item[0],
+                monto: monto,
+                fecha: fecha,
+                anulado: false,
+                usuario: undefined,
+            } as PrestamoPago
+        })
+
+        if (pagos) {
+            setDatos(pagos);
+        }
+    }
 
     const validaPagos = async () => {
 
@@ -102,10 +149,7 @@ export default function PageCobroAutomatico() {
                     <UploadButton
                         title="Buscar"
                         accept={['.xlsx', '.xls']}
-                        onChange={(data) => {
-                            setDatos(data);
-                            setErrores([]);
-                        }}
+                        onChange={preparaPagos}
                         onError={setErrores} />
                 </Container>
 
