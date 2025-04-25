@@ -38,6 +38,7 @@ export const menuItems: MenuItem[] = [
             { menuid: 22, key: `${Urls.Prestamos.Base}/${Urls.Prestamos.Registrados}`, label: 'Prestamos Registrados', icon: <IconListNumbered /> },
             { menuid: 23, key: `${Urls.Prestamos.Base}/${Urls.Prestamos.Cobro.replace(':id?', '')}`, label: 'Cobro de Prestamo', icon: <IconReceiveMoney /> },
             { menuid: 23, key: `${Urls.Prestamos.Base}/${Urls.Prestamos.CobroAutomatico}`, label: 'Cobro Automático', icon: <IconReceiveMoney /> },
+            { menuid: 24, key: `${Urls.Prestamos.Base}/${Urls.Prestamos.CargaMasiva}`, label: 'Carga Masiva', icon: <IconReceiveMoney /> },
         ],
     },
     {

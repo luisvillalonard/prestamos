@@ -6,6 +6,7 @@ import * as XLSX from 'xlsx'
 import { Colors } from './useConstants'
 import { getArrayBuffer } from './useUtils'
 
+export const fileType: string = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8';
 type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];
 export interface FileData {
     ok: boolean,
@@ -14,14 +15,13 @@ export interface FileData {
     data: unknown[],
     errors: string[],
 }
-const fileType: string = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8';
 
 type TitleLevel = 1 | 2
 interface Title {
     text: string,
     level: TitleLevel,
 }
-interface HeaderColumn {
+export interface HeaderColumn {
     key: string,
     text: string,
     width?: number
@@ -87,20 +87,6 @@ export async function loadExcel(file: FileType): Promise<FileData> {
     };
 
 }
-
-/* function copyElement<T extends object>(source: T): T {
-    Object.keys(source).forEach((key) => {
-        const copy: {} as T
-        const value = source[key as keyof T]
-        copy[key as keyof T] = value
-    }, {})
-
-    return copy
-}
-
-function getTypeofProperty<T, K extends keyof T>(o: T, name: K) {
-    return typeof o[name];
-} */
 
 export const exportarClientesExcel = async (data: Cliente[]) => {
 
@@ -256,7 +242,7 @@ export const exportarPrestamosExcel = async (data: Prestamo[]) => {
     exportToResponse(workbook, 'Prestamos Registrados');
 };
 
-const addTitles = (titles: Title[], sheet: Worksheet, columns?: number) => {
+export const addTitles = (titles: Title[], sheet: Worksheet, columns?: number) => {
 
     if (!sheet && (!titles || titles.length === 0)) return;
 
@@ -273,7 +259,7 @@ const addTitles = (titles: Title[], sheet: Worksheet, columns?: number) => {
     });
 }
 
-const addHeaders = (headers: HeaderColumn[], sheet: Worksheet) => {
+export const addHeaders = (headers: HeaderColumn[], sheet: Worksheet) => {
 
     if (!sheet && (!headers || headers.length === 0)) return;
 
@@ -288,7 +274,20 @@ const addHeaders = (headers: HeaderColumn[], sheet: Worksheet) => {
     headerRow.height = 22
 }
 
-const exportToResponse = (workbook: Workbook, filename: string) => {
+export const getDataValidation = (valores: unknown[], showErrorMessage: boolean, errorMessage?: string): ExcelJS.DataValidation => {
+
+    return {
+        type: 'list',
+        allowBlank: true,
+        formulae: [`"${valores.join(',')}"`],
+        showErrorMessage: showErrorMessage,
+        errorStyle: 'error',
+        error: errorMessage,
+    }
+
+}
+
+export const exportToResponse = (workbook: Workbook, filename: string) => {
 
     if (!workbook) return;
 

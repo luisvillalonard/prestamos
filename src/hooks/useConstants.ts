@@ -19,6 +19,7 @@ export const Urls = {
         Registrados: 'registrados',
         Cobro: 'cobro/manual/:id?',
         CobroAutomatico: 'cobro/automatico',
+        CargaMasiva: 'carga',
     },
     Seguridad: {
         Base: 'seguridad',

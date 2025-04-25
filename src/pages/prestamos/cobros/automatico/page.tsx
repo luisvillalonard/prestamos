@@ -143,7 +143,7 @@ export default function PageCobroAutomatico() {
                         <ButtonSuccess
                             href={`${appUrl}Plantilla Cobros Automaticos.xlsx`}
                             icon={<IconExcel style={{ display: 'flex', fontSize: 20 }} />}>
-                            Descargar Plantilla de Cobros
+                            Descargar Plantilla
                         </ButtonSuccess>
                     }>
                     <UploadButton

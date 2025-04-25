@@ -14,6 +14,7 @@ import PageOcupaciones from '@pages/dataMaestra/ocupaciones/page'
 import PagePrestamosEstados from '@pages/dataMaestra/prestamosEstados/page'
 import PageHome from '@pages/home'
 import PageNotFound from '@pages/not-found'
+import PagePrestamosCargaMasiva from '@pages/prestamos/carga/page'
 import PageCobroAutomatico from '@pages/prestamos/cobros/automatico/page'
 import PagePrestamoCobro from '@pages/prestamos/cobros/page'
 import FormPrestamoEditar from '@pages/prestamos/editar'
@@ -55,6 +56,7 @@ const RutasApp = () => {
                 <Route path={Urls.Prestamos.Registrados} element={<PagePrestamos />} />
                 <Route path={Urls.Prestamos.Cobro} element={<PagePrestamoCobro />} />
                 <Route path={Urls.Prestamos.CobroAutomatico} element={<PageCobroAutomatico />} />
+                <Route path={Urls.Prestamos.CargaMasiva} element={<PagePrestamosCargaMasiva />} />
             </Route>
             <Route path={Urls.Seguridad.Base}>
                 <Route path={Urls.Seguridad.Permisos} element={<PagePermisos />} />
