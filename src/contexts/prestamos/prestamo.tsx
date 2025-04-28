@@ -51,13 +51,6 @@ export default function PrestamosProvider(props: Pick<ControlProps, "children">)
             totalInteres: 0,
             amortizacion: 0,
             reenganche: false,
-            reengancheMonto: 0,
-            reengancheInteres: 0,
-            reengancheCuotas: 0,
-            reengancheCapitalCuota: 0,
-            reengancheTotalInteres: 0,
-            reengancheAmortizacion: 0,
-            reenganchePrestamoCuotas: [],
         });
     }
 

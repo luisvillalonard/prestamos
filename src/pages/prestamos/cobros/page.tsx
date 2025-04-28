@@ -9,22 +9,14 @@ import { useData } from "@hooks/useData"
 import { useForm } from "@hooks/useForm"
 import { IconListPoint, IconSearch } from "@hooks/useIconos"
 import { Alerta, Exito } from "@hooks/useMensaje"
-import { FormatNumber } from "@hooks/useUtils"
 import { Prestamo, PrestamoPago } from "@interfaces/prestamos"
 import ClienteInfo from "@pages/clientes/info"
-import { Col, Divider, Flex, Form, Input, InputNumber, Row, Tabs, Tag } from "antd"
-import { CSSProperties, useEffect, useState } from "react"
+import { Col, Divider, Flex, Form, InputNumber, Row, Tabs, Tag } from "antd"
+import { useEffect, useState } from "react"
 import { useLocation, useNavigate, useParams } from "react-router-dom"
 import BuscadorPrestamo from "../busqueda"
 import PrestamoCuotas from "../cuotas"
-
-const styleInput: CSSProperties = {
-    width: '100%',
-    borderRadius: 0,
-    borderBottomWidth: 1,
-    borderBottomStyle: 'solid',
-    borderBottomColor: Colors.Secondary
-}
+import PrestamoInfo from "../componentes/info"
 
 enum ActiveKeyEnum {
     Busqueda = '1',
@@ -40,9 +32,6 @@ export default function PagePrestamoCobro() {
     const { entidad, editar } = useForm<PrestamoPago | undefined>(modelo)
     const [prestamo, setPrestamo] = useState<Prestamo | undefined>(undefined)
     const [errores, setErrores] = useState<string[]>([])
-    const [montoCapitalCuota, setMontoCapitalCuota] = useState<number>(0)
-    const [montoTotalInteres, setMontoTotalInteres] = useState<number>(0)
-    const [montoAmortizacion, setMontoAmortizacion] = useState<number>(0)
     const [activeKey, setActiveKey] = useState<string>("1")
     const { id } = useParams()
     const nav = useNavigate()
@@ -66,6 +55,7 @@ export default function PagePrestamoCobro() {
                     monto: 0,
                     usuario: undefined
                 });
+                setActiveKey("2");
 
             } else {
 
@@ -130,23 +120,6 @@ export default function PagePrestamoCobro() {
             cargarPrestamo(Number(id));
         }
     }, [url.pathname, id])
-    useEffect(() => {
-        setMontoCapitalCuota(0);
-        setMontoCapitalCuota(0);
-        setMontoAmortizacion(0);
-        if (prestamo) {
-            const totalIntereses = prestamo.monto * (prestamo.interes / 100);
-            setMontoTotalInteres(totalIntereses);
-
-            const capitalCuota = Number((prestamo.monto / prestamo.cuotas).toFixed(2));
-            setMontoCapitalCuota(capitalCuota);
-
-            const interesCuota = Number(Number(totalIntereses / prestamo.cuotas).toFixed(2))
-            setMontoAmortizacion(capitalCuota + interesCuota);
-
-            setActiveKey("2");
-        }
-    }, [prestamo])
 
     return (
         <>
@@ -249,79 +222,18 @@ export default function PagePrestamoCobro() {
                                         <Tag color='blue' style={{ fontSize: 16, borderRadius: 10 }}>{prestamo?.codigo || 'P-000000'}</Tag>
                                     </Flex>
                                 }>
-                                <Row gutter={[10, 10]}>
-                                    <Col xl={4} lg={4} md={8} sm={24} xs={24}>
-                                        <Flex vertical>
-                                            <strong>Monto</strong>
-                                            <Input size="large" variant="borderless" readOnly value={FormatNumber(prestamo?.monto, 2)} style={styleInput} />
-                                        </Flex>
-                                    </Col>
-                                    <Col xl={4} lg={4} md={8} sm={24} xs={24}>
-                                        <Flex vertical>
-                                            <strong>Interes (%)</strong>
-                                            <Input size="large" variant="borderless" readOnly value={FormatNumber(prestamo?.interes, 2)} style={styleInput} />
-                                        </Flex>
-                                    </Col>
-                                    <Col xl={4} lg={4} md={8} sm={24} xs={24}>
-                                        <Flex vertical>
-                                            <strong>N&uacute;mero Cuotas</strong>
-                                            <Input size="large" variant="borderless" readOnly value={FormatNumber(prestamo?.cuotas, 0)} style={styleInput} />
-                                        </Flex>
-                                    </Col>
-                                    <Col xl={4} lg={4} md={8} sm={24} xs={24}>
-                                        <Flex vertical>
-                                            <strong>Forma de Pago</strong>
-                                            <Input size="large" variant="borderless" readOnly value={prestamo?.formaPago?.nombre} style={styleInput} />
-                                        </Flex>
-                                    </Col>
-                                    <Col xl={4} lg={4} md={8} sm={24} xs={24}>
-                                        <Flex vertical>
-                                            <strong>M&eacute;todo Pago</strong>
-                                            <Input size="large" variant="borderless" readOnly value={prestamo?.metodoPago?.nombre} style={styleInput} />
-                                        </Flex>
-                                    </Col>
-                                    <Col xl={4} lg={4} md={8} sm={24} xs={24}>
-                                        <Flex vertical>
-                                            <strong>Tipo Moneda</strong>
-                                            <Input size="large" variant="borderless" readOnly value={prestamo?.moneda?.nombre} style={styleInput} />
-                                        </Flex>
-                                    </Col>
-                                    <Col xl={4} lg={4} md={8} sm={24} xs={24}>
-                                        <Flex vertical>
-                                            <strong>Fecha emisi&oacute;n</strong>
-                                            <Input size="large" variant="borderless" readOnly value={prestamo?.fechaCredito} style={styleInput} />
-                                        </Flex>
-                                    </Col>
-                                    <Col xl={4} lg={4} md={8} sm={24} xs={24}>
-                                        <Flex vertical>
-                                            <strong>Acesor</strong>
-                                            <Input size="large" variant="borderless" readOnly value={prestamo?.acesor?.nombre} style={styleInput} />
-                                        </Flex>
-                                    </Col>
-                                    <Col xl={4} lg={4} md={8} sm={24} xs={24}>
-                                        <Flex vertical>
-                                            <strong>Monto Cuota</strong>
-                                            <Input size="large" variant="borderless" readOnly value={FormatNumber(montoCapitalCuota, 2)} style={{ ...styleInput, width: '100%' }} />
-                                        </Flex>
-                                    </Col>
-                                    <Col xl={4} lg={4} md={8} sm={24} xs={24}>
-                                        <Flex vertical>
-                                            <strong>Total Interes</strong>
-                                            <Input size="large" variant="borderless" readOnly value={FormatNumber(montoTotalInteres, 2)} style={{ ...styleInput, width: '100%' }} />
-                                        </Flex>
-                                    </Col>
-                                    <Col xl={4} lg={4} md={8} sm={24} xs={24}>
-                                        <Flex vertical>
-                                            <strong>Monto a Pagar</strong>
-                                            <Input size="large" variant="borderless" readOnly value={FormatNumber(montoAmortizacion, 2)} style={{ ...styleInput, width: '100%' }} />
-                                        </Flex>
-                                    </Col>
-                                </Row>
+                                <PrestamoInfo prestamo={prestamo} />
                             </Container>
 
                             <Container
                                 size="small"
-                                title={<TitlePanel title="Informaci&oacute;n de Cr&eacute;dito" color={Colors.Primary} />}>
+                                title={<TitlePanel title="Informaci&oacute;n de Cr&eacute;dito" color={Colors.Primary} />}
+                                styles={{
+                                    body: {
+                                        padding: 0,
+                                        overflow: 'auto',
+                                    }
+                                }}>
                                 <PrestamoCuotas
                                     cuotas={prestamo?.prestamoCuotas ?? []}
                                     aplicaDescuento={prestamo?.aplicaDescuento ?? false} />

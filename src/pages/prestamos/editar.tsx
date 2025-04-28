@@ -429,7 +429,7 @@ export default function FormPrestamoEditar() {
                                         <Switch
                                             id="aplicaDescuento"
                                             checked={modelo.aplicaDescuento}
-                                            disabled={isBlocked}
+                                            disabled={isBlocked && modelo.aplicaDescuento}
                                             onChange={(checked) => editar({ ...modelo, aplicaDescuento: checked })} />
                                         <span style={{ fontSize: 16 }}>Aplicar descuento extraordinario</span>
                                     </Space>
@@ -440,7 +440,13 @@ export default function FormPrestamoEditar() {
 
                     <Container
                         className="mb-3"
-                        title={<Typography.Title level={4} style={{ margin: 0, color: Colors.Primary }}>Informaci&oacute;n de Cr&eacute;dito</Typography.Title>}>
+                        title={<Typography.Title level={4} style={{ margin: 0, color: Colors.Primary }}>Informaci&oacute;n de Cr&eacute;dito</Typography.Title>}
+                        styles={{
+                            body: {
+                                padding: 0,
+                                overflowX: 'auto',
+                            }
+                        }}>
                         <PrestamoCuotas
                             editando
                             cuotas={modelo?.prestamoCuotas ?? []}

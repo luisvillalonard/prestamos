@@ -38,7 +38,7 @@ export default function PrestamoCuotas(props: PrestamoCuotasProps & Pick<Control
             dataSource={cuotas && cuotas.map((item, index) => { return { ...item, key: index + 1 } })}
             locale={{ emptyText: <Flex>0 cuotas</Flex> }}>
             <Table.Column title="# Cuota" dataIndex="key" key="key" align="center" fixed='left' width={80} />
-            <Table.Column title="Fecha Pago" render={(record: PrestamoCuota) => (
+            <Table.Column title="Fecha Pago" fixed='left' render={(record: PrestamoCuota) => (
                 <span style={{ textWrap: 'nowrap' }}>{record.fechaPago}</span>
             )} />
             <Table.Column title="Deuda Inicial" render={(record: PrestamoCuota) => (FormatNumber(record.deudaInicial, 2))} />

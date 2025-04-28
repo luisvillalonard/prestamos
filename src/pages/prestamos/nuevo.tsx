@@ -602,8 +602,8 @@ export default function FormPrestamo() {
                         className="mb-3"
                         title={<Typography.Title level={4} style={{ margin: 0, color: Colors.Primary }}>Informaci&oacute;n de Cr&eacute;dito</Typography.Title>}>
                         <PrestamoCuotas
-                            editando={!isBlocked}
-                            cuotas={!prestamo.reenganche ? prestamo?.prestamoCuotas : prestamo.reenganchePrestamoCuotas}
+                            editando
+                            cuotas={prestamo?.prestamoCuotas}
                             aplicaDescuento={prestamo.aplicaDescuento}
                             onChange={(cuotas: PrestamoCuota[]) => {
                                 if (prestamo) {

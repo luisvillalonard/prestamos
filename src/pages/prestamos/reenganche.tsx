@@ -25,7 +25,7 @@ const styleInputTotal: CSSProperties = {
     fontWeight: 'bold',
     borderBottomWidth: 1,
     borderBottomStyle: 'solid',
-    borderBottomColor: Colors.Secondary
+    borderBottomColor: Colors.Secondary,
 }
 
 export default function FormPrestamoReenganche() {
@@ -42,9 +42,6 @@ export default function FormPrestamoReenganche() {
     const [reenganche, setReenganche] = useState<Prestamo | undefined>(undefined)
     const [errores, setErrores] = useState<string[]>([])
     const [fechasPago, setFechasPago] = useState<DateArray[]>([])
-    const [activeKey, setActiveKey] = useState<string>('')
-    const [isBlocked, setIsBlocked] = useState<boolean>(false)
-    const [filtroCliente, setFiltroCliente] = useState<string>('')
     const [form] = Form.useForm()
     const nav = useNavigate()
     const url = useLocation()
@@ -77,41 +74,21 @@ export default function FormPrestamoReenganche() {
         if (result.ok && result.datos) {
             const prest = result.datos;
             if (prest) {
-                const totalIntereses = prest.monto * (prest.interes / 100);
-                const capitalCuota = Number((prest.monto / prest.cuotas).toFixed(2));
-                const interesCuota = Number(Number(totalIntereses / prest.cuotas).toFixed(2));
-                setPrestamo(prest);
                 setReenganche({
                     ...prest,
                     id: 0,
                     codigo: '',
-                    cliente: prest.cliente,
-                    fechaRegistro: prest.fechaRegistro,
-                    fechaCredito: prest.fechaCredito,
                     formaPagoId: prest.formaPago?.id,
-                    formaPago: prest.formaPago,
                     metodoPagoId: prest.metodoPago?.id,
-                    metodoPago: prest.metodoPago,
                     monedaId: prest.moneda?.id,
-                    moneda: prest.moneda,
                     acesorId: prest.acesor?.id,
-                    acesor: prest.acesor,
-                    monto: prest.monto,
-                    interes: prest.interes,
-                    cuotas: prest.cuotas,
-                    estado: prest.estado,
-                    destino: prest.destino,
-                    cancelado: prest.cancelado,
                     usuario: undefined,
-                    prestamoCuotas: [],
                     reenganche: true,
-                    aplicaDescuento: prest.aplicaDescuento,
-                    totalInteres: totalIntereses,
-                    capitalCuota: capitalCuota,
-                    amortizacion: Number((capitalCuota + interesCuota).toFixed(2)),
+                    totalInteres: 0,
+                    capitalCuota: 0,
+                    amortizacion: 0,
                 });
-                setFechasPago([{ fecha: prest.prestamoCuotas[0]?.fechaPago, anterior: false }]);
-                setIsBlocked(prest.estado?.final === false);
+                setPrestamo(prest);
 
             } else {
                 setErrores(['Código de préstamo no encontrado']);
@@ -137,55 +114,50 @@ export default function FormPrestamoReenganche() {
 
     const calcularFechaPago = () => {
 
-        if (!(prestamo && prestamo.fechaCredito && prestamo.formaPago)) {
+        if (!(reenganche && reenganche.fechaCredito && reenganche.formaPago)) {
             setFechasPago([]);
             return;
         }
 
-        const fechaInicio = String_To_Date(prestamo.fechaCredito);
+        const fechaInicio = String_To_Date(reenganche.fechaCredito);
         if (!fechaInicio) return;
 
-        const dias = prestamo.formaPago.dias.map(item => item.dia);
+        const dias = reenganche.formaPago.dias.map(item => item.dia);
         const fechas = DateList(fechaInicio, dias, dias.length);
 
         setFechasPago(fechas);
-        setPrestamo({ ...prestamo, fechaInicioPago: fechas.length > 0 ? fechas[0].fecha : undefined });
+        setReenganche({ ...reenganche, fechaInicioPago: fechas.length > 0 ? fechas[0].fecha : undefined });
 
     }
 
     const calcularCuotas = () => {
 
-        if (!prestamo) return;
-
-        let esValido: boolean = false;
-        if (!prestamo.reenganche) {
-            if (prestamo.monto > 0 && prestamo.interes >= 0 && prestamo.cuotas > 0 && prestamo.fechaInicioPago !== null)
-                esValido = true
-        } else {
-            if (prestamo.reengancheMonto > 0 && prestamo.reengancheInteres >= 0 && prestamo.reengancheCuotas > 0 && prestamo.reengancheFechaInicioPago !== null)
-                esValido = true
+        if (!reenganche) {
+            return;
+        } else if (!prestamo) {
+            return;
         }
 
-        if (esValido) {
+        if (reenganche.monto > 0 && reenganche.interes >= 0 && reenganche.cuotas > 0 && reenganche.fechaInicioPago) {
 
             setErrores([]);
 
             const pendiente: number = montoPendiente(prestamo);
-            const monto: number = prestamo.reenganche ? prestamo.reengancheMonto + pendiente : prestamo.monto;
-            const interes: number = prestamo.reenganche ? prestamo.reengancheInteres : prestamo.interes;
-            const cuotas: number = prestamo.reenganche ? prestamo.reengancheCuotas : prestamo.cuotas;
-            const fechaInicioPago: string = prestamo.reenganche ? prestamo.reengancheFechaInicioPago! : prestamo.fechaInicioPago!;
+            const monto: number = reenganche.monto + pendiente;
+            const interes: number = reenganche.interes;
+            const cuotas: number = reenganche.cuotas;
+            const fechaInicioPago: string = reenganche.fechaInicioPago;
 
             let saldoFinal: number = monto;
             const totalIntereses = monto * (interes / 100);
             const capitalCuota = Number((monto / cuotas).toFixed(2));
-            const interesCuota = Number(Number(totalIntereses / cuotas).toFixed(2))
 
             const dias = prestamo.formaPago?.dias.map(item => item.dia) ?? [];
             const fechaInicio = String_To_Date(fechaInicioPago)!;
             const fechas = DateList(fechaInicio, dias, cuotas);
             const prestamoCuotas = Array.from(Array(cuotas).keys()).map((_num, index) => {
 
+                const interesCuota = Number(Number(saldoFinal * (interes / 100)).toFixed(2))
                 saldoFinal = Number((saldoFinal - capitalCuota).toFixed(2));
 
                 return {
@@ -194,31 +166,20 @@ export default function FormPrestamoReenganche() {
                     capital: capitalCuota,
                     interes: interesCuota,
                     descuento: 0,
-                    amortizacion: Number((interesCuota + capitalCuota).toFixed(2)),
+                    amortizacion: Number((capitalCuota + interesCuota).toFixed(2)),
                     saldoFinal: saldoFinal < 0 ? 0 : saldoFinal,
                     vencido: fechas[index].anterior,
                 } as PrestamoCuota
 
             });
 
-            if (prestamo.reenganche) {
-                setPrestamo({
-                    ...prestamo,
-                    reengancheCapitalCuota: capitalCuota,
-                    reengancheTotalInteres: totalIntereses,
-                    reengancheAmortizacion: Number((capitalCuota + interesCuota).toFixed(2)),
-                    reenganchePrestamoCuotas: prestamoCuotas,
-                });
-
-            } else {
-                setPrestamo({
-                    ...prestamo,
-                    capitalCuota: capitalCuota,
-                    totalInteres: totalIntereses,
-                    amortizacion: Number((capitalCuota + interesCuota).toFixed(2)),
-                    prestamoCuotas: prestamoCuotas,
-                });
-            }
+            setReenganche({
+                ...reenganche,
+                capitalCuota: capitalCuota,
+                totalInteres: totalIntereses,
+                amortizacion: 0,
+                prestamoCuotas: prestamoCuotas,
+            });
 
         }
 
@@ -226,14 +187,14 @@ export default function FormPrestamoReenganche() {
 
     const validaPrestamo = () => {
 
-        if (!prestamo) return false;
+        if (!reenganche) return false;
 
         const alertas: string[] = [];
 
-        if (!prestamo.cliente || !prestamo.cliente.id || prestamo.cliente.id <= 0)
+        if (!reenganche.cliente || !reenganche.cliente.id || reenganche.cliente.id <= 0)
             alertas.push('Debe establecer el cliente del prestamo.');
 
-        if (prestamo.prestamoCuotas.length === 0)
+        if (reenganche.prestamoCuotas.length === 0)
             alertas.push('Debe calcular las cuotas del prestamo.');
 
         setErrores(alertas);
@@ -242,7 +203,7 @@ export default function FormPrestamoReenganche() {
 
     const guardar = async () => {
 
-        if (!prestamo) {
+        if (!reenganche) {
             Alerta('Debe completar los campos obligatorios del formulario antes de guardar.');
             return;
         }
@@ -250,16 +211,17 @@ export default function FormPrestamoReenganche() {
 
         let resp;
         try {
-            resp = await agregar(prestamo);
+            const pendiente: number = montoPendiente(prestamo!);
+            resp = await agregar({ ...reenganche, monto: reenganche.monto + pendiente });
         } catch (error: any) {
             Alerta(error.message || 'Situación inesperada tratando de guardar los datos del prestamo.');
         }
 
         if (!resp) {
-            setPrestamo(prestamo);
+            setReenganche(reenganche);
             Alerta('Situación inesperada tratando de guardar los datos del prestamo.');
         } else if (!resp.ok) {
-            setPrestamo(prestamo);
+            setReenganche(reenganche);
             Alerta(resp.mensaje || 'Situación inesperada tratando de guardar los datos del prestamo.');
         } else {
             Exito(
@@ -285,9 +247,9 @@ export default function FormPrestamoReenganche() {
     }, [reenganche?.fechaCredito, reenganche?.formaPago])
 
     if (!reenganche) {
-        return <Loading fullscreen active message="Cargando, espere" />
+        return <Loading fullscreen active message="Cargando, espere..." />
     } else if (!prestamo) {
-        return <Loading fullscreen active message="Cargando, espere" />
+        return <Loading fullscreen active message="Cargando, espere..." />
     }
 
     return (
@@ -323,11 +285,11 @@ export default function FormPrestamoReenganche() {
                     <Container
                         className="mb-3"
                         title={<Typography.Title level={4} style={{ margin: 0, color: Colors.Primary }}>Datos del Reenganche</Typography.Title>}>
-                        <Row gutter={[10, 10]}>
+                        <Row gutter={[10, 10]} style={{ marginBottom: 10 }}>
                             <Col xl={4} lg={4} md={8} sm={24} xs={24} style={{ alignSelf: 'end' }}>
-                                <Form.Item name="reengancheMonto" label="Monto" rules={[{ required: true, type: 'number', min: 1, message: 'Obligatorio' }]}>
+                                <Form.Item name="monto" label="Monto" rules={[{ required: true, type: 'number', min: 1, message: 'Obligatorio' }]}>
                                     <InputNumbers
-                                        name="reengancheMonto"
+                                        name="monto"
                                         defaultValue={reenganche.monto}
                                         value={reenganche.monto}
                                         placeholder="0.00"
@@ -335,8 +297,8 @@ export default function FormPrestamoReenganche() {
                                         onFocus={(evt) => evt && evt.currentTarget && evt.currentTarget.select()}
                                         onChange={(value) => {
                                             if (prestamo) {
-                                                setPrestamo({
-                                                    ...prestamo,
+                                                setReenganche({
+                                                    ...reenganche,
                                                     monto: Number(value),
                                                 });
                                             }
@@ -344,9 +306,9 @@ export default function FormPrestamoReenganche() {
                                 </Form.Item>
                             </Col>
                             <Col xl={4} lg={4} md={8} sm={24} xs={24} style={{ alignSelf: 'end' }}>
-                                <Form.Item name="reengancheInteres" label="Interes (%)" rules={[{ required: true, type: 'number', min: 1, message: 'Obligatorio' }]}>
+                                <Form.Item name="interes" label="Interes (%)" rules={[{ required: true, type: 'number', min: 1, message: 'Obligatorio' }]}>
                                     <InputNumbers
-                                        name="reengancheInteres"
+                                        name="interes"
                                         defaultValue={reenganche.interes}
                                         value={reenganche.interes}
                                         placeholder="0.00"
@@ -354,8 +316,8 @@ export default function FormPrestamoReenganche() {
                                         onFocus={(evt) => evt && evt.currentTarget && evt.currentTarget.select()}
                                         onChange={(value) => {
                                             if (prestamo) {
-                                                setPrestamo({
-                                                    ...prestamo,
+                                                setReenganche({
+                                                    ...reenganche,
                                                     interes: Number(value),
                                                 });
                                             }
@@ -372,9 +334,9 @@ export default function FormPrestamoReenganche() {
                                         style={{ width: '100%' }}
                                         onFocus={(evt) => evt && evt.currentTarget && evt.currentTarget.select()}
                                         onChange={(value) => {
-                                            if (prestamo) {
-                                                setPrestamo({
-                                                    ...prestamo,
+                                            if (reenganche) {
+                                                setReenganche({
+                                                    ...reenganche,
                                                     cuotas: Number(value),
                                                 });
                                             }
@@ -392,8 +354,8 @@ export default function FormPrestamoReenganche() {
                                         })}
                                         notFoundContent={''}
                                         onChange={(fecha) => {
-                                            if (prestamo) {
-                                                setPrestamo({ ...prestamo, fechaInicioPago: fecha });
+                                            if (reenganche) {
+                                                setReenganche({ ...reenganche, fechaInicioPago: fecha });
                                             }
                                         }} />
                                 </Form.Item>
@@ -436,17 +398,14 @@ export default function FormPrestamoReenganche() {
                         className="mb-3"
                         title={<Typography.Title level={4} style={{ margin: 0, color: Colors.Primary }}>Informaci&oacute;n de Cr&eacute;dito</Typography.Title>}
                         styles={{
-                            body: { padding: 0 }
+                            body: {
+                                padding: 0,
+                                overflowX: 'auto',
+                            }
                         }}>
                         <PrestamoCuotas
-                            editando={!isBlocked}
-                            cuotas={prestamo?.prestamoCuotas}
-                            aplicaDescuento={prestamo.aplicaDescuento}
-                            onChange={(cuotas: PrestamoCuota[]) => {
-                                if (prestamo) {
-                                    setPrestamo({ ...prestamo, prestamoCuotas: cuotas })
-                                }
-                            }} />
+                            cuotas={reenganche.prestamoCuotas}
+                            aplicaDescuento={reenganche.aplicaDescuento} />
                     </Container>
 
                 </Form>
