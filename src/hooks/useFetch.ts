@@ -34,6 +34,11 @@ export const useFetch = () => {
             user = JSON.parse(dataStorage);
         }
 
+        const apiUrl = import.meta.env.MODE === 'production'
+            ? import.meta.env.VITE_API_URL_PROD
+            : import.meta.env.MODE === 'staging'
+                ? import.meta.env.VITE_API_URL_QA
+                : import.meta.env.VITE_API_URL_DEV;
         const defaultHeaders = { ...baseFetch.headers, Authorization: user?.token || '' };
         const reqMethod = !options?.method ? baseFetch.method : options.method;
         const reqHeader = options?.headers ? { ...options.headers, ...defaultHeaders } : defaultHeaders;
@@ -45,7 +50,7 @@ export const useFetch = () => {
         }
 
         try {
-            const fetchResult = await fetch(`${process.env.VITE_API_URL}/api/${url}`, reqOptions);
+            const fetchResult = await fetch(`${apiUrl}/api/${url}`, reqOptions);
             const result = await fetchResult.json();
 
             if (fetchResult.ok) {

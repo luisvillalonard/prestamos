@@ -1,4 +1,6 @@
-export const appUrl = process.env.VITE_APP_URL || '/';
+export const appUrl = import.meta.env.MODE === 'production'
+    ? import.meta.env.VITE_APP_URL_PROD
+    : import.meta.env.VITE_APP_URL_DEV;
 export const secretKey = 'D7B9F2FD64B04F18B4D1EC4869FC52BA';
 
 export const Urls = {
@@ -16,6 +18,7 @@ export const Urls = {
         Base: 'prestamos',
         Nuevo: 'nuevo',
         Editar: 'editar/:id?',
+        Reenganche: 'reenganche/:id?',
         Registrados: 'registrados',
         Cobro: 'cobro/manual/:id?',
         CobroAutomatico: 'cobro/automatico',

@@ -73,17 +73,12 @@ export default function FormPrestamo() {
             id: 0,
             codigo: '',
             cliente: undefined,
-            formaPagoId: undefined,
             formaPago: undefined,
-            metodoPagoId: undefined,
             metodoPago: undefined,
-            monedaId: undefined,
             moneda: undefined,
-            acesorId: undefined,
             acesor: undefined,
             fechaRegistro: diaActual,
             fechaCredito: diaActual,
-            fechaInicioPago: undefined,
             monto: 0,
             interes: 0,
             cuotas: 0,
@@ -97,14 +92,6 @@ export default function FormPrestamo() {
             capitalCuota: 0,
             amortizacion: 0,
             reenganche: false,
-            reengancheMonto: 0,
-            reengancheInteres: 0,
-            reengancheCuotas: 0,
-            reengancheFechaInicioPago: undefined,
-            reengancheCapitalCuota: 0,
-            reengancheTotalInteres: 0,
-            reengancheAmortizacion: 0,
-            reenganchePrestamoCuotas: [],
         }
         setPrestamo(nuevo);
         setErrores([]);
@@ -115,9 +102,9 @@ export default function FormPrestamo() {
     }
 
     const setFormFieldsValues = (item: Prestamo) => {
-        const totalInteres = item.monto * (item.interes / 100);
-        const capitalCuota = Number((item.monto / item.cuotas).toFixed(2));
-        const interesCuota = Number(Number(totalInteres / item.cuotas).toFixed(2));
+        const totalInteres = item.monto > 0 && item.interes > 0 ? item.monto * (item.interes / 100) : 0;
+        const capitalCuota = item.monto > 0 && item.cuotas > 0 ? Number((item.monto / item.cuotas).toFixed(2)) : 0;
+        const interesCuota = totalInteres > 0 && item.cuotas > 0 ? Number(Number(totalInteres / item.cuotas).toFixed(2)) : 0;
         form.setFieldsValue({
             id: item.id,
             codigo: item.codigo,
@@ -145,15 +132,6 @@ export default function FormPrestamo() {
             totalInteres: totalInteres,
             capitalCuota: capitalCuota,
             amortizacion: Number((capitalCuota / interesCuota).toFixed(2)),
-            reenganche: item.reenganche,
-            reengancheMonto: 0,
-            reengancheInteres: 0,
-            reengancheCuotas: 0,
-            reengancheFechaInicioPago: item.reengancheFechaInicioPago,
-            reengancheCapitalCuota: item.reengancheCapitalCuota,
-            reengancheTotalInteres: item.reengancheTotalInteres,
-            reengancheAmortizacion: item.reengancheAmortizacion,
-            reenganchePrestamoCuotas: item.reenganchePrestamoCuotas,
         });
     }
 
@@ -174,15 +152,6 @@ export default function FormPrestamo() {
                     totalInteres: totalInteres,
                     capitalCuota: capitalCuota,
                     amortizacion: Number((capitalCuota + interesCuota).toFixed(2)),
-                    reenganche: false,
-                    reengancheMonto: 0,
-                    reengancheInteres: 0,
-                    reengancheCuotas: 0,
-                    reengancheFechaInicioPago: undefined,
-                    reengancheCapitalCuota: 0,
-                    reengancheTotalInteres: 0,
-                    reengancheAmortizacion: 0,
-                    reenganchePrestamoCuotas: [],
                 });
                 setFormFieldsValues(prest);
                 setErrores(['Este cliente tiene un préstamo activo. Debe hacer un reenganche para continuar con el prestamo.']);
@@ -215,21 +184,6 @@ export default function FormPrestamo() {
 
     }
 
-    const montoPendiente = (prestamo: Prestamo): number => {
-
-        const { monto, prestamoCuotas } = prestamo
-        if (!prestamoCuotas || prestamoCuotas.length === 0) return monto;
-
-        const cuotasPendientes = prestamoCuotas.filter(cuota => !cuota.pagado)
-
-        const total = cuotasPendientes.reduce((acc, item) => {
-            const montoPagos: number = item.pagos && item.pagos.reduce((accP, itemP) => { return accP + itemP.monto }, 0);
-            return acc - montoPagos;
-        }, monto)
-
-        return Math.round(total)
-    }
-
     const calcularFechaPago = () => {
 
         if (!(prestamo && prestamo.fechaCredito && prestamo.formaPago)) {
@@ -252,35 +206,25 @@ export default function FormPrestamo() {
 
         if (!prestamo) return;
 
-        let esValido: boolean = false;
-        if (!prestamo.reenganche) {
-            if (prestamo.monto > 0 && prestamo.interes >= 0 && prestamo.cuotas > 0 && prestamo.fechaInicioPago !== null)
-                esValido = true
-        } else {
-            if (prestamo.reengancheMonto > 0 && prestamo.reengancheInteres >= 0 && prestamo.reengancheCuotas > 0 && prestamo.reengancheFechaInicioPago !== null)
-                esValido = true
-        }
-
-        if (esValido) {
+        if (prestamo.monto > 0 && prestamo.interes >= 0 && prestamo.cuotas > 0 && prestamo.fechaInicioPago) {
 
             setErrores([]);
 
-            const pendiente: number = montoPendiente(prestamo);
-            const monto: number = prestamo.reenganche ? prestamo.reengancheMonto + pendiente : prestamo.monto;
-            const interes: number = prestamo.reenganche ? prestamo.reengancheInteres : prestamo.interes;
-            const cuotas: number = prestamo.reenganche ? prestamo.reengancheCuotas : prestamo.cuotas;
-            const fechaInicioPago: string = prestamo.reenganche ? prestamo.reengancheFechaInicioPago! : prestamo.fechaInicioPago!;
+            const monto: number = prestamo.monto;
+            const interes: number = prestamo.interes;
+            const cuotas: number = prestamo.cuotas;
+            const fechaInicioPago: string = prestamo.fechaInicioPago;
 
             let saldoFinal: number = monto;
             const totalIntereses = monto * (interes / 100);
             const capitalCuota = Number((monto / cuotas).toFixed(2));
-            const interesCuota = Number(Number(totalIntereses / cuotas).toFixed(2))
 
             const dias = prestamo.formaPago?.dias.map(item => item.dia) ?? [];
             const fechaInicio = String_To_Date(fechaInicioPago)!;
             const fechas = DateList(fechaInicio, dias, cuotas);
             const prestamoCuotas = Array.from(Array(cuotas).keys()).map((_num, index) => {
 
+                const interesCuota = Number(Number(saldoFinal * (interes / 100)).toFixed(2))
                 saldoFinal = Number((saldoFinal - capitalCuota).toFixed(2));
 
                 return {
@@ -296,48 +240,15 @@ export default function FormPrestamo() {
 
             });
 
-            if (prestamo.reenganche) {
-                setPrestamo({
-                    ...prestamo,
-                    reengancheCapitalCuota: capitalCuota,
-                    reengancheTotalInteres: totalIntereses,
-                    reengancheAmortizacion: Number((capitalCuota + interesCuota).toFixed(2)),
-                    reenganchePrestamoCuotas: prestamoCuotas,
-                });
-
-            } else {
-                setPrestamo({
-                    ...prestamo,
-                    capitalCuota: capitalCuota,
-                    totalInteres: totalIntereses,
-                    amortizacion: Number((capitalCuota + interesCuota).toFixed(2)),
-                    prestamoCuotas: prestamoCuotas,
-                });
-            }
+            setPrestamo({
+                ...prestamo,
+                capitalCuota: capitalCuota,
+                totalInteres: totalIntereses,
+                amortizacion: 0,
+                prestamoCuotas: prestamoCuotas,
+            });
 
         }
-
-    }
-
-    const estableceReenganche = () => {
-
-        if (!(prestamo && prestamo.fechaCredito && prestamo.formaPago)) {
-            setFechasPago([]);
-            return;
-        }
-
-        const fechaInicio = String_To_Date(diaActual);
-        if (!fechaInicio) return;
-
-        const dias = prestamo.formaPago.dias.map(item => item.dia);
-        const fechas = DateList(fechaInicio, dias, dias.length);
-
-        setFechasPago(fechas);
-        setPrestamo({
-            ...prestamo,
-            fechaCredito: diaActual,
-            reenganche: true,
-        });
 
     }
 
@@ -350,10 +261,7 @@ export default function FormPrestamo() {
         if (!prestamo.cliente || !prestamo.cliente.id || prestamo.cliente.id <= 0)
             alertas.push('Debe establecer el cliente del prestamo.');
 
-        if (!prestamo.reenganche && prestamo.prestamoCuotas.length === 0)
-            alertas.push('Debe calcular las cuotas del prestamo.');
-
-        if (prestamo.reenganche && prestamo.reenganchePrestamoCuotas.length === 0)
+        if (prestamo.prestamoCuotas.length === 0)
             alertas.push('Debe calcular las cuotas del prestamo.');
 
         setErrores(alertas);
@@ -370,19 +278,7 @@ export default function FormPrestamo() {
 
         let resp;
         try {
-            if (prestamo.reenganche) {
-                const pendiente: number = montoPendiente(prestamo);
-                resp = await agregar({
-                    ...prestamo,
-                    id: 0,
-                    monto: prestamo.reengancheMonto + pendiente,
-                    interes: prestamo.reengancheInteres,
-                    cuotas: prestamo.reengancheCuotas,
-                    prestamoCuotas: prestamo.reenganchePrestamoCuotas,
-                })
-            } else {
-                resp = await agregar(prestamo);
-            }
+            resp = await agregar(prestamo);
         } catch (error: any) {
             Alerta(error.message || 'Situación inesperada tratando de guardar los datos del prestamo.');
         }
@@ -396,7 +292,7 @@ export default function FormPrestamo() {
         } else {
             Exito(
                 'Préstamo registrado exitosamente!',
-                () => nav(`/${Urls.Prestamos.Base}/${Urls.Prestamos.Registrados}`)
+                () => nav(`/${Urls.Prestamos.Base}/${Urls.Prestamos.Registrados}`, { replace: true })
             );
         }
 
@@ -421,7 +317,7 @@ export default function FormPrestamo() {
                     <TitlePage title="Formulario de C&aacute;lculo y Registro de Prestamo" />
                     <Space>
                         <ButtonDefault key="1" size="large" onClick={nuevoPrestamo}>Nuevo</ButtonDefault>
-                        <ButtonPrimary key="2" id="btnGuardarPrestamo" size="large" htmlType="submit" form="FormPrestamo" disabled={isBlocked && !prestamo.reenganche}>
+                        <ButtonPrimary key="2" id="btnGuardar" size="large" htmlType="submit" form="FormPrestamo" disabled={isBlocked}>
                             Guardar
                         </ButtonPrimary>
                     </Space>
@@ -478,148 +374,21 @@ export default function FormPrestamo() {
                         <Loading active={cargandoClientes} message="buscando, espere" />
                     </Container>
 
-                    <Collapse
-                        ghost
-                        size="small"
-                        bordered={false}
-                        defaultActiveKey={[prestamo.reenganche ? '2' : '']}
-                        activeKey={[prestamo.reenganche ? '2' : '']}
-                        items={[
-                            {
-                                key: '2',
-                                label: null,
-                                showArrow: false,
-                                styles: {
-                                    header: { padding: 0 },
-                                    body: { paddingLeft: 0, paddingRight: 0 }
-                                },
-                                children: <>
-                                    <Container
-                                        title={<Typography.Title level={4} style={{ margin: 0, color: Colors.Primary }}>Datos del Reenganche</Typography.Title>}>
-                                        <Row gutter={[10, 10]}>
-                                            <Col xl={4} lg={4} md={8} sm={24} xs={24} style={{ alignSelf: 'end' }}>
-                                                <Form.Item name="reengancheMonto" label="Monto" rules={[{ required: true, type: 'number', min: 1, message: 'Obligatorio' }]}>
-                                                    <InputNumbers
-                                                        name="reengancheMonto"
-                                                        defaultValue={prestamo.reengancheMonto}
-                                                        value={prestamo.reengancheMonto}
-                                                        placeholder="0.00"
-                                                        style={{ width: '100%' }}
-                                                        disabled={!prestamo.reenganche}
-                                                        onFocus={(evt) => evt && evt.currentTarget && evt.currentTarget.select()}
-                                                        onChange={(value) => {
-                                                            if (prestamo) {
-                                                                setPrestamo({
-                                                                    ...prestamo,
-                                                                    reengancheMonto: Number(value),
-                                                                });
-                                                            }
-                                                        }} />
-                                                </Form.Item>
-                                            </Col>
-                                            <Col xl={4} lg={4} md={8} sm={24} xs={24} style={{ alignSelf: 'end' }}>
-                                                <Form.Item name="reengancheInteres" label="Interes (%)" rules={[{ required: true, type: 'number', min: 1, message: 'Obligatorio' }]}>
-                                                    <InputNumbers
-                                                        name="reengancheInteres"
-                                                        defaultValue={prestamo.reengancheInteres}
-                                                        value={prestamo.reengancheInteres}
-                                                        placeholder="0.00"
-                                                        style={{ width: '100%' }}
-                                                        disabled={!prestamo.reenganche}
-                                                        onFocus={(evt) => evt && evt.currentTarget && evt.currentTarget.select()}
-                                                        onChange={(value) => {
-                                                            if (prestamo) {
-                                                                setPrestamo({
-                                                                    ...prestamo,
-                                                                    reengancheInteres: Number(value),
-                                                                });
-                                                            }
-                                                        }} />
-                                                </Form.Item>
-                                            </Col>
-                                            <Col xl={4} lg={4} md={8} sm={24} xs={24} style={{ alignSelf: 'end' }}>
-                                                <Form.Item name="reengancheCuotas" label="N&uacute;mero Cuotas" rules={[{ required: true, type: 'number', min: 1, message: 'Obligatorio' }]}>
-                                                    <InputNumbers
-                                                        name="reengancheCuotas"
-                                                        defaultValue={prestamo.reengancheCuotas}
-                                                        value={prestamo.reengancheCuotas}
-                                                        placeholder="0.00"
-                                                        style={{ width: '100%' }}
-                                                        disabled={!prestamo.reenganche}
-                                                        onFocus={(evt) => evt && evt.currentTarget && evt.currentTarget.select()}
-                                                        onChange={(value) => {
-                                                            if (prestamo) {
-                                                                setPrestamo({
-                                                                    ...prestamo,
-                                                                    reengancheCuotas: Number(value),
-                                                                });
-                                                            }
-                                                        }} />
-                                                </Form.Item>
-                                            </Col>
-                                            <Col xl={4} lg={4} md={8} sm={24} xs={24} style={{ alignSelf: 'end' }}>
-                                                <Form.Item name="reengancheFechaInicioPago" label="Inicio de Pago" rules={[{ required: true, type: 'string', message: 'Obligatorio' }]}>
-                                                    <Select
-                                                        defaultActiveFirstOption={true}
-                                                        defaultValue={prestamo.reengancheFechaInicioPago}
-                                                        value={prestamo.reengancheFechaInicioPago}
-                                                        options={fechasPago.map((item, index) => {
-                                                            return { key: index, value: item.fecha, label: item.fecha }
-                                                        })}
-                                                        notFoundContent={''}
-                                                        onChange={(fecha) => {
-                                                            if (prestamo) {
-                                                                setPrestamo({ ...prestamo, reengancheFechaInicioPago: fecha });
-                                                            }
-                                                        }} />
-                                                </Form.Item>
-                                            </Col>
-                                        </Row>
-                                        <Row gutter={[10, 10]}>
-                                            <Col xl={4} lg={4} md={8} sm={24} xs={24} style={{ alignSelf: 'end' }}>
-                                                <Form.Item label="Monto Cuota">
-                                                    <Input disabled variant="borderless" value={FormatNumber(prestamo.reengancheCapitalCuota, 2)} style={styleInputTotal} />
-                                                </Form.Item>
-                                            </Col>
-                                            <Col xl={4} lg={4} md={8} sm={24} xs={24} style={{ alignSelf: 'end' }}>
-                                                <Form.Item label="Total Interes">
-                                                    <Input disabled variant="borderless" value={FormatNumber(prestamo.reengancheTotalInteres, 2)} style={styleInputTotal} />
-                                                </Form.Item>
-                                            </Col>
-                                            <Col xl={4} lg={4} md={8} sm={24} xs={24} style={{ alignSelf: 'end' }}>
-                                                <Form.Item label="Monto a Pagar">
-                                                    <Input disabled variant="borderless" value={FormatNumber(prestamo.reengancheAmortizacion, 2)} style={styleInputTotal} />
-                                                </Form.Item>
-                                            </Col>
-                                            <Col style={{ alignSelf: 'end' }}>
-                                                <ButtonDefault key="1" icon={<IconCalculator />} onClick={calcularCuotas}>Calcular</ButtonDefault>
-                                            </Col>
-                                        </Row>
-                                    </Container>
-                                </>,
-                            },
-                        ]}>
-                    </Collapse>
-
                     <Container
                         className="mb-3"
                         title={
                             <Flex align="center" gap={10}>
                                 <Typography.Title level={4} style={{ margin: 0, color: Colors.Primary }}>Datos del Prestamo</Typography.Title>
                                 <Tag color='default' style={{ fontWeight: 500, fontSize: 16, borderRadius: 10, margin: 0 }}>{prestamo?.codigo || 'P-000000'}</Tag>
-                                {
-                                    prestamo?.reenganche === true
-                                        ? <Tag color={Colors.Success} style={{ fontWeight: 400, fontSize: 16, borderRadius: 10, margin: 0 }}>Reenganche</Tag>
-                                        : <></>
-                                }
                             </Flex>
                         }
                         extra={
                             <Flex gap={10}>
                                 {
-                                    isBlocked && !prestamo.reenganche
-                                        ? <ButtonSuccess onClick={() => {
-                                            estableceReenganche();
+                                    isBlocked
+                                        ?
+                                        <ButtonSuccess onClick={() => {
+                                            nav(`/${Urls.Prestamos.Base}/${Urls.Prestamos.Reenganche.replace(':id?', prestamo.id.toString())}`, { replace: true })
                                         }}>
                                             Reenganchar
                                         </ButtonSuccess>

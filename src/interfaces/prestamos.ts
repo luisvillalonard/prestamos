@@ -2,20 +2,26 @@ import { Cliente } from "./clientes"
 import { Acesor, FormaPago, MetodoPago, Moneda, PrestamoEstado } from "./dataMaestra"
 import { Usuario } from "./seguridad"
 
-export interface Prestamo extends PrestamoHelpers {
+export interface Prestamo {
     id: number,
     codigo: string,
     cliente: Cliente | undefined,
     fechaRegistro: string,
     fechaCredito: string,
+    fechaInicioPago?: string,
+    formaPagoId?: number,
     formaPago: FormaPago | undefined,
+    metodoPagoId?: number,
     metodoPago: MetodoPago | undefined,
+    monedaId?: number,
     moneda: Moneda | undefined,
     monto: number,
     interes: number,
     cuotas: number,
     estado: PrestamoEstado | undefined,
+    aplicaDescuento: boolean,
     destino: string,
+    acesorId?: number,
     acesor: Acesor | undefined,
     usuario: Usuario | undefined,
     fechaActualizado?: string,
@@ -23,27 +29,10 @@ export interface Prestamo extends PrestamoHelpers {
     cancelado: boolean,
     fechaCancelado?: string,
     prestamoCuotas: PrestamoCuota[],
-    aplicaDescuento: boolean,
-}
-
-interface PrestamoHelpers {
-    fechaInicioPago?: string
-    formaPagoId?: number,
-    metodoPagoId?: number,
-    monedaId?: number,
-    acesorId?: number,
-    capitalCuota: number,
     totalInteres: number,
+    capitalCuota: number,
     amortizacion: number,
     reenganche: boolean,
-    reengancheMonto: number,
-    reengancheInteres: number,
-    reengancheCuotas: number,
-    reengancheFechaInicioPago?: string
-    reengancheCapitalCuota: number,
-    reengancheTotalInteres: number,
-    reengancheAmortizacion: number,
-    reenganchePrestamoCuotas: PrestamoCuota[],
 }
 
 export interface PrestamoCuota {

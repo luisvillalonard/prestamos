@@ -20,7 +20,7 @@ export default function PagePrestamos() {
     const { token } = theme.useToken()
     const nav = useNavigate()
 
-    const onNew = () => nav(`/${Urls.Prestamos.Base}/${Urls.Prestamos.Nuevo}`)
+    const onNew = () => nav(`/${Urls.Prestamos.Base}/${Urls.Prestamos.Nuevo}`, { replace: true })
 
     return (
         <>

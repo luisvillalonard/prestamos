@@ -1,6 +1,5 @@
 import AlertStatic from "@components/alerts/alert"
 import { ButtonPrimary } from "@components/buttons/primary"
-import { ButtonSuccess } from "@components/buttons/success"
 import Container from "@components/containers/container"
 import Loading from "@components/containers/loading"
 import { InputDatePicker } from "@components/inputs/date"
@@ -31,7 +30,7 @@ export default function FormPrestamoEditar() {
 
     const {
         contextClientes: { },
-        contextPrestamos: { state: { modelo, procesando: cargandoPrestamo }, editar, agregar, actualizar, porId },
+        contextPrestamos: { state: { modelo, procesando: cargandoPrestamo }, editar, actualizar, porId },
         contextPrestamosEstados: { todos: cargarEstados },
         contextFormasPago: { state: { datos: formasPago }, todos: cargarFormasPago },
         contextMetodosPago: { state: { datos: metodosPago }, todos: cargarMetodosPago },
@@ -116,7 +115,7 @@ export default function FormPrestamoEditar() {
                 setFechasPago([{ fecha: prest.prestamoCuotas[0]?.fechaPago, anterior: false }]);
 
             } else {
-                setErrores(['Código de préstamo no encontrado']);
+                setErrores(['Código de préstamo no encontrado.']);
             }
         }
 
@@ -165,14 +164,8 @@ export default function FormPrestamoEditar() {
         if (!validaPrestamo()) return;
 
         let resp;
-        const esNuevo = modelo.id === 0;
-
         try {
-            if (esNuevo) {
-                resp = await agregar(modelo);
-            } else {
-                resp = await actualizar(modelo);
-            }
+            resp = await actualizar(modelo);
         } catch (error: any) {
             Alerta(error.message || 'Situación inesperada tratando de guardar los datos del prestamo.');
         }
@@ -186,7 +179,7 @@ export default function FormPrestamoEditar() {
         } else {
             Exito(
                 'Préstamo registrado exitosamente!',
-                () => nav(`/${Urls.Prestamos.Base}/${Urls.Prestamos.Registrados}`)
+                () => nav(`/${Urls.Prestamos.Base}/${Urls.Prestamos.Registrados}`, { replace: true })
             );
         }
 
@@ -246,25 +239,6 @@ export default function FormPrestamoEditar() {
                             <Flex align="center" gap={10}>
                                 <Typography.Title level={4} style={{ margin: 0, color: Colors.Primary }}>Datos del Prestamo</Typography.Title>
                                 <Tag color='default' style={{ fontWeight: 500, fontSize: 16, borderRadius: 10, margin: 0 }}>{modelo?.codigo || 'P-000000'}</Tag>
-                                {
-                                    modelo?.reenganche === true
-                                        ? <Tag color={Colors.Success} style={{ fontWeight: 400, fontSize: 16, borderRadius: 10, margin: 0 }}>Reenganche</Tag>
-                                        : <></>
-                                }
-                            </Flex>
-                        }
-                        extra={
-                            <Flex gap={10}>
-                                {
-                                    isBlocked && modelo.id === 0
-                                        ? <ButtonSuccess onClick={() => {
-                                            editar({ ...modelo, reenganche: true })
-                                            setIsBlocked(false)
-                                        }}>
-                                            Reenganchar
-                                        </ButtonSuccess>
-                                        : <></>
-                                }
                             </Flex>
                         }>
                         <Row gutter={[10, 10]}>
@@ -473,7 +447,7 @@ export default function FormPrestamoEditar() {
                             aplicaDescuento={modelo.aplicaDescuento}
                             onChange={(cuotas) => {
                                 if (modelo) {
-                                    editar({ ...modelo, cuotas: cuotas })
+                                    editar({ ...modelo, prestamoCuotas: cuotas })
                                 }
                             }} />
                     </Container>
