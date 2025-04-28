@@ -1,5 +1,4 @@
 import { ButtonDefault } from "@components/buttons/default"
-import Loading from "@components/containers/loading"
 import Searcher from "@components/inputs/searcher"
 import { useData } from "@hooks/useData"
 import { FormatNumber } from "@hooks/useUtils"
@@ -14,12 +13,10 @@ export default function BuscadorPrestamo(props: Pick<ControlProps, "onChange">) 
     const { contextPrestamos: { activos } } = useData()
     const [filtroPrestamo, setFiltroPrestamo] = useState<string>('')
     const [prestamos, setPrestamos] = useState<Prestamo[]>([])
-    const [loading, setLoading] = useState<boolean>(false)
 
     const buscarPrestamo = async () => {
 
         if (filtroPrestamo) {
-            setLoading(true);
             const result = await activos({
                 pageSize: 999999,
                 currentPage: 1,
@@ -28,7 +25,6 @@ export default function BuscadorPrestamo(props: Pick<ControlProps, "onChange">) 
             if (result && result.ok) {
                 setPrestamos(result.datos ?? [])
             }
-            setLoading(false);
         }
     }
 
@@ -90,7 +86,6 @@ export default function BuscadorPrestamo(props: Pick<ControlProps, "onChange">) 
                     </Table>
                 </Col>
             </Row>
-            <Loading active={loading} message='Buscando prestamos, espere...' />
         </>
     )
 }

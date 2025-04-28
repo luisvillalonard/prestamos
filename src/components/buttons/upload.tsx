@@ -110,7 +110,7 @@ export default function UploadButton(props: UploadButtonProps) {
     }
 
     return (
-        <Space.Compact style={{ width: '100%' }} block>
+        <Space.Compact size="large" style={{ width: '100%' }} block>
             <Upload
                 accept={!accept ? '' : accept.map((item) => item).join(',')}
                 maxCount={1}
