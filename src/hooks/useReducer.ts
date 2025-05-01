@@ -23,14 +23,15 @@ export function useReducerHook<T extends unknown>(urlBase: string) {
             resp = errorResult<T>(error);
         }
 
-        dispatch({ type: ACTIONS.FETCH_COMPLETE });
         dispatch({ type: ACTIONS.EDITING, model: undefined });
         dispatch({ type: ACTIONS.RELOAD, recargar: true });
+        dispatch({ type: ACTIONS.FETCH_COMPLETE });
         return resp;
 
     }
 
     const actualizar = async (item: T): Promise<ResponseResult<T>> => {
+
         dispatch({ type: ACTIONS.FETCHING });
         let resp: ResponseResult<T>;
 
@@ -40,10 +41,11 @@ export function useReducerHook<T extends unknown>(urlBase: string) {
             resp = errorResult<T>(error);
         }
 
-        dispatch({ type: ACTIONS.FETCH_COMPLETE });
         dispatch({ type: ACTIONS.EDITING, model: undefined });
         dispatch({ type: ACTIONS.RELOAD, recargar: true });
+        dispatch({ type: ACTIONS.FETCH_COMPLETE });
         return resp;
+
     }
 
     const todos = async (req?: RequestFilter): Promise<void> => {
@@ -54,12 +56,12 @@ export function useReducerHook<T extends unknown>(urlBase: string) {
         try {
             const params = getParamsUrlToString(req);
             resp = await api.Get<T[]>(`${urlBase}${params}`.trim());
+            dispatch({ type: ACTIONS.FETCH_COMPLETE });
             dispatch({
                 type: ACTIONS.SET_DATA,
                 data: resp.datos ?? [],
                 paginacion: resp.paginacion
             });
-            dispatch({ type: ACTIONS.FETCH_COMPLETE });
         } catch {
             dispatch({ type: ACTIONS.FETCH_COMPLETE });
         }

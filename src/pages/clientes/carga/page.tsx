@@ -8,13 +8,13 @@ import TitlePage from "@components/titles/titlePage"
 import { Colors } from "@hooks/useConstants"
 import { useData } from "@hooks/useData"
 import { DD_MM_YYYY } from "@hooks/useDate"
-import { exportToResponse, FileData, getDataValidation, HeaderColumn } from "@hooks/useFile"
+import { exportToResponse, FileData, HeaderColumn } from "@hooks/useFile"
 import { IconExcel } from "@hooks/useIconos"
 import { Cliente } from "@interfaces/clientes"
 import { Ciudad, DocumentoTipo, Ocupacion, Sexo } from "@interfaces/dataMaestra"
 import { Col, Divider, Flex, Space, Table } from "antd"
-import { useEffect, useState } from "react"
 import ExcelJS from "exceljs"
+import { useEffect, useState } from "react"
 
 export default function PageClienteCargaMasiva() {
 
@@ -93,22 +93,40 @@ export default function PageClienteCargaMasiva() {
         const workbook = new ExcelJS.Workbook();
 
         // Creo la hoja de excel
-        const worksheet = workbook.addWorksheet("Plantilla Clientes");
+        const worksheetClientes = workbook.addWorksheet("Plantilla Clientes");
+        const worksheetCiudades = workbook.addWorksheet("Ciudades");
+        const worksheetOcupaciones = workbook.addWorksheet("Ocupaciones");
 
         // Configuro algunas propiedades
-        worksheet.properties = { ...worksheet.properties, defaultRowHeight: 18, showGridLines: true };
+        worksheetClientes.properties = { ...worksheetClientes.properties, defaultRowHeight: 18 };
+        worksheetCiudades.properties = { ...worksheetClientes.properties };
+        worksheetOcupaciones.properties = { ...worksheetClientes.properties };
+
+        // Agrego la data maestra
+        ciudades.forEach(tipo => {
+            const row = worksheetCiudades.addRow([tipo.nombre]);
+            if (row) {
+                row.height = 16;
+            }
+        })
+        ocupaciones.forEach(tipo => {
+            const row = worksheetOcupaciones.addRow([tipo.nombre]);
+            if (row) {
+                row.height = 16;
+            }
+        })
 
         // Agrego los titulos
-        let row = worksheet.addRow(null);
-        worksheet.mergeCells("A1:O1");
+        let row = worksheetClientes.addRow(null);
+        worksheetClientes.mergeCells("A1:O1");
         let cell = row.getCell(1);
         cell.value = 'LoanManagement';
         cell.font = { size: 20, bold: false };
         cell.alignment = { horizontal: 'center', vertical: 'middle' }
         row.height = 32;
 
-        row = worksheet.addRow(null);
-        worksheet.mergeCells("A2:O2");
+        row = worksheetClientes.addRow(null);
+        worksheetClientes.mergeCells("A2:O2");
         cell = row.getCell(1);
         cell.value = 'Carga Masiva de Clientes';
         cell.font = { size: 14, bold: false };
@@ -116,47 +134,90 @@ export default function PageClienteCargaMasiva() {
         row.height = 22;
 
         // Agrego una fila intermedia en blanco
-        worksheet.addRow(null);
+        worksheetClientes.addRow(null);
 
         // Agrego los encabezados de las columnas
-        var headerRow = worksheet.addRow(null);
+        var headerRow = worksheetClientes.addRow(null);
         const headers: HeaderColumn[] =
-        [
-            { key: '1', text: "Codigo", width: 10 },
-            { key: '2', text: "Codigo Empleado" },
-            { key: '3', text: "Nombres", width: 16 },
-            { key: '4', text: "Apellidos", width: 16 },
-            { key: '5', text: "Tipo Documento", width: 19 },
-            { key: '6', text: "Documento", width: 16 },
-            { key: '7', text: "Sexo" },
-            { key: '8', text: "Fecha Nacimiento", width: 20 },
-            { key: '9', text: "Ciudad", width: 20 },
-            { key: '10', text: "Ocupacion", width: 20 },
-            { key: '11', text: "Dirección", width: 24 },
-            { key: '12', text: "Telefono Fijo" },
-            { key: '13', text: "Telefono Celular" },
-            { key: '14', text: "Fecha Antiguedad" },
-            { key: '15', text: "Activo", width: 16 },
-        ];
+            [
+                { key: '1', text: "Codigo", width: 14 },
+                { key: '2', text: "Codigo Empleado" },
+                { key: '3', text: "Nombres", width: 16 },
+                { key: '4', text: "Apellidos", width: 16 },
+                { key: '5', text: "Tipo Documento", width: 19 },
+                { key: '6', text: "Documento", width: 16 },
+                { key: '7', text: "Sexo" },
+                { key: '8', text: "Fecha Nacimiento", width: 20 },
+                { key: '9', text: "Ciudad", width: 20 },
+                { key: '10', text: "Ocupacion", width: 20 },
+                { key: '11', text: "Dirección", width: 24 },
+                { key: '12', text: "Telefono Fijo" },
+                { key: '13', text: "Telefono Celular" },
+                { key: '14', text: "Fecha Antiguedad" },
+                { key: '15', text: "Activo", width: 16 },
+            ];
         headers.forEach((header, index) => {
             const cell = headerRow.getCell(index + 1)
             cell.value = header.text
             cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: Colors.Primary.replace('#', '') } }
             cell.font = { bold: true, color: { argb: Colors.White.replace('#', '') } }
             cell.alignment = { vertical: 'middle' }
-            const col = worksheet.getColumn(index);
+            const col = worksheetClientes.getColumn(index + 1);
             if (col) { col.width = header.width }
         })
         headerRow.height = 22;
 
-        // Agrego los listados de los campos necesarios
-        worksheet.getCell('E5:999999').dataValidation = getDataValidation(tiposDocumentos.map(item => item.nombre), true, "Is Invalid");
-        worksheet.getCell('G5:999999').dataValidation = getDataValidation(sexos.map(item => item.nombre), true, "Is Invalid");
-        worksheet.getCell('I5:999999').dataValidation = getDataValidation(ciudades.map(item => item.nombre), true, "Is Invalid");
-        worksheet.getCell('J5:999999').dataValidation = getDataValidation(ocupaciones.map(item => item.nombre), true, "Is Invalid");
+        // Agrego los listados de las columnas necesarias
+        Array.from(Array(10000).keys()).forEach((pos) => {
+            if (pos > 4) {
+                worksheetClientes.getCell(`E${pos}`).dataValidation = {
+                    type: 'list',
+                    allowBlank: false,
+                    formulae: [`"${tiposDocumentos.map(item => item.nombre).join(',')}"`],
+                };
+                worksheetClientes.getCell(`G${pos}`).dataValidation = {
+                    type: 'list',
+                    allowBlank: false,
+                    formulae: [`"${sexos.map(item => item.nombre).join(',')}"`],
+                };
+                worksheetClientes.getCell(`I${pos}`).dataValidation = {
+                    type: 'list',
+                    allowBlank: false,
+                    formulae: [`Ciudades!$A$1:$A${ocupaciones.length + 1}`],
+                };
+                worksheetClientes.getCell(`J${pos}`).dataValidation = {
+                    type: 'list',
+                    allowBlank: false,
+                    formulae: [`Ocupaciones!$A$1:$A${ocupaciones.length + 1}`],
+                };
+                worksheetClientes.getCell(`O${pos}`).dataValidation = {
+                    type: 'list',
+                    allowBlank: false,
+                    formulae: [`"SI,NO"`],
+                };
+            }
+        })
+        /* worksheetClientes.getCell('E5').dataValidation = {
+            type: 'list',
+            allowBlank: false,
+            formulae: [`MasterData!$A$2:$A${tiposDocumentos.length + 1}`],
+            showErrorMessage: true,
+            errorStyle: 'error',
+            error: "Is Invalid",
+        }; */
+        /* worksheetClientes.getCell('I5').dataValidation = {
+            type: 'list',
+            allowBlank: false,
+            formulae: [`MasterData!$C$2:$C${ciudades.length + 1}`],
+        };
+        worksheetClientes.getCell('J5').dataValidation = {
+            type: 'list',
+            allowBlank: false,
+            formulae: [`MasterData!$D$2:$D${ocupaciones.length + 1}`],
+        }; */
 
         // Lo subo al navegador
-        exportToResponse(workbook, "Plantilla Carga Masiva Clientes.xlsx");
+        exportToResponse(workbook, "Plantilla Carga Masiva Clientes");
 
     }
 

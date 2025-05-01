@@ -23,7 +23,6 @@ export default function FormCliente() {
         contextOcupaciones: { state: { datos: ocupaciones }, todos: cargarOcupaciones },
         contextAuth: { state: { user } },
     } = useData()
-    /* const { entidad, editar } = useForm<Cliente | undefined>(undefined) */
     const [errores, setErrores] = useState<string[]>([])
     const [form] = Form.useForm()
     const nav = useNavigate()
