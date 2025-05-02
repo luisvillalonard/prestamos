@@ -13,6 +13,7 @@ export interface ClienteContextState<T> extends GlobalContextState<T> {
     activos: (filtro?: RequestFilter) => Promise<ResponseResult<VwCliente[]>>,
     porId: (id: number) => Promise<ResponseResult<T>>,
     porDocumento: (documento: string) => Promise<ResponseResult<T>>,
+    cargar: (clientes: T[]) => Promise<ResponseResult<T[]>>,
 }
 
 export const ClientesContext = createContext<ClienteContextState<Cliente>>({} as ClienteContextState<Cliente>)
@@ -24,6 +25,7 @@ export default function ClientesProvider(props: Pick<ControlProps, "children">) 
     const urlActivos = `${Urls.Clientes.Base}/activos`;
     const urlPorId = `${Urls.Clientes.Base}/byId`;
     const urlDocumento = `${Urls.Clientes.Base}/documento`;
+    const urlCarga = `${Urls.Clientes.Base}/carga`;
     const { children } = props
     const { state, dispatch, editar, cancelar, agregar, actualizar, errorResult } = useReducerHook<Cliente>(urlBase);
     const api = useFetch();
@@ -105,6 +107,22 @@ export default function ClientesProvider(props: Pick<ControlProps, "children">) 
 
     }
 
+    const cargar = async (clientes: Cliente[]): Promise<ResponseResult<Cliente[]>> => {
+
+        dispatch({ type: ACTIONS.FETCHING });
+        let resp: ResponseResult<Cliente[]>;
+
+        try {
+            resp = await api.Post<Cliente[]>(urlCarga, clientes);
+        } catch (error: any) {
+            resp = errorResult<Cliente[]>(error);
+        }
+
+        dispatch({ type: ACTIONS.FETCH_COMPLETE });
+        return resp;
+
+    }
+
     return (
         <ClientesContext.Provider value={{
             state,
@@ -117,6 +135,7 @@ export default function ClientesProvider(props: Pick<ControlProps, "children">) 
             porDocumento,
             todos,
             activos,
+            cargar,
         }}>
             {children}
         </ClientesContext.Provider>

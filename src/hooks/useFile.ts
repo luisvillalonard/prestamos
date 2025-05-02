@@ -11,7 +11,6 @@ type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];
 export interface FileData {
     ok: boolean,
     name?: string,
-    headers: string[],
     data: unknown[],
     errors: string[],
 }
@@ -31,7 +30,6 @@ export async function loadExcel(file: FileType): Promise<FileData> {
 
     const fileData: FileData = {
         ok: false,
-        headers: [],
         data: [],
         errors: [],
     }
@@ -53,11 +51,6 @@ export async function loadExcel(file: FileType): Promise<FileData> {
         return { ...fileData, errors: ['No fue posible leer la hoja del archivo.'] }
     }
 
-    const headerNames: string[] = workbook.Workbook?.Names?.map(item => item.Name) ?? [];
-    if (!headerNames || headerNames.length === 0) {
-        return { ...fileData, errors: ['No fue posible establecer los nombres de las columnas de los datos.'] }
-    }
-
     const sheetName = workbook.SheetNames[0];
     const worksheet: XLSX.WorkSheet = workbook.Sheets[sheetName];
     if (!worksheet) {
@@ -69,19 +62,10 @@ export async function loadExcel(file: FileType): Promise<FileData> {
         return { ...fileData, errors: ['No fue posible leer los datos del archivo.'] }
     }
 
-    //let item: Record<string, any> = {};
-    const headersTitles = jsonResult.slice(3)[0] as unknown[];
-    for (let index = 0; index < headersTitles.length; index++) {
-        const title = headersTitles[index];
-        console.log('title', title);
-
-    }
-
     return {
         ...fileData,
         ok: true,
         name: file.name,
-        headers: headerNames,
         data: jsonResult,
         errors: []
     };

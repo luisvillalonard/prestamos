@@ -22,9 +22,13 @@ export default function LoginForm(props: Pick<ControlProps, "onChange">) {
         if (result) {
             if (result.ok) {
                 if (result.datos) {
-                    onChange && onChange(result.datos);
+                    onChange?.(result.datos);
                 }
             } else {
+                if (result.datos) {
+                    onChange?.(result.datos);
+                    return;
+                }
                 setMensaje(result.mensaje || 'Situación inesperada tratando de validar los datos del usuario.');
             }
         } else {

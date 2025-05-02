@@ -10,6 +10,7 @@ import { useData } from "@hooks/useData"
 import { DD_MM_YYYY } from "@hooks/useDate"
 import { exportToResponse, FileData, HeaderColumn } from "@hooks/useFile"
 import { IconExcel } from "@hooks/useIconos"
+import { Alerta, Exito } from "@hooks/useMensaje"
 import { Cliente } from "@interfaces/clientes"
 import { Ciudad, DocumentoTipo, Ocupacion, Sexo } from "@interfaces/dataMaestra"
 import { Col, Divider, Flex, Space, Table } from "antd"
@@ -19,6 +20,7 @@ import { useEffect, useState } from "react"
 export default function PageClienteCargaMasiva() {
 
     const {
+        contextClientes: { cargar: cargarClientes },
         contextDocumentosTipos: { state: { datos: tiposDocumentos }, todos: cargarTiposDocumentos },
         contextSexos: { state: { datos: sexos }, todos: cargarSexos },
         contextCiudades: { state: { datos: ciudades }, todos: cargarCiudades },
@@ -30,7 +32,7 @@ export default function PageClienteCargaMasiva() {
 
     const cargarAuxiliares = () => Promise.all([cargarTiposDocumentos(), cargarSexos(), cargarCiudades(), cargarOcupaciones()])
 
-    const generaClientes = (file: FileData) => {
+    const generaClientes = (file?: FileData) => {
 
         if (!file) {
             setClientes([]);
@@ -55,10 +57,10 @@ export default function PageClienteCargaMasiva() {
         for (let index = 0; index < rows.length; index++) {
 
             const row: any = rows[index];
-            let tipoDocumento: DocumentoTipo | undefined = tiposDocumentos.filter(item => item.id === row[4])[0];
-            let sexo: Sexo | undefined = sexos.filter(item => item.id === row[6])[0];
-            let ciudad: Ciudad | undefined = ciudades.filter(item => item.id === row[8])[0];
-            let ocupacion: Ocupacion | undefined = ocupaciones.filter(item => item.id === row[9])[0];
+            const tipoDocumento: DocumentoTipo | undefined = row[4] ? tiposDocumentos.filter(item => item.nombre.toLowerCase() === row[4]?.toLowerCase())[0] : undefined;
+            const sexo: Sexo | undefined = row[6] ? sexos.filter(item => item.nombre.toLowerCase() === row[6]?.toLowerCase())[0] : undefined;
+            const ciudad: Ciudad | undefined = row[8] ? ciudades.filter(item => item.nombre.toLowerCase() === row[8]?.toLowerCase())[0] : undefined;
+            const ocupacion: Ocupacion | undefined = row[9] ? ocupaciones.filter(item => item.nombre.toLowerCase() === row[9]?.toLowerCase())[0] : undefined;
 
             nuevosClientes.push({
                 id: 0,
@@ -141,7 +143,7 @@ export default function PageClienteCargaMasiva() {
         const headers: HeaderColumn[] =
             [
                 { key: '1', text: "Codigo", width: 14 },
-                { key: '2', text: "Codigo Empleado" },
+                { key: '2', text: "Codigo Empleado", width: 20 },
                 { key: '3', text: "Nombres", width: 16 },
                 { key: '4', text: "Apellidos", width: 16 },
                 { key: '5', text: "Tipo Documento", width: 19 },
@@ -158,6 +160,7 @@ export default function PageClienteCargaMasiva() {
             ];
         headers.forEach((header, index) => {
             const cell = headerRow.getCell(index + 1)
+            cell.name = header.key
             cell.value = header.text
             cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: Colors.Primary.replace('#', '') } }
             cell.font = { bold: true, color: { argb: Colors.White.replace('#', '') } }
@@ -197,28 +200,20 @@ export default function PageClienteCargaMasiva() {
                 };
             }
         })
-        /* worksheetClientes.getCell('E5').dataValidation = {
-            type: 'list',
-            allowBlank: false,
-            formulae: [`MasterData!$A$2:$A${tiposDocumentos.length + 1}`],
-            showErrorMessage: true,
-            errorStyle: 'error',
-            error: "Is Invalid",
-        }; */
-        /* worksheetClientes.getCell('I5').dataValidation = {
-            type: 'list',
-            allowBlank: false,
-            formulae: [`MasterData!$C$2:$C${ciudades.length + 1}`],
-        };
-        worksheetClientes.getCell('J5').dataValidation = {
-            type: 'list',
-            allowBlank: false,
-            formulae: [`MasterData!$D$2:$D${ocupaciones.length + 1}`],
-        }; */
 
         // Lo subo al navegador
         exportToResponse(workbook, "Plantilla Carga Masiva Clientes");
 
+    }
+
+    const guardar = async () => {
+
+        const result = await cargarClientes(clientes);
+        if (!result.ok) {
+            Alerta(result.mensaje || 'Situación ineesperada tratando de cargar los clientes establecidos.');
+        } else if (result.ok) {
+            Exito('Todos los clientes han sido cargados exitosamente!.');
+        }
     }
 
     useEffect(() => { cargarAuxiliares() }, [])
@@ -230,7 +225,7 @@ export default function PageClienteCargaMasiva() {
                 <Flex align="center" justify="space-between">
                     <TitlePage title="M&oacute;lculo de Carga masiva de Clientes" />
                     <Space>
-                        <ButtonPrimary disabled={!validos}>Cargar Clientes</ButtonPrimary>
+                        <ButtonPrimary disabled={!validos} onClick={guardar}>Cargar Clientes</ButtonPrimary>
                     </Space>
                 </Flex>
                 <Divider className='my-3' />

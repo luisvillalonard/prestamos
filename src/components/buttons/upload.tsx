@@ -31,6 +31,7 @@ export default function UploadButton(props: UploadButtonProps) {
 
     const onRemoveFile = () => {
         setFile(undefined);
+        onChange?.(undefined);
         return true;
     }
 
@@ -126,7 +127,7 @@ export default function UploadButton(props: UploadButtonProps) {
             </Upload >
             <Input readOnly value={file?.name} placeholder={!file ? "en espera..." : file.name} />
             <Button>
-                <IconTrash color="red" onClick={() => { setFile(undefined) }} />
+                <IconTrash color="red" onClick={onRemoveFile} />
             </Button>
         </Space.Compact>
     );

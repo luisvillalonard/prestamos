@@ -7,7 +7,7 @@ import { TagDanger, TagDefault, TagSuccess } from "@components/tags/tags"
 import TitlePage from "@components/titles/titlePage"
 import { Colors } from "@hooks/useConstants"
 import { useData } from "@hooks/useData"
-import { exportToResponse, FileData, getDataValidation, HeaderColumn } from "@hooks/useFile"
+import { exportToResponse, FileData, HeaderColumn } from "@hooks/useFile"
 import { IconExcel } from "@hooks/useIconos"
 import { PrestamoEstado } from "@interfaces/dataMaestra"
 import { Col, Divider, Flex, Space, Table } from "antd"
@@ -24,12 +24,13 @@ export default function PagePrestamosCargaMasiva() {
         contextFormasPago: { state: { datos: formasPago }, todos: cargarFormasPago },
         contextMetodosPago: { state: { datos: metodosPago }, todos: cargarMetodosPago },
         contextMonedas: { state: { datos: monedas }, todos: cargarMonedas },
+        contextAcesores: { state: { datos: acesores }, todos: cargarAcesores },
     } = useData()
     const [prestamos, setPrestamos] = useState<Prestamo[]>([])
     const [errores, setErrores] = useState<string[]>([])
     const [validos, setValidos] = useState<boolean>(false)
 
-    const cargarAuxiliares = () => Promise.all([cargarEstados(), cargarFormasPago(), cargarMetodosPago(), cargarMonedas()])
+    const cargarAuxiliares = () => Promise.all([cargarEstados(), cargarFormasPago(), cargarMetodosPago(), cargarMonedas(), cargarAcesores()])
 
     const generaPrestamos = (file: FileData) => {
 
@@ -152,13 +153,46 @@ export default function PagePrestamosCargaMasiva() {
         })
         headerRow.height = 22;
 
-        // Agrego los listados de los campos necesarios
-        worksheetPrestamos.getCell('E5:999999').dataValidation = getDataValidation(formasPago.map(item => item.nombre), true, "Is Invalid");
-        worksheetPrestamos.getCell('F5:999999').dataValidation = getDataValidation(metodosPago.map(item => item.nombre), true, "Is Invalid");
-        worksheetPrestamos.getCell('G5:999999').dataValidation = getDataValidation(monedas.map(item => item.nombre), true, "Is Invalid");
-        worksheetPrestamos.getCell('O5:999999').dataValidation = getDataValidation(estados.map(item => item.nombre), true, "Is Invalid");
-        worksheetPrestamos.getCell('K5:999999').dataValidation = getDataValidation(['SI', 'NO'], true, "Is Invalid");
-        worksheetPrestamos.getCell('M5:999999').dataValidation = getDataValidation(['SI', 'NO'], true, "Is Invalid");
+        // Agrego los listados de las columnas necesarias
+        Array.from(Array(10000).keys()).forEach((pos) => {
+            if (pos > 4) {
+                worksheetPrestamos.getCell(`E${pos}`).dataValidation = {
+                    type: 'list',
+                    allowBlank: false,
+                    formulae: [`"${formasPago.map(item => item.nombre).join(',')}"`],
+                };
+                worksheetPrestamos.getCell(`F${pos}`).dataValidation = {
+                    type: 'list',
+                    allowBlank: false,
+                    formulae: [`"${metodosPago.map(item => item.nombre).join(',')}"`],
+                };
+                worksheetPrestamos.getCell(`G${pos}`).dataValidation = {
+                    type: 'list',
+                    allowBlank: false,
+                    formulae: [`"${monedas.map(item => item.nombre).join(',')}"`],
+                };
+                worksheetPrestamos.getCell(`L${pos}`).dataValidation = {
+                    type: 'list',
+                    allowBlank: false,
+                    formulae: [`"${acesores.map(item => item.nombre).join(',')}"`],
+                };
+                worksheetPrestamos.getCell(`O${pos}`).dataValidation = {
+                    type: 'list',
+                    allowBlank: false,
+                    formulae: [`"${estados.map(item => item.nombre).join(',')}"`],
+                };
+                worksheetPrestamos.getCell(`K${pos}`).dataValidation = {
+                    type: 'list',
+                    allowBlank: false,
+                    formulae: [`"SI,NO"`],
+                };
+                worksheetPrestamos.getCell(`M${pos}`).dataValidation = {
+                    type: 'list',
+                    allowBlank: false,
+                    formulae: [`"SI,NO"`],
+                };
+            }
+        })
 
         // Agrego una fila intermedia en blanco
         worksheetCuotas.addRow(null);
@@ -176,10 +210,19 @@ export default function PagePrestamosCargaMasiva() {
         })
         headerRow.height = 22;
         
-        worksheetCuotas.getCell('I5:999999').dataValidation = getDataValidation(['SI', 'NO'], true, "Is Invalid");
+        // Agrego los listados de las columnas necesarias
+        Array.from(Array(10000).keys()).forEach((pos) => {
+            if (pos > 4) {
+                worksheetPrestamos.getCell(`I${pos}`).dataValidation = {
+                    type: 'list',
+                    allowBlank: false,
+                    formulae: [`"SI,NO"`],
+                };
+            }
+        })
 
         // Lo subo al navegador
-        exportToResponse(workbook, "Plantilla Carga Masiva Prestamos.xlsx");
+        exportToResponse(workbook, "Plantilla Carga Masiva Prestamos");
 
     }
 
