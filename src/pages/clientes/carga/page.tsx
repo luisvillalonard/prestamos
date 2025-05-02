@@ -61,6 +61,7 @@ export default function PageClienteCargaMasiva() {
             const sexo: Sexo | undefined = row[6] ? sexos.filter(item => item.nombre.toLowerCase() === row[6]?.toLowerCase())[0] : undefined;
             const ciudad: Ciudad | undefined = row[8] ? ciudades.filter(item => item.nombre.toLowerCase() === row[8]?.toLowerCase())[0] : undefined;
             const ocupacion: Ocupacion | undefined = row[9] ? ocupaciones.filter(item => item.nombre.toLowerCase() === row[9]?.toLowerCase())[0] : undefined;
+            const activo: boolean = row[14] && String(row[14]) === 'SI' ? true : false;
 
             nuevosClientes.push({
                 id: 0,
@@ -79,7 +80,7 @@ export default function PageClienteCargaMasiva() {
                 telefonoCelular: row[12] ? row[12] : undefined,
                 fechaAntiguedad: row[13] ? row[13] : undefined,
                 fechaCreacion: DD_MM_YYYY(new Date()),
-                activo: row[14],
+                activo: activo,
             });
 
         }

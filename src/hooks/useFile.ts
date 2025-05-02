@@ -61,6 +61,7 @@ export async function loadExcel(file: FileType): Promise<FileData> {
     if (!jsonResult) {
         return { ...fileData, errors: ['No fue posible leer los datos del archivo.'] }
     }
+    jsonResult = jsonResult.filter((item: any) => item.length > 0);
 
     return {
         ...fileData,
