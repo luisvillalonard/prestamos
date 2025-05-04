@@ -51,23 +51,29 @@ export async function loadExcel(file: FileType): Promise<FileData> {
         return { ...fileData, errors: ['No fue posible leer la hoja del archivo.'] }
     }
 
-    const sheetName = workbook.SheetNames[0];
-    const worksheet: XLSX.WorkSheet = workbook.Sheets[sheetName];
-    if (!worksheet) {
-        return { ...fileData, errors: ['No fue posible leer la hoja del archivo.'] }
-    }
+    const sheets: unknown[] = [];
+    workbook.SheetNames.forEach(sheetName => {
+        const worksheet: XLSX.WorkSheet = workbook.Sheets[sheetName];
+        if (worksheet) {
+            let jsonResult = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+            if (jsonResult) {
+                jsonResult = jsonResult.filter((item: any) => item.length > 0);
+                sheets.push(jsonResult);
+            }
+        }
+    });
 
-    let jsonResult = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+    /* let jsonResult = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
     if (!jsonResult) {
         return { ...fileData, errors: ['No fue posible leer los datos del archivo.'] }
     }
-    jsonResult = jsonResult.filter((item: any) => item.length > 0);
+    jsonResult = jsonResult.filter((item: any) => item.length > 0); */
 
     return {
         ...fileData,
         ok: true,
         name: file.name,
-        data: jsonResult,
+        data: sheets,
         errors: []
     };
 

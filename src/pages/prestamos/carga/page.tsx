@@ -3,30 +3,34 @@ import { ButtonPrimary } from "@components/buttons/primary"
 import { ButtonSuccess } from "@components/buttons/success"
 import UploadButton from "@components/buttons/upload"
 import Container from "@components/containers/container"
+import Loading from "@components/containers/loading"
 import { TagDanger, TagDefault, TagSuccess } from "@components/tags/tags"
 import TitlePage from "@components/titles/titlePage"
 import { Colors } from "@hooks/useConstants"
 import { useData } from "@hooks/useData"
+import { DD_MM_YYYY } from "@hooks/useDate"
 import { exportToResponse, FileData, HeaderColumn } from "@hooks/useFile"
 import { IconExcel } from "@hooks/useIconos"
-import { PrestamoEstado } from "@interfaces/dataMaestra"
-import { Col, Divider, Flex, Space, Table } from "antd"
-import { useEffect, useState } from "react"
-import ExcelJS from "exceljs"
-import { Prestamo } from "@interfaces/prestamos"
+import { Alerta, Exito } from "@hooks/useMensaje"
 import { FormatNumber } from "@hooks/useUtils"
+import { FormaPago, MetodoPago, Moneda, PrestamoEstado } from "@interfaces/dataMaestra"
+import { PrestamoCuota, PrestamoCuotaImportado, PrestamoImportado } from "@interfaces/prestamos"
+import { Col, Divider, Flex, Space, Table } from "antd"
+import ExcelJS from "exceljs"
+import { useEffect, useState } from "react"
 
 
 export default function PagePrestamosCargaMasiva() {
 
     const {
+        contextPrestamos: { state: { procesando }, cargar: cargarPrestamos },
         contextPrestamosEstados: { state: { datos: estados }, todos: cargarEstados },
         contextFormasPago: { state: { datos: formasPago }, todos: cargarFormasPago },
         contextMetodosPago: { state: { datos: metodosPago }, todos: cargarMetodosPago },
         contextMonedas: { state: { datos: monedas }, todos: cargarMonedas },
         contextAcesores: { state: { datos: acesores }, todos: cargarAcesores },
     } = useData()
-    const [prestamos, setPrestamos] = useState<Prestamo[]>([])
+    const [prestamos, setPrestamos] = useState<PrestamoImportado[]>([])
     const [errores, setErrores] = useState<string[]>([])
     const [validos, setValidos] = useState<boolean>(false)
 
@@ -42,46 +46,77 @@ export default function PagePrestamosCargaMasiva() {
 
         setErrores([]);
 
-        if (!file.data) {
+        if (!file.data || file.data.length === 0) {
             setErrores(['No existen datos que procesar en el archivo.']);
             return;
         }
 
-        const rows = file.data.slice(4);
-        if (!rows || rows.length === 0) {
+        const sheets: any[] = file.data;
+        const rowsPrestamos = sheets[0].slice(3);
+        const rowsPrestamosCuotas = sheets[1].slice(3);
+        if (!rowsPrestamos || rowsPrestamos.length === 0) {
             setErrores(['El archivo no tiene datos que procesar.']);
             return;
         }
 
-        const nuevosPrestamos: Prestamo[] = [];
-        for (let index = 0; index < rows.length; index++) {
+        const prestamosCuotas: PrestamoCuotaImportado[] = [];
+        for (let index = 0; index < rowsPrestamosCuotas.length; index++) {
 
-            const row: any = rows[index];
-            let estado: PrestamoEstado | undefined = estados.filter(item => item.id === row[4])[0];
+            const row: any = rowsPrestamosCuotas[index];
+            const pagado: boolean = row[8] && String(row[8]) === 'SI' ? true : false;
+
+            prestamosCuotas.push({
+                id: 0,
+                prestamoId: 0,
+                prestamoCodigo: row[0],
+                fechaPago: DD_MM_YYYY(row[1]),
+                deudaInicial: row[2] ? parseFloat(row[2]) : 0,
+                capital: row[3] ? parseFloat(row[3]) : 0,
+                interes: row[4] ? parseInt(row[4]) : 0,
+                amortizacion: row[5] ? parseFloat(row[5]) : 0,
+                descuento: row[6] ? parseFloat(row[6]) : 0,
+                saldoFinal: row[7] ? parseFloat(row[7]) : 0,
+                vencido: false,
+                pagado: pagado,
+                pagos: []
+            })
+        }
+
+        const nuevosPrestamos: PrestamoImportado[] = [];
+        for (let index = 0; index < rowsPrestamos.length; index++) {
+
+            const row: any = rowsPrestamos[index];
+            const fechaRegistro: string = DD_MM_YYYY(row[2]);
+            const fechaCredito: string = DD_MM_YYYY(row[3]);
+            const formaPago: FormaPago | undefined = row[4] ? formasPago.filter(item => item.nombre.toLowerCase() === row[4]?.toLowerCase())[0] : undefined;
+            const metodoPago: MetodoPago | undefined = row[5] ? metodosPago.filter(item => item.nombre.toLowerCase() === row[5]?.toLowerCase())[0] : undefined;
+            const moneda: Moneda | undefined = row[6] ? monedas.filter(item => item.nombre.toLowerCase() === row[6]?.toLowerCase())[0] : undefined;
+            const acesor: Moneda | undefined = row[11] ? acesores.filter(item => item.nombre.toLowerCase() === row[11]?.toLowerCase())[0] : undefined;
+            const cancelado: boolean = row[12] && String(row[12]) === 'SI' ? true : false;
+            const estado: PrestamoEstado | undefined = row[14] ? estados.filter(item => item.nombre.toLowerCase() === row[14]?.toLowerCase())[0] : undefined;
+            const cuotas: PrestamoCuota[] = prestamosCuotas.filter(cuota => cuota.prestamoCodigo === row[0]);
+            const valido: boolean = (fechaRegistro && fechaCredito && formaPago && metodoPago && moneda && estado) ? true : false;
 
             nuevosPrestamos.push({
                 id: 0,
-                codigo: '',
-                cliente: undefined,
-                fechaRegistro: '',
-                fechaCredito: '',
-                formaPago: undefined,
-                metodoPago: undefined,
-                moneda: undefined,
-                monto: 0,
-                interes: 0,
-                cuotas: 0,
+                codigo: row[0],
+                clienteCodigo: row[1],
+                fechaRegistro: row[2],
+                fechaCredito: row[3],
+                formaPago: formaPago,
+                metodoPago: metodoPago,
+                moneda: moneda,
+                monto: row[7] ? parseFloat(row[7]) : 0,
+                interes: row[8] ? parseFloat(row[8]) : 0,
+                cuotas: row[9] ? parseInt(row[9]) : 0,
                 estado: estado,
                 destino: '',
-                acesor: undefined,
-                usuario: undefined,
-                cancelado: false,
-                prestamoCuotas: [],
+                acesor: acesor,
+                cancelado: cancelado,
+                prestamoCuotas: cuotas,
                 aplicaDescuento: false,
-                capitalCuota: 0,
-                totalInteres: 0,
-                amortizacion: 0,
-                reenganche: false,
+                valido: valido,
+                existe: false,
             });
 
         }
@@ -209,11 +244,11 @@ export default function PagePrestamosCargaMasiva() {
             if (col) { col.width = header.width }
         })
         headerRow.height = 22;
-        
+
         // Agrego los listados de las columnas necesarias
         Array.from(Array(10000).keys()).forEach((pos) => {
             if (pos > 4) {
-                worksheetPrestamos.getCell(`I${pos}`).dataValidation = {
+                worksheetCuotas.getCell(`I${pos}`).dataValidation = {
                     type: 'list',
                     allowBlank: false,
                     formulae: [`"SI,NO"`],
@@ -230,7 +265,7 @@ export default function PagePrestamosCargaMasiva() {
 
         const colText: string[] = 'A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z'.split(',');
         let row = sheet.addRow(null);
-        sheet.mergeCells(`A1:${colText.filter((_, index) => index === countCols-1)[0] ?? 'A'}1`);
+        sheet.mergeCells(`A1:${colText.filter((_, index) => index === countCols - 1)[0] ?? 'A'}1`);
         let cell = row.getCell(1);
         cell.value = 'LoanManagement';
         cell.font = { size: 20, bold: false };
@@ -238,7 +273,7 @@ export default function PagePrestamosCargaMasiva() {
         row.height = 32;
 
         row = sheet.addRow(null);
-        sheet.mergeCells(`A2:${colText.filter((_, index) => index === countCols-1)[0] ?? 'A'}2`);
+        sheet.mergeCells(`A2:${colText.filter((_, index) => index === countCols - 1)[0] ?? 'A'}2`);
         cell = row.getCell(1);
         cell.value = 'Carga Masiva de Prestamos';
         cell.font = { size: 14, bold: false };
@@ -247,6 +282,16 @@ export default function PagePrestamosCargaMasiva() {
 
     }
 
+    const guardar = async () => {
+
+        const result = await cargarPrestamos(prestamos);
+        if (!result.ok) {
+            Alerta(result.mensaje || 'Situación ineesperada tratando de cargar los prestamos establecidos.');
+        } else if (result.ok) {
+            setPrestamos(result.datos ?? []);
+            Exito(result.mensaje || 'El proceso de carga de prestamos ha concluido exitosamente!.');
+        }
+    }
 
     useEffect(() => { cargarAuxiliares() }, [])
 
@@ -254,10 +299,11 @@ export default function PagePrestamosCargaMasiva() {
         <>
             <Col xs={24}>
 
+                <Loading fullscreen active={procesando} message="Procesando, espere..." />
                 <Flex align="center" justify="space-between">
                     <TitlePage title="M&oacute;lculo de Carga Masiva de Prestamos" />
                     <Space>
-                        <ButtonPrimary disabled={!validos}>Cargar Prestamos</ButtonPrimary>
+                        <ButtonPrimary disabled={!validos} onClick={guardar}>Cargar Prestamos</ButtonPrimary>
                     </Space>
                 </Flex>
                 <Divider className='my-3' />
@@ -283,7 +329,7 @@ export default function PagePrestamosCargaMasiva() {
                 </Container>
 
                 <Container>
-                    <Table<Prestamo>
+                    <Table<PrestamoImportado>
                         size="middle"
                         bordered={false}
                         pagination={{ size: 'default' }}
@@ -291,17 +337,26 @@ export default function PagePrestamosCargaMasiva() {
                         scroll={{ x: 1300 }}
                         dataSource={prestamos.map((item, index) => { return { ...item, key: index + 1 } })}>
                         <Table.Column title="#" dataIndex="key" key="key" align="center" fixed='left' width={60} />
+                        <Table.Column title='Valido' render={(record: PrestamoImportado) => (
+                            record.valido ? <TagSuccess text='Si' /> : <TagDanger text='No' />
+                        )} />
+                        <Table.Column title='Existe' render={(record: PrestamoImportado) => (
+                            record.existe ? <TagDanger text='Si' /> : <TagDefault text='No' />
+                        )} />
                         <Table.Column title="Código" dataIndex="codigo" key="codigo" />
-                        <Table.Column title="Fecha Cr&eacute;dito" render={(record: Prestamo) => (record.fechaCredito)} />
-                        <Table.Column title="Cliente Codigo" render={(record: Prestamo) => (record.cliente?.codigo)} />
-                        <Table.Column title="Monto" render={(record: Prestamo) => (FormatNumber(record.monto, 2))} />
-                        <Table.Column title="Inter&eacute;s" render={(record: Prestamo) => (FormatNumber(record.interes, 2))} />
-                        <Table.Column title="Estado" render={(record: Prestamo) => (
-                            record.cancelado
-                                ? <TagDanger text={record.estado?.nombre || 'Desconocido'} />
-                                : record.estado?.final
-                                    ? <TagSuccess text={record.estado?.nombre || 'Desconocido'} />
-                                    : <TagDefault text="Desconocido" />
+                        <Table.Column title="Fecha Registro" render={(record: PrestamoImportado) => (record.fechaRegistro)} />
+                        <Table.Column title="Fecha Cr&eacute;dito" render={(record: PrestamoImportado) => (record.fechaCredito)} />
+                        <Table.Column title="Codigo Cliente" render={(record: PrestamoImportado) => (record.clienteCodigo)} />
+                        <Table.Column title="Forma Pago" render={(record: PrestamoImportado) => (record.formaPago?.nombre)} />
+                        <Table.Column title="M&eacute;todo Pago" render={(record: PrestamoImportado) => (record.metodoPago?.nombre)} />
+                        <Table.Column title="Moneda" render={(record: PrestamoImportado) => (record.moneda?.nombre)} />
+                        <Table.Column title="Monto" render={(record: PrestamoImportado) => (FormatNumber(record.monto, 2))} />
+                        <Table.Column title="Inter&eacute;s" render={(record: PrestamoImportado) => (FormatNumber(record.interes, 2))} />
+                        <Table.Column title="Cancelado" render={(record: PrestamoImportado) => (
+                            record.cancelado ? <TagDanger text="Si" /> : <TagDefault text="No" />
+                        )} />
+                        <Table.Column title="Estado" render={(record: PrestamoImportado) => (
+                            record.estado?.final ? <TagSuccess text={record.estado?.nombre} /> : <TagDefault text={record.estado?.nombre || 'Desconocido'} />
                         )} />
                     </Table>
                 </Container>

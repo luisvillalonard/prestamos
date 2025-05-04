@@ -78,3 +78,29 @@ export interface VwPrestamo {
     activo: boolean,
     cancelado: boolean,
 }
+
+export interface PrestamoImportado {
+    id: number,
+    codigo: string,
+    clienteCodigo: string,
+    fechaRegistro: string,
+    fechaCredito: string,
+    formaPago: FormaPago | undefined,
+    metodoPago: MetodoPago | undefined,
+    moneda: Moneda | undefined,
+    monto: number,
+    interes: number,
+    cuotas: number,
+    estado: PrestamoEstado | undefined,
+    aplicaDescuento: boolean,
+    destino: string,
+    acesor: Acesor | undefined,
+    cancelado: boolean,
+    prestamoCuotas: PrestamoCuota[],
+    valido: boolean,
+    existe: boolean,
+}
+
+export interface PrestamoCuotaImportado extends PrestamoCuota {
+    prestamoCodigo: string
+}

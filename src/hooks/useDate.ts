@@ -5,7 +5,8 @@ dayjs.locale('es-DO');
 
 export const dateFormat = 'DD-MM-YYYY';
 
-export function DD_MM_YYYY(date: Date): string {
+export function DD_MM_YYYY(date?: Date): string {
+    if (!date) return ''
     return dayjs(date).format(dateFormat)
 }
 

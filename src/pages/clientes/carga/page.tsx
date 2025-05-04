@@ -3,7 +3,8 @@ import { ButtonPrimary } from "@components/buttons/primary"
 import { ButtonSuccess } from "@components/buttons/success"
 import UploadButton from "@components/buttons/upload"
 import Container from "@components/containers/container"
-import { TagDanger, TagSuccess } from "@components/tags/tags"
+import Loading from "@components/containers/loading"
+import { TagDanger, TagDefault, TagSuccess } from "@components/tags/tags"
 import TitlePage from "@components/titles/titlePage"
 import { Colors } from "@hooks/useConstants"
 import { useData } from "@hooks/useData"
@@ -11,7 +12,7 @@ import { DD_MM_YYYY } from "@hooks/useDate"
 import { exportToResponse, FileData, HeaderColumn } from "@hooks/useFile"
 import { IconExcel } from "@hooks/useIconos"
 import { Alerta, Exito } from "@hooks/useMensaje"
-import { Cliente } from "@interfaces/clientes"
+import { ClienteImportado } from "@interfaces/clientes"
 import { Ciudad, DocumentoTipo, Ocupacion, Sexo } from "@interfaces/dataMaestra"
 import { Col, Divider, Flex, Space, Table } from "antd"
 import ExcelJS from "exceljs"
@@ -20,13 +21,13 @@ import { useEffect, useState } from "react"
 export default function PageClienteCargaMasiva() {
 
     const {
-        contextClientes: { cargar: cargarClientes },
+        contextClientes: { state: { procesando }, cargar: cargarClientes },
         contextDocumentosTipos: { state: { datos: tiposDocumentos }, todos: cargarTiposDocumentos },
         contextSexos: { state: { datos: sexos }, todos: cargarSexos },
         contextCiudades: { state: { datos: ciudades }, todos: cargarCiudades },
         contextOcupaciones: { state: { datos: ocupaciones }, todos: cargarOcupaciones },
     } = useData()
-    const [clientes, setClientes] = useState<Cliente[]>([])
+    const [clientes, setClientes] = useState<ClienteImportado[]>([])
     const [errores, setErrores] = useState<string[]>([])
     const [validos, setValidos] = useState<boolean>(false)
 
@@ -42,18 +43,19 @@ export default function PageClienteCargaMasiva() {
 
         setErrores([]);
 
-        if (!file.data) {
+        if (!file.data || file.data.length === 0) {
             setErrores(['No existen datos que procesar en el archivo.']);
             return;
         }
 
-        const rows = file.data.slice(4);
+        const sheets: any[] = file.data;
+        const rows = sheets[0].slice(3);
         if (!rows || rows.length === 0) {
             setErrores(['El archivo no tiene datos que procesar.']);
             return;
         }
 
-        const nuevosClientes: Cliente[] = [];
+        const nuevosClientes: ClienteImportado[] = [];
         for (let index = 0; index < rows.length; index++) {
 
             const row: any = rows[index];
@@ -62,6 +64,7 @@ export default function PageClienteCargaMasiva() {
             const ciudad: Ciudad | undefined = row[8] ? ciudades.filter(item => item.nombre.toLowerCase() === row[8]?.toLowerCase())[0] : undefined;
             const ocupacion: Ocupacion | undefined = row[9] ? ocupaciones.filter(item => item.nombre.toLowerCase() === row[9]?.toLowerCase())[0] : undefined;
             const activo: boolean = row[14] && String(row[14]) === 'SI' ? true : false;
+            const valido: boolean = (tipoDocumento && sexo && ciudad && ocupacion) ? true : false;
 
             nuevosClientes.push({
                 id: 0,
@@ -81,6 +84,8 @@ export default function PageClienteCargaMasiva() {
                 fechaAntiguedad: row[13] ? row[13] : undefined,
                 fechaCreacion: DD_MM_YYYY(new Date()),
                 activo: activo,
+                valido: valido,
+                existe: false,
             });
 
         }
@@ -96,14 +101,14 @@ export default function PageClienteCargaMasiva() {
         const workbook = new ExcelJS.Workbook();
 
         // Creo la hoja de excel
-        const worksheetClientes = workbook.addWorksheet("Plantilla Clientes");
+        const worksheetClientes = workbook.addWorksheet("Plantilla");
         const worksheetCiudades = workbook.addWorksheet("Ciudades");
         const worksheetOcupaciones = workbook.addWorksheet("Ocupaciones");
 
         // Configuro algunas propiedades
         worksheetClientes.properties = { ...worksheetClientes.properties, defaultRowHeight: 18 };
-        worksheetCiudades.properties = { ...worksheetClientes.properties };
-        worksheetOcupaciones.properties = { ...worksheetClientes.properties };
+        worksheetCiudades.properties = { ...worksheetCiudades.properties, defaultRowHeight: 18 };
+        worksheetOcupaciones.properties = { ...worksheetOcupaciones.properties, defaultRowHeight: 18 };
 
         // Agrego la data maestra
         ciudades.forEach(tipo => {
@@ -172,7 +177,7 @@ export default function PageClienteCargaMasiva() {
         headerRow.height = 22;
 
         // Agrego los listados de las columnas necesarias
-        Array.from(Array(10000).keys()).forEach((pos) => {
+        Array.from(Array(1000).keys()).forEach((pos) => {
             if (pos > 4) {
                 worksheetClientes.getCell(`E${pos}`).dataValidation = {
                     type: 'list',
@@ -213,7 +218,8 @@ export default function PageClienteCargaMasiva() {
         if (!result.ok) {
             Alerta(result.mensaje || 'Situación ineesperada tratando de cargar los clientes establecidos.');
         } else if (result.ok) {
-            Exito('Todos los clientes han sido cargados exitosamente!.');
+            setClientes(result.datos ?? []);
+            Exito(result.mensaje || 'El proceso de carga de clientes ha concluido exitosamente!.');
         }
     }
 
@@ -223,6 +229,7 @@ export default function PageClienteCargaMasiva() {
         <>
             <Col xs={24}>
 
+                <Loading fullscreen active={procesando} message="Procesando, espere..." />
                 <Flex align="center" justify="space-between">
                     <TitlePage title="M&oacute;lculo de Carga masiva de Clientes" />
                     <Space>
@@ -252,29 +259,34 @@ export default function PageClienteCargaMasiva() {
                 </Container>
 
                 <Container>
-                    <Table<Cliente>
+                    <Table<ClienteImportado>
                         size='middle'
                         bordered={false}
                         pagination={{ size: 'default', responsive: true }}
-                        dataSource={clientes.map((item, index) => { return { ...item, key: index + 1 } })
-                        }
+                        dataSource={clientes.map((item, index) => { return { ...item, key: index + 1 } })}
                         locale={{ emptyText: <Flex>0 clientes</Flex> }}
                         scroll={{ x: 'max-content' }}>
+                        <Table.Column title='Valido' render={(record: ClienteImportado) => (
+                            record.valido ? <TagSuccess text='Si' /> : <TagDanger text='No' />
+                        )} />
+                        <Table.Column title='Existe' render={(record: ClienteImportado) => (
+                            record.existe ? <TagDanger text='Si' /> : <TagDefault text='No' />
+                        )} />
                         <Table.Column title='#' dataIndex='key' key='key' align='center' fixed='left' width={60} />
                         <Table.Column title='Código' dataIndex='codigo' key='codigo' fixed='left' width={80} />
                         <Table.Column title='Empleado Id' dataIndex='empleadoId' key='empleadoId' fixed='left' width={100} />
-                        <Table.Column title='Nombres y Apellidos' render={(record: Cliente) => (
+                        <Table.Column title='Nombres y Apellidos' render={(record: ClienteImportado) => (
                             `${record.nombres} ${record.apellidos}`
                         )} />
-                        <Table.Column title='Tipo Documento' render={(record: Cliente) => (record.documentoTipo?.nombre)} />
-                        <Table.Column title='Documento' render={(record: Cliente) => (record.documento)} />
-                        <Table.Column title='Sexo' render={(record: Cliente) => (record.sexo?.nombre)} />
-                        <Table.Column title='Ciudad' render={(record: Cliente) => (record.ciudad?.nombre)} />
-                        <Table.Column title='Ocupaci&oacute;n' render={(record: Cliente) => (record.ocupacion?.nombre)} />
-                        <Table.Column title='Celular' render={(record: Cliente) => (
+                        <Table.Column title='Tipo Documento' render={(record: ClienteImportado) => (record.documentoTipo?.nombre)} />
+                        <Table.Column title='Documento' render={(record: ClienteImportado) => (record.documento)} />
+                        <Table.Column title='Sexo' render={(record: ClienteImportado) => (record.sexo?.nombre)} />
+                        <Table.Column title='Ciudad' render={(record: ClienteImportado) => (record.ciudad?.nombre)} />
+                        <Table.Column title='Ocupaci&oacute;n' render={(record: ClienteImportado) => (record.ocupacion?.nombre)} />
+                        <Table.Column title='Celular' render={(record: ClienteImportado) => (
                             <span style={{ textWrap: 'nowrap' }}>{record.telefonoCelular}</span>
                         )} />
-                        <Table.Column title='Estado' render={(record: Cliente) => (
+                        <Table.Column title='Estado' render={(record: ClienteImportado) => (
                             record.activo ? <TagSuccess text='Activo' /> : <TagDanger text='Inactivo' />
                         )} />
                     </Table>

@@ -3,7 +3,7 @@ import { DD_MM_YYYY } from "@hooks/useDate"
 import { useFetch } from "@hooks/useFetch"
 import { useReducerHook } from "@hooks/useReducer"
 import { getParamsUrlToString } from "@hooks/useUtils"
-import { Cliente, VwCliente } from "@interfaces/clientes"
+import { Cliente, ClienteImportado, VwCliente } from "@interfaces/clientes"
 import { ControlProps, RequestFilter, ResponseResult } from "@interfaces/globales"
 import { ACTIONS, GlobalContextState } from "@reducers/global"
 import { createContext } from "react"
@@ -13,7 +13,7 @@ export interface ClienteContextState<T> extends GlobalContextState<T> {
     activos: (filtro?: RequestFilter) => Promise<ResponseResult<VwCliente[]>>,
     porId: (id: number) => Promise<ResponseResult<T>>,
     porDocumento: (documento: string) => Promise<ResponseResult<T>>,
-    cargar: (clientes: T[]) => Promise<ResponseResult<T[]>>,
+    cargar: (clientes: ClienteImportado[]) => Promise<ResponseResult<ClienteImportado[]>>,
 }
 
 export const ClientesContext = createContext<ClienteContextState<Cliente>>({} as ClienteContextState<Cliente>)
@@ -107,15 +107,15 @@ export default function ClientesProvider(props: Pick<ControlProps, "children">) 
 
     }
 
-    const cargar = async (clientes: Cliente[]): Promise<ResponseResult<Cliente[]>> => {
+    const cargar = async (clientes: ClienteImportado[]): Promise<ResponseResult<ClienteImportado[]>> => {
 
         dispatch({ type: ACTIONS.FETCHING });
-        let resp: ResponseResult<Cliente[]>;
+        let resp: ResponseResult<ClienteImportado[]>;
 
         try {
-            resp = await api.Post<Cliente[]>(urlCarga, clientes);
+            resp = await api.Post<ClienteImportado[]>(urlCarga, clientes);
         } catch (error: any) {
-            resp = errorResult<Cliente[]>(error);
+            resp = errorResult<ClienteImportado[]>(error);
         }
 
         dispatch({ type: ACTIONS.FETCH_COMPLETE });

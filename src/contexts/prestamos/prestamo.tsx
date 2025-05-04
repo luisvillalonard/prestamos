@@ -4,7 +4,7 @@ import { useFetch } from "@hooks/useFetch"
 import { useReducerHook } from "@hooks/useReducer"
 import { getParamsUrlToString } from "@hooks/useUtils"
 import { ControlProps, RequestFilter, ResponseResult } from "@interfaces/globales"
-import { Prestamo, VwPrestamo } from "@interfaces/prestamos"
+import { Prestamo, PrestamoImportado, VwPrestamo } from "@interfaces/prestamos"
 import { ACTIONS, GlobalContextState } from "@reducers/global"
 import { createContext } from "react"
 
@@ -13,6 +13,7 @@ export interface PrestamoContextState<T> extends GlobalContextState<T> {
     activos: (filtro?: RequestFilter) => Promise<ResponseResult<Prestamo[]>>,
     actual: (clienteId: number) => Promise<ResponseResult<T>>,
     porId: (id: number) => Promise<ResponseResult<T>>,
+    cargar: (clientes: PrestamoImportado[]) => Promise<ResponseResult<PrestamoImportado[]>>,
 }
 
 export const PrestamosContext = createContext<PrestamoContextState<Prestamo>>({} as PrestamoContextState<Prestamo>)
@@ -21,6 +22,7 @@ export default function PrestamosProvider(props: Pick<ControlProps, "children">)
 
     const urlBase = `${Urls.Prestamos.Base}`;
     const urlTodos = `${Urls.Prestamos.Base}/todos`;
+    const urlCarga = `${Urls.Prestamos.Base}/carga`;
     const { children } = props
     const { state, dispatch, editar, cancelar, agregar, actualizar, errorResult } = useReducerHook<Prestamo>(urlBase);
     const api = useFetch();
@@ -119,6 +121,22 @@ export default function PrestamosProvider(props: Pick<ControlProps, "children">)
 
     }
 
+    const cargar = async (clientes: PrestamoImportado[]): Promise<ResponseResult<PrestamoImportado[]>> => {
+
+        dispatch({ type: ACTIONS.FETCHING });
+        let resp: ResponseResult<PrestamoImportado[]>;
+
+        try {
+            resp = await api.Post<PrestamoImportado[]>(urlCarga, clientes);
+        } catch (error: any) {
+            resp = errorResult<[]>(error);
+        }
+
+        dispatch({ type: ACTIONS.FETCH_COMPLETE });
+        return resp;
+
+    }
+
     return (
         <PrestamosContext.Provider value={{
             state,
@@ -131,6 +149,7 @@ export default function PrestamosProvider(props: Pick<ControlProps, "children">)
             activos,
             actual,
             porId,
+            cargar,
         }}>
             {children}
         </PrestamosContext.Provider>

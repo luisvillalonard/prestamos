@@ -44,3 +44,8 @@ export interface VwCliente {
     telefonoCelular: string,
     activo: boolean,
 }
+
+export interface ClienteImportado extends Cliente {
+    valido: boolean,
+    existe: boolean,
+}
